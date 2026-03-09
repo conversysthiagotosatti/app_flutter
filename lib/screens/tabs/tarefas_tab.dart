@@ -232,8 +232,8 @@ class _TarefasTabState extends State<TarefasTab> {
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.of(context).push(
+        onTap: () async {
+          await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => TarefaDetalheScreen(
                 apiClient: widget.apiClient,
@@ -241,6 +241,10 @@ class _TarefasTabState extends State<TarefasTab> {
               ),
             ),
           );
+          // Sempre recarrega o Kanban ao voltar do detalhe
+          setState(() {
+            _future = _service.listar();
+          });
         },
         child: Card(
           elevation: 1.5,

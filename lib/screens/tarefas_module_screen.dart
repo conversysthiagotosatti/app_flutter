@@ -6,6 +6,7 @@ import 'cadastrar_epico_screen.dart';
 import 'nova_tarefa_screen.dart';
 import 'documentos_screen.dart';
 import 'relatorios_screen.dart';
+import 'dashboard_screen.dart';
 import 'tabs/tarefas_tab.dart';
 
 class TarefasModuleScreen extends StatelessWidget {
@@ -87,9 +88,22 @@ class TarefasModuleScreen extends StatelessWidget {
     );
   }
 
+  void _openDashboard(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DashboardScreen(apiClient: apiClient),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final options = [
+      (
+        'Dashboard',
+        Icons.dashboard_outlined,
+        (BuildContext ctx) => _openDashboard(ctx),
+      ),
       (
         'Analisar com IA',
         Icons.auto_awesome,

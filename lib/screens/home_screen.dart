@@ -150,14 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
           lower.contains('observa') ||
           lower.contains('zabbix') ||
           lower.contains('contratos ai') ||
-          lower.contains('contrato ai')) {
-        // módulos Helpdesk, Observabilidade/Zabbix e Contratos AI
-        // mostram apenas a tela "Em Desenvolvimento"
+          lower.contains('contrato ai') ||
+          lower.contains('contratos')) {
+        // módulos Helpdesk, Observabilidade/Zabbix e Contratos
+        // (incluindo Contratos AI) mostram apenas a tela "Em Desenvolvimento"
         page = EmDesenvolvimentoScreen(titulo: nome);
-      } else if (lower.contains('contrato') ||
-          lower.contains('tarefa') ||
-          lower.contains('board')) {
-        // módulos de contratos/board/tarefas usam o módulo de tarefas
+      } else if (lower.contains('tarefa') || lower.contains('board')) {
+        // módulos de tarefas/board usam o módulo de tarefas
         page = TarefasModuleScreen(apiClient: _client);
       } else {
         page = Center(
