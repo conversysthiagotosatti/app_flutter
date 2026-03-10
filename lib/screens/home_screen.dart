@@ -4,6 +4,7 @@ import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../widgets/conversys_app_bar.dart';
 import 'em_desenvolvimento_screen.dart';
+import 'helpdesk_module_screen.dart';
 import 'notificacoes_screen.dart';
 import 'tabs/clientes_tab.dart';
 import 'tabs/contratos_tab.dart';
@@ -152,9 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
           lower.contains('contratos ai') ||
           lower.contains('contrato ai') ||
           lower.contains('contratos')) {
-        // módulos Helpdesk, Observabilidade/Zabbix e Contratos
-        // (incluindo Contratos AI) mostram apenas a tela "Em Desenvolvimento"
-        page = EmDesenvolvimentoScreen(titulo: nome);
+        // módulo Helpdesk abre um submenu próprio;
+        // Observabilidade/Zabbix e Contratos ainda mostram "Em Desenvolvimento"
+        if (lower.contains('helpdesk') || lower.contains('help desk')) {
+          page = HelpdeskModuleScreen(apiClient: _client);
+        } else {
+          page = EmDesenvolvimentoScreen(titulo: nome);
+        }
       } else if (lower.contains('tarefa') || lower.contains('board')) {
         // módulos de tarefas/board usam o módulo de tarefas
         page = TarefasModuleScreen(apiClient: _client);
