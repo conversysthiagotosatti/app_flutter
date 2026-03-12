@@ -5,6 +5,7 @@ import '../widgets/conversys_app_bar.dart';
 import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_analytics_screen.dart';
 import 'helpdesk_chamados_screen.dart';
+import 'helpdesk_copilot_screen.dart';
 
 class HelpdeskModuleScreen extends StatelessWidget {
   final ApiClient apiClient;
@@ -31,6 +32,16 @@ class HelpdeskModuleScreen extends StatelessWidget {
     );
   }
 
+  void _openCopilot(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => HelpdeskCopilotScreen(
+          apiClient: apiClient,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const background = Color(0xFF020617);
@@ -49,6 +60,11 @@ class HelpdeskModuleScreen extends StatelessWidget {
         'Chamados',
         Icons.support_agent,
         (BuildContext ctx) => _openChamados(ctx),
+      ),
+      (
+        'Copilot IA',
+        Icons.bolt,
+        (BuildContext ctx) => _openCopilot(ctx),
       ),
     ];
 

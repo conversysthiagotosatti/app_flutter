@@ -8,6 +8,8 @@ import 'documentos_screen.dart';
 import 'relatorios_screen.dart';
 import 'dashboard_screen.dart';
 import 'tabs/tarefas_tab.dart';
+import 'tarefas_calendario_screen.dart';
+import 'tarefas_copilot_screen.dart';
 
 class TarefasModuleScreen extends StatelessWidget {
   final ApiClient apiClient;
@@ -96,6 +98,22 @@ class TarefasModuleScreen extends StatelessWidget {
     );
   }
 
+  void _openCalendario(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TarefasCalendarioScreen(apiClient: apiClient),
+      ),
+    );
+  }
+
+  void _openCopilot(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => TarefasCopilotScreen(apiClient: apiClient),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const background = Color(0xFF020617);
@@ -109,6 +127,16 @@ class TarefasModuleScreen extends StatelessWidget {
         'Dashboard',
         Icons.dashboard_outlined,
         (BuildContext ctx) => _openDashboard(ctx),
+      ),
+      (
+        'Calendário',
+        Icons.calendar_today_outlined,
+        (BuildContext ctx) => _openCalendario(ctx),
+      ),
+      (
+        'Copilot IA',
+        Icons.bolt,
+        (BuildContext ctx) => _openCopilot(ctx),
       ),
       (
         'Analisar com IA',
