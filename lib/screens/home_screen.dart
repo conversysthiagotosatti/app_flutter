@@ -57,7 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final lower = name.toLowerCase();
     if (lower.contains('cliente')) return Icons.business;
     if (lower.contains('contrato')) return Icons.description_outlined;
-    if (lower.contains('tarefa') || lower.contains('board')) {
+    if (lower.contains('tarefa') ||
+        lower.contains('board') ||
+        lower.contains('projeto')) {
       return Icons.check_circle_outline;
     }
     if (lower.contains('helpdesk') || lower.contains('help desk')) {
@@ -160,8 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           page = EmDesenvolvimentoScreen(titulo: nome);
         }
-      } else if (lower.contains('tarefa') || lower.contains('board')) {
-        // módulos de tarefas/board usam o módulo de tarefas
+      } else if (lower.contains('tarefa') ||
+          lower.contains('board') ||
+          lower.contains('projeto')) {
+        // módulos de tarefas/board/projetos usam o módulo de tarefas
         page = TarefasModuleScreen(apiClient: _client);
       } else {
         page = Center(
