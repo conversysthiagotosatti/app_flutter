@@ -15,9 +15,44 @@ class ConversysApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.indigo,
+    // Paleta alinhada com o front web (front-jyra / Conversys brand):
+    // - Fundo claro: #f8fafc
+    // - Superfícies: #ffffff
+    // - Primário (accent): #005AFF
+    // - Primário escuro: #0047cc
+    // - Texto principal: #0f172a
+    // - Texto secundário: #64748b
+    final colorScheme = ColorScheme(
       brightness: Brightness.light,
+      primary: const Color(0xFF005AFF),
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFE5EFFF),
+      onPrimaryContainer: const Color(0xFF03122F),
+      secondary: const Color(0xFF03122F),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFF062254),
+      onSecondaryContainer: Colors.white,
+      tertiary: const Color(0xFFEC4899),
+      onTertiary: Colors.white,
+      tertiaryContainer: const Color(0xFFFFE4F3),
+      onTertiaryContainer: const Color(0xFF4A0626),
+      error: const Color(0xFFEF4444),
+      onError: Colors.white,
+      errorContainer: const Color(0xFFFFE4E4),
+      onErrorContainer: const Color(0xFF7F1D1D),
+      background: const Color(0xFFF8FAFC),
+      onBackground: const Color(0xFF0F172A),
+      surface: Colors.white,
+      onSurface: const Color(0xFF0F172A),
+      surfaceVariant: const Color(0xFFE2E8F0),
+      onSurfaceVariant: const Color(0xFF64748B),
+      outline: const Color(0xFFCBD5E1),
+      outlineVariant: const Color(0xFFE2E8F0),
+      shadow: Colors.black.withOpacity(0.12),
+      scrim: Colors.black54,
+      inverseSurface: const Color(0xFF03122F),
+      onInverseSurface: const Color(0xFFF8FAFC),
+      inversePrimary: const Color(0xFFAECBFF),
     );
 
     return MaterialApp(
@@ -26,12 +61,37 @@ class ConversysApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: colorScheme,
         useMaterial3: true,
+        scaffoldBackgroundColor: colorScheme.background,
+        fontFamily: 'Inter',
         appBarTheme: AppBarTheme(
+          backgroundColor: colorScheme.secondary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.outline),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+          ),
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: colorScheme.surface,
+          indicatorColor: colorScheme.primary.withOpacity(0.08),
+          labelTextStyle: WidgetStatePropertyAll(
+            TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: colorScheme.primary,
           foregroundColor: Colors.white,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
         ),
       ),
       home: const _AuthGate(),

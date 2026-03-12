@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   /// Ajuste esta URL para o host/porta onde o Django está rodando.
-  static const String baseUrl = 'http://172.18.0.3:8000';
+  static const String baseUrl = 'http://172.20.5.100:8000';
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';

@@ -98,6 +98,12 @@ class TarefasModuleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const background = Color(0xFF020617);
+    const cardColor = Color(0xFF0B1220);
+    const cardBorder = Color(0xFF1E293B);
+    const iconBg = Color(0xFF0F172A);
+    const labelColor = Colors.white;
+
     final options = [
       (
         'Dashboard',
@@ -136,47 +142,60 @@ class TarefasModuleScreen extends StatelessWidget {
       ),
     ];
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        itemCount: options.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 4 / 3,
-        ),
-        itemBuilder: (context, index) {
-          final (label, icon, onTap) = options[index];
-          return InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () => onTap(context),
-            child: Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
+    return Container(
+      color: background,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: GridView.builder(
+          itemCount: options.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 4 / 3,
+          ),
+          itemBuilder: (context, index) {
+            final (label, icon, onTap) = options[index];
+            return InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => onTap(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: cardBorder),
+                ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(icon, size: 32),
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(icon, size: 20, color: Colors.blue[200]),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       label,
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                          ?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: labelColor,
+                          ),
                     ),
                   ],
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

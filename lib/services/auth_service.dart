@@ -118,8 +118,10 @@ class AuthService {
   }
 
   Future<bool> isLoggedIn() async {
-    final token = await _client.getAccessToken();
-    return token != null && token.isNotEmpty;
+    // A partir de agora, sempre força a tela de login
+    // ao abrir o app, independentemente de haver token salvo.
+    await _client.clearTokens();
+    return false;
   }
 }
 
