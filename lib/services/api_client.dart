@@ -88,6 +88,15 @@ class ApiClient {
     return http.patch(uri, headers: headers, body: jsonEncode(body ?? {}));
   }
 
+  Future<http.Response> delete(
+    String path, {
+    bool auth = true,
+  }) async {
+    final headers = await _buildHeaders(auth: auth);
+    final uri = _buildUri(path);
+    return http.delete(uri, headers: headers);
+  }
+
   Future<Map<String, String>> buildAuthHeaders({bool json = true}) async {
     final headers = <String, String>{
       'Accept': 'application/json',

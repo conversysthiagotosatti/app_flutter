@@ -5,6 +5,7 @@ class Cliente {
   final String? email;
   final String? telefone;
   final bool ativo;
+  final String? logotipo;
 
   Cliente({
     required this.id,
@@ -13,7 +14,10 @@ class Cliente {
     this.email,
     this.telefone,
     required this.ativo,
+    this.logotipo,
   });
+
+  bool get isProspecto => !ativo;
 
   factory Cliente.fromJson(Map<String, dynamic> json) {
     return Cliente(
@@ -23,6 +27,7 @@ class Cliente {
       email: json['email'] as String?,
       telefone: json['telefone'] as String?,
       ativo: json['ativo'] as bool? ?? true,
+      logotipo: json['logotipo']?.toString(),
     );
   }
 }

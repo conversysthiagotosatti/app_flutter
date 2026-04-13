@@ -107,7 +107,26 @@ class AuthService {
 
     final modules = data['modulos'];
     if (modules is List) {
-      await _client.saveModules(modules);
+      // Garante que o módulo "Propostas" exista no superapp.
+      // O backend pode não retornar explicitamente, mas a UI precisa estar disponível.
+      final normalized = List<dynamic>.from(modules);
+      final alreadyHasPropostas = normalized.any((m) {
+        if (m is Map) {
+          final nome = m['nome'];
+          if (nome is String) return nome.toLowerCase().contains('proposta');
+        }
+        return false;
+      });
+
+      if (!alreadyHasPropostas) {
+        normalized.add({
+          'nome': 'Propostas',
+          'descricao': 'Propostas comerciais',
+        });
+      }
+
+      data['modulos'] = normalized;
+      await _client.saveModules(normalized);
     }
 
     return data;

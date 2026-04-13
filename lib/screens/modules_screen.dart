@@ -12,6 +12,7 @@ class ModulesScreen extends StatelessWidget {
   IconData _iconForModule(String name) {
     final lower = name.toLowerCase();
     if (lower.contains('cliente')) return Icons.business;
+    if (lower.contains('proposta')) return Icons.receipt_long;
     if (lower.contains('contrato')) return Icons.description_outlined;
     if (lower.contains('tarefa')) return Icons.check_circle_outline;
     if (lower.contains('helpdesk')) return Icons.support_agent;

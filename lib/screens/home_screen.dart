@@ -6,6 +6,7 @@ import '../widgets/conversys_app_bar.dart';
 import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_module_screen.dart';
 import 'notificacoes_screen.dart';
+import 'propostas_module_screen.dart';
 import 'tabs/clientes_tab.dart';
 import 'tabs/contratos_tab.dart';
 import 'tabs/tarefas_tab.dart';
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   IconData _iconForModule(String name) {
     final lower = name.toLowerCase();
     if (lower.contains('cliente')) return Icons.business;
+    if (lower.contains('proposta')) return Icons.receipt_long;
     if (lower.contains('contrato')) return Icons.description_outlined;
     if (lower.contains('tarefa') ||
         lower.contains('board') ||
@@ -148,6 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
       Widget page;
       if (lower.contains('cliente')) {
         page = ClientesTab(apiClient: _client);
+      } else if (lower.contains('proposta')) {
+        page = PropostasModuleScreen(apiClient: _client);
       } else if (lower.contains('helpdesk') ||
           lower.contains('help desk') ||
           lower.contains('observa') ||
