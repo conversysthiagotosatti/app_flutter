@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/api_client.dart';
 import '../services/helpdesk_chamados_service.dart';
 import '../widgets/conversys_app_bar.dart';
+import 'helpdesk_copilot_screen.dart';
 import 'notificacoes_screen.dart';
 
 class HelpdeskChamadoDetalheScreen extends StatefulWidget {
@@ -193,8 +194,25 @@ class _HelpdeskChamadoDetalheScreenState
         widget.chamado.criadoEm;
 
     return Scaffold(
-      appBar: conversysAppBar(context, 
+      appBar: conversysAppBar(
+        context,
         'Ticket #${widget.chamado.id}',
+        extraActions: [
+          IconButton(
+            icon: const Icon(Icons.smart_toy_outlined),
+            tooltip: 'Copilot Helpdesk',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => HelpdeskCopilotScreen(
+                    apiClient: widget.apiClient,
+                    chamadoId: widget.chamado.id,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(

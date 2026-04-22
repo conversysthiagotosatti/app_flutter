@@ -44,8 +44,14 @@ class HelpdeskChamadosService {
 
   HelpdeskChamadosService(this.apiClient);
 
-  Future<List<Map<String, dynamic>>> _listarEntidade(String entity) async {
-    final resp = await apiClient.get('/api/helpdesk/$entity/');
+  Future<List<Map<String, dynamic>>> _listarEntidade(
+    String entity, {
+    Map<String, dynamic>? query,
+  }) async {
+    final resp = await apiClient.get(
+      '/api/helpdesk/$entity/',
+      query: query,
+    );
     if (resp.statusCode != 200) {
       throw Exception(
         'Erro ao carregar $entity (${resp.statusCode})',
@@ -62,6 +68,19 @@ class HelpdeskChamadosService {
       list = const [];
     }
     return list.whereType<Map<String, dynamic>>().toList();
+  }
+
+  /// Perfil do usuário logado (mesmo payload do portal: `tipo_usuario`, `memberships`, …).
+  Future<Map<String, dynamic>> fetchAuthMe() async {
+    final resp = await apiClient.get('/api/auth/me/');
+    if (resp.statusCode != 200) {
+      throw Exception('Erro ao carregar perfil (${resp.statusCode})');
+    }
+    final decoded = jsonDecode(resp.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw Exception('Resposta inválida de /api/auth/me/');
+    }
+    return decoded;
   }
 
   Future<List<Map<String, dynamic>>> listarGruposSolucao() =>
@@ -82,11 +101,16 @@ class HelpdeskChamadosService {
   Future<List<Map<String, dynamic>>> listarImpactos() =>
       _listarEntidade('impactos');
 
-  Future<List<Map<String, dynamic>>> listarClientesHd() =>
-      _listarEntidade('clientes-hd');
-
-  Future<List<Map<String, dynamic>>> listarContratosHd() =>
-      _listarEntidade('contratos-hd');
+  /// Contratos helpdesk; com [clienteConversysId] filtra como no portal (`HelpdeskNewTicketModal`).
+  Future<List<Map<String, dynamic>>> listarContratosHd({
+    int? clienteConversysId,
+  }) async {
+    final q = <String, dynamic>{};
+    if (clienteConversysId != null) {
+      q['cliente_conversys'] = clienteConversysId;
+    }
+    return _listarEntidade('contratos-hd', query: q.isEmpty ? null : q);
+  }
 
   Future<List<Map<String, dynamic>>> listarTemplates() =>
       _listarEntidade('templates-chamado');
@@ -125,6 +149,24 @@ class HelpdeskChamadosService {
         .toList();
   }
 
+  String _extractErrorMessage(String body) {
+    if (body.isEmpty) return '';
+    try {
+      final j = jsonDecode(body);
+      if (j is Map<String, dynamic>) {
+        final d = j['detail'];
+        if (d is String) return d;
+        if (d is List) return d.map((e) => e.toString()).join(' ');
+        return j.entries
+            .map((e) => '${e.key}: ${e.value}')
+            .join('; ');
+      }
+    } catch (_) {}
+    return body.length > 300 ? body.substring(0, 300) : body;
+  }
+
+  /// Cria chamado alinhado ao `createChamado` do portal (`HelpdeskNewTicketModal`).
+  /// Usa `cliente_conversys` (ID de [clientes.Cliente]); o backend resolve `cliente_helpdesk`.
   Future<void> criar({
     required String titulo,
     String? descricao,
@@ -135,23 +177,21 @@ class HelpdeskChamadosService {
     int? tipoChamadoId,
     int? areaId,
     int? impactoId,
-    int? clienteId,
+    int? clienteConversysId,
     int? contratoId,
     int? templateId,
-    int? itemConfiguracaoId,
+    int? subclienteId,
     String? solicitanteNome,
   }) async {
     final body = <String, dynamic>{
       'titulo': titulo.trim(),
+      'descricao': (descricao ?? '').trim(),
     };
-    if (descricao != null && descricao.trim().isNotEmpty) {
-      body['descricao'] = descricao.trim();
+    if (prioridade != null && prioridade.isNotEmpty) {
+      body['prioridade'] = prioridade;
     }
     if (grupoSolucaoId != null) {
       body['grupo_solucao'] = grupoSolucaoId;
-    }
-    if (prioridade != null && prioridade.isNotEmpty) {
-      body['prioridade'] = prioridade;
     }
     if (categoriaId != null) {
       body['categoria'] = categoriaId;
@@ -168,8 +208,8 @@ class HelpdeskChamadosService {
     if (impactoId != null) {
       body['impacto'] = impactoId;
     }
-    if (clienteId != null) {
-      body['cliente_helpdesk'] = clienteId;
+    if (clienteConversysId != null) {
+      body['cliente_conversys'] = clienteConversysId;
     }
     if (contratoId != null) {
       body['contrato_helpdesk'] = contratoId;
@@ -177,8 +217,8 @@ class HelpdeskChamadosService {
     if (templateId != null) {
       body['template'] = templateId;
     }
-    if (itemConfiguracaoId != null) {
-      body['item_configuracao'] = itemConfiguracaoId;
+    if (subclienteId != null) {
+      body['subcliente'] = subclienteId;
     }
     if (solicitanteNome != null && solicitanteNome.trim().isNotEmpty) {
       body['solicitante_nome'] = solicitanteNome.trim();
@@ -189,10 +229,12 @@ class HelpdeskChamadosService {
       body: body,
     );
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
+      final msg = _extractErrorMessage(resp.body);
       throw Exception(
-        'Erro ao criar chamado (${resp.statusCode})',
+        msg.isEmpty
+            ? 'Erro ao criar chamado (${resp.statusCode})'
+            : 'Erro ao criar chamado (${resp.statusCode}): $msg',
       );
     }
   }
 }
-

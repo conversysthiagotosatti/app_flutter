@@ -418,6 +418,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseDeleteConfirm => 'Delete this draft permanently?';
 
   @override
+  String get expenseGroupsTile => 'Groups';
+
+  @override
+  String get expenseBatchImportTile => 'Batch import';
+
+  @override
+  String get expenseAuditModuleTile => 'Audit';
+
+  @override
+  String get expenseRefresh => 'Refresh';
+
+  @override
+  String get expenseGroupListTitle => 'Groups (drafts)';
+
+  @override
+  String get expenseGroupDetailTitle => 'Batch';
+
+  @override
+  String get expenseGroupSubmitBatch => 'Submit batch for approval';
+
+  @override
+  String get expenseGroupMembers => 'Expenses in batch';
+
+  @override
+  String get expensePendingGroupsTitle => 'Pending groups';
+
+  @override
+  String get expenseByExpenseTitle => 'By expense';
+
+  @override
+  String get expenseApproveGroup => 'Approve group';
+
+  @override
+  String get expenseRejectGroup => 'Reject group';
+
+  @override
+  String get expensePaymentsScreenTitle => 'Payments (finance)';
+
+  @override
+  String get expenseSelectAll => 'Select all';
+
+  @override
+  String get expenseDeselectAll => 'Clear selection';
+
+  @override
+  String get expenseExportCsv => 'Copy CSV';
+
+  @override
+  String get expenseExportCsvDone => 'CSV copied to clipboard.';
+
+  @override
+  String get expenseApplyReturn => 'Apply return CSV';
+
+  @override
+  String get expenseSapSend => 'Send to SAP';
+
+  @override
+  String get expenseSapBulk => 'SAP selected';
+
+  @override
+  String get expenseFinanceApprove => 'Approve (finance)';
+
+  @override
+  String get expenseFinanceReject => 'Reject (finance)';
+
+  @override
+  String get expenseAnomaliesTitle => 'Anomalies';
+
+  @override
+  String get expenseExtractedTitle => 'Extracted data (OCR)';
+
+  @override
+  String get expenseApprovalsChainTitle => 'Approval levels';
+
+  @override
+  String get expenseAgrupamentoTitulo => 'Group title';
+
+  @override
+  String get expenseBatchImportHint =>
+      'Enter the group title and pick receipt images. Draft expenses will be created (OCR + AI classification when available).';
+
+  @override
+  String get expenseOcrFill => 'Fill with OCR';
+
+  @override
+  String get expenseClassifyTipo => 'Suggest type (AI)';
+
+  @override
+  String get expenseStatusPendingFinance => 'Pending finance';
+
+  @override
+  String get expenseStatusFinanceApproved => 'Finance approved';
+
+  @override
+  String get expenseStatusFinanceRejected => 'Finance rejected';
+
+  @override
+  String get expenseDateFrom => 'From date';
+
+  @override
+  String get expenseDateTo => 'To date';
+
+  @override
+  String get expenseClearPeriod => 'Clear period';
+
+  @override
+  String get expenseApplyReturnResult => 'Return file result';
+
+  @override
+  String get expenseSelectOne => 'Select at least one expense.';
+
+  @override
   String get continueLabel => 'Continue';
 
   @override

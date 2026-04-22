@@ -135,11 +135,16 @@ class ExpenseEnterpriseService {
   Future<List<ExpenseEnterpriseRow>> fetchExpenses(
     int clienteId, {
     String? status,
+    String? agrupamentoTitulo,
   }) async {
-    final q = _tenantQuery(
-      clienteId,
-      status != null && status.isNotEmpty ? {'status': status} : null,
-    );
+    final extra = <String, String>{};
+    if (status != null && status.isNotEmpty) {
+      extra['status'] = status;
+    }
+    if (agrupamentoTitulo != null && agrupamentoTitulo.trim().isNotEmpty) {
+      extra['agrupamento_titulo'] = agrupamentoTitulo.trim();
+    }
+    final q = _tenantQuery(clienteId, extra.isEmpty ? null : extra);
     final r = await apiClient.get(
       '/api/expenses/',
       query: q,
@@ -298,14 +303,14 @@ class ExpenseEnterpriseService {
     return ExpenseEnterpriseRow.fromJson(decoded);
   }
 
+  /// Marca como **paga** (API do portal: somente `status: paid`).
   Future<ExpenseEnterpriseRow> finalizeExpense(
     int clienteId,
     int expenseId,
-    String status,
   ) async {
     final r = await apiClient.post(
       '/api/expenses/$expenseId/finalize/',
-      body: {'status': status},
+      body: {'status': 'paid'},
       query: _tenantQuery(clienteId),
       extraHeaders: _tenantHeaders(clienteId),
     );
@@ -381,6 +386,185 @@ class ExpenseEnterpriseService {
       files: [file],
     );
     _ensureOk(r, 'Erro no OCR (imagem)');
+    final decoded = jsonDecode(r.body);
+    if (decoded is Map<String, dynamic>) return decoded;
+    return {};
+  }
+
+  Future<List<ExpenseGroupSummaryRow>> fetchGroupSummary(int clienteId) async {
+    final r = await apiClient.get(
+      '/api/expenses/group-summary/',
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao carregar agrupamentos');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! List) return [];
+    return decoded
+        .whereType<Map<String, dynamic>>()
+        .map(ExpenseGroupSummaryRow.fromJson)
+        .toList();
+  }
+
+  Future<ExpenseGroupSubmitResult> submitExpenseGroup(
+    int clienteId,
+    String agrupamentoTitulo,
+  ) async {
+    final r = await apiClient.post(
+      '/api/expenses/submit-group/',
+      body: {'agrupamento_titulo': agrupamentoTitulo.trim()},
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao enviar lote');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida do envio de lote');
+    }
+    return ExpenseGroupSubmitResult.fromJson(decoded);
+  }
+
+  Future<List<ExpensePendingGroupRow>> fetchPendingGroups(int clienteId) async {
+    final r = await apiClient.get(
+      '/api/expenses/pending-groups/',
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao carregar grupos pendentes');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! List) return [];
+    return decoded
+        .whereType<Map<String, dynamic>>()
+        .map(ExpensePendingGroupRow.fromJson)
+        .toList();
+  }
+
+  Future<ExpensePendingGroupBulkResult> approvePendingGroup(
+    int clienteId,
+    String agrupamentoTitulo, {
+    String comment = '',
+  }) async {
+    final r = await apiClient.post(
+      '/api/expenses/pending-groups/approve/',
+      body: {
+        'agrupamento_titulo': agrupamentoTitulo.trim(),
+        'comment': comment,
+      },
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao aprovar grupo');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida');
+    }
+    return ExpensePendingGroupBulkResult.fromJson(decoded);
+  }
+
+  Future<ExpensePendingGroupBulkResult> rejectPendingGroup(
+    int clienteId,
+    String agrupamentoTitulo, {
+    String comment = '',
+  }) async {
+    final r = await apiClient.post(
+      '/api/expenses/pending-groups/reject/',
+      body: {
+        'agrupamento_titulo': agrupamentoTitulo.trim(),
+        'comment': comment,
+      },
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao rejeitar grupo');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida');
+    }
+    return ExpensePendingGroupBulkResult.fromJson(decoded);
+  }
+
+  Future<ExpenseEnterpriseRow> financeApproveExpense(
+    int clienteId,
+    int expenseId, {
+    String comment = '',
+  }) async {
+    final r = await apiClient.post(
+      '/api/expenses/$expenseId/finance-approve/',
+      body: {'comment': comment},
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro na aprovação financeira');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida');
+    }
+    return ExpenseEnterpriseRow.fromJson(decoded);
+  }
+
+  Future<ExpenseEnterpriseRow> financeRejectExpense(
+    int clienteId,
+    int expenseId, {
+    String comment = '',
+  }) async {
+    final r = await apiClient.post(
+      '/api/expenses/$expenseId/finance-reject/',
+      body: {'comment': comment},
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro na rejeição financeira');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida');
+    }
+    return ExpenseEnterpriseRow.fromJson(decoded);
+  }
+
+  Future<ExpenseSapSendResponse> sapSendExpense(
+    int clienteId,
+    int expenseId,
+  ) async {
+    final r = await apiClient.post(
+      '/api/expenses/$expenseId/sap-send/',
+      body: <String, dynamic>{},
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    if (r.statusCode < 200 || r.statusCode >= 300) {
+      final extra = _detailFromBody(r.body);
+      throw ExpenseApiException(
+        extra.isEmpty
+            ? 'Erro ao enviar ao SAP (${r.statusCode})'
+            : extra,
+        r.statusCode,
+      );
+    }
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw ExpenseApiException('Resposta inválida do SAP');
+    }
+    return ExpenseSapSendResponse.fromJson(decoded);
+  }
+
+  Future<Map<String, dynamic>> classifyTipoFromImage(
+    int clienteId,
+    List<int> bytes,
+    String filename,
+  ) async {
+    final file = http.MultipartFile.fromBytes(
+      'image',
+      bytes,
+      filename: filename,
+    );
+    final r = await apiClient.postMultipart(
+      '/api/expenses/classify-tipo/',
+      fields: const {},
+      files: [file],
+      query: _tenantQuery(clienteId),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao classificar tipo de despesa');
     final decoded = jsonDecode(r.body);
     if (decoded is Map<String, dynamic>) return decoded;
     return {};

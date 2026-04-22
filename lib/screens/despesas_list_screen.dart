@@ -58,6 +58,12 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
         return l10n.expenseStatusAudited;
       case 'paid':
         return l10n.expenseStatusPaid;
+      case 'pending_finance':
+        return l10n.expenseStatusPendingFinance;
+      case 'finance_approved':
+        return l10n.expenseStatusFinanceApproved;
+      case 'finance_rejected':
+        return l10n.expenseStatusFinanceRejected;
       default:
         return code;
     }
@@ -211,6 +217,18 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
         child: Text(l10n.expenseStatusApproved),
       ),
       DropdownMenuItem(
+        value: 'pending_finance',
+        child: Text(l10n.expenseStatusPendingFinance),
+      ),
+      DropdownMenuItem(
+        value: 'finance_approved',
+        child: Text(l10n.expenseStatusFinanceApproved),
+      ),
+      DropdownMenuItem(
+        value: 'finance_rejected',
+        child: Text(l10n.expenseStatusFinanceRejected),
+      ),
+      DropdownMenuItem(
         value: 'rejected',
         child: Text(l10n.expenseStatusRejected),
       ),
@@ -236,7 +254,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
             child: Column(
               children: [
                 DropdownButtonFormField<int>(
-                  value: _clienteId,
+                  initialValue: _clienteId,
                   decoration: InputDecoration(
                     labelText: l10n.expenseSelectClient,
                     labelStyle: const TextStyle(color: Colors.white70),
@@ -265,7 +283,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _statusFilter,
+                  initialValue: _statusFilter,
                   decoration: InputDecoration(
                     labelText: l10n.expenseStatusFilter,
                     labelStyle: const TextStyle(color: Colors.white70),

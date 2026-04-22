@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -81,6 +83,12 @@ class _DespesaDetalheScreenState extends State<DespesaDetalheScreen> {
         return l10n.expenseStatusAudited;
       case 'paid':
         return l10n.expenseStatusPaid;
+      case 'pending_finance':
+        return l10n.expenseStatusPendingFinance;
+      case 'finance_approved':
+        return l10n.expenseStatusFinanceApproved;
+      case 'finance_rejected':
+        return l10n.expenseStatusFinanceRejected;
       default:
         return code;
     }
@@ -215,14 +223,72 @@ class _DespesaDetalheScreenState extends State<DespesaDetalheScreen> {
     }
   }
 
-  Future<void> _finalize(String status, AppLocalizations l10n) async {
+  Future<void> _markPaid(AppLocalizations l10n) async {
     try {
       await _svc.finalizeExpense(
         widget.clienteId,
         widget.expenseId,
-        status,
       );
       if (!mounted) return;
+      await _reload();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expenseLoadError(e.toString()))),
+      );
+    }
+  }
+
+  Future<void> _financeApprove(AppLocalizations l10n) async {
+    final c = await _promptComment(l10n.expenseFinanceApprove, l10n);
+    if (c == null) return;
+    try {
+      await _svc.financeApproveExpense(
+        widget.clienteId,
+        widget.expenseId,
+        comment: c,
+      );
+      if (!mounted) return;
+      await _reload();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expenseLoadError(e.toString()))),
+      );
+    }
+  }
+
+  Future<void> _financeReject(AppLocalizations l10n) async {
+    final c = await _promptComment(l10n.expenseFinanceReject, l10n);
+    if (c == null) return;
+    try {
+      await _svc.financeRejectExpense(
+        widget.clienteId,
+        widget.expenseId,
+        comment: c,
+      );
+      if (!mounted) return;
+      await _reload();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expenseLoadError(e.toString()))),
+      );
+    }
+  }
+
+  Future<void> _sendSap(AppLocalizations l10n) async {
+    try {
+      final r = await _svc.sapSendExpense(widget.clienteId, widget.expenseId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${r.detail}\n${const JsonEncoder.withIndent('  ').convert(r.sap ?? {})}',
+          ),
+          duration: const Duration(seconds: 6),
+        ),
+      );
       await _reload();
     } catch (e) {
       if (!mounted) return;
@@ -302,6 +368,14 @@ class _DespesaDetalheScreenState extends State<DespesaDetalheScreen> {
               _statusLabel(l10n, st),
               style: TextStyle(color: Colors.blue[200], fontWeight: FontWeight.w600),
             ),
+            if (r.agrupamentoTitulo != null &&
+                r.agrupamentoTitulo!.trim().isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                '${l10n.expenseAgrupamentoTitulo}: ${r.agrupamentoTitulo}',
+                style: TextStyle(color: Colors.blueGrey[200], fontSize: 12),
+              ),
+            ],
             const SizedBox(height: 16),
             _kv(l10n.expenseFieldAmount, r.amount),
             _kv(l10n.expenseFieldDate, r.date),
@@ -311,6 +385,63 @@ class _DespesaDetalheScreenState extends State<DespesaDetalheScreen> {
             if (r.location.isNotEmpty) _kv(l10n.expenseFieldLocation, r.location),
             if (r.username != null) _kv(l10n.expenseAuthor, r.username!),
             _kv(l10n.expenseRiskScore, r.riskScore.toStringAsFixed(2)),
+            if (r.approvals.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.expenseApprovalsChainTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ...r.approvals.map(
+                (a) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    'L${a.level} · ${a.status}${a.comment.isNotEmpty ? ' — ${a.comment}' : ''}',
+                    style: TextStyle(color: Colors.blueGrey[200], fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+            if (r.anomalies.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.expenseAnomaliesTitle,
+                style: const TextStyle(
+                  color: Colors.amber,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ...r.anomalies.map(
+                (a) => Text(
+                  '${a.type} (${a.score}): ${a.description}',
+                  style: const TextStyle(color: Colors.amberAccent, fontSize: 12),
+                ),
+              ),
+            ],
+            if (r.extractedData.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.expenseExtractedTitle,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 4),
+              SelectableText(
+                const JsonEncoder.withIndent('  ').convert(r.extractedData),
+                style: const TextStyle(
+                  color: Colors.white54,
+                  fontFamily: 'monospace',
+                  fontSize: 10,
+                ),
+              ),
+            ],
             if (_receiptUri(r.receiptFile) != null) ...[
               const SizedBox(height: 12),
               OutlinedButton.icon(
@@ -349,21 +480,28 @@ class _DespesaDetalheScreenState extends State<DespesaDetalheScreen> {
                     child: Text(l10n.expenseReject),
                   ),
                 ],
-                if (st == 'approved') ...[
+                if (st == 'pending_finance') ...[
                   FilledButton(
-                    onPressed: () => _finalize('audited', l10n),
-                    child: Text(l10n.expenseMarkAudited),
+                    onPressed: () => _financeApprove(l10n),
+                    child: Text(l10n.expenseFinanceApprove),
                   ),
-                  FilledButton(
-                    onPressed: () => _finalize('paid', l10n),
-                    child: Text(l10n.expenseMarkPaid),
+                  OutlinedButton(
+                    onPressed: () => _financeReject(l10n),
+                    child: Text(l10n.expenseFinanceReject),
                   ),
                 ],
-                if (st == 'audited')
+                if (st == 'finance_approved' ||
+                    st == 'approved' ||
+                    st == 'audited') ...[
                   FilledButton(
-                    onPressed: () => _finalize('paid', l10n),
+                    onPressed: () => _markPaid(l10n),
                     child: Text(l10n.expenseMarkPaid),
                   ),
+                  OutlinedButton(
+                    onPressed: () => _sendSap(l10n),
+                    child: Text(l10n.expenseSapSend),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 24),

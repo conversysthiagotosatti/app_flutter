@@ -421,6 +421,119 @@ class AppLocalizationsPt extends AppLocalizations {
   String get expenseDeleteConfirm => 'Excluir este rascunho permanentemente?';
 
   @override
+  String get expenseGroupsTile => 'Agrupamentos';
+
+  @override
+  String get expenseBatchImportTile => 'Importar lote';
+
+  @override
+  String get expenseAuditModuleTile => 'Auditoria';
+
+  @override
+  String get expenseRefresh => 'Atualizar';
+
+  @override
+  String get expenseGroupListTitle => 'Agrupamentos (rascunhos)';
+
+  @override
+  String get expenseGroupDetailTitle => 'Lote';
+
+  @override
+  String get expenseGroupSubmitBatch => 'Enviar lote para aprovação';
+
+  @override
+  String get expenseGroupMembers => 'Despesas no lote';
+
+  @override
+  String get expensePendingGroupsTitle => 'Grupos pendentes';
+
+  @override
+  String get expenseByExpenseTitle => 'Por despesa';
+
+  @override
+  String get expenseApproveGroup => 'Aprovar grupo';
+
+  @override
+  String get expenseRejectGroup => 'Rejeitar grupo';
+
+  @override
+  String get expensePaymentsScreenTitle => 'Pagamentos (financeiro)';
+
+  @override
+  String get expenseSelectAll => 'Selecionar todas';
+
+  @override
+  String get expenseDeselectAll => 'Limpar seleção';
+
+  @override
+  String get expenseExportCsv => 'Copiar CSV';
+
+  @override
+  String get expenseExportCsvDone =>
+      'CSV copiado para a área de transferência.';
+
+  @override
+  String get expenseApplyReturn => 'Aplicar retorno CSV';
+
+  @override
+  String get expenseSapSend => 'Enviar ao SAP';
+
+  @override
+  String get expenseSapBulk => 'SAP selecionadas';
+
+  @override
+  String get expenseFinanceApprove => 'Aprovar (financeiro)';
+
+  @override
+  String get expenseFinanceReject => 'Rejeitar (financeiro)';
+
+  @override
+  String get expenseAnomaliesTitle => 'Anomalias';
+
+  @override
+  String get expenseExtractedTitle => 'Dados extraídos (OCR)';
+
+  @override
+  String get expenseApprovalsChainTitle => 'Aprovações por nível';
+
+  @override
+  String get expenseAgrupamentoTitulo => 'Agrupamento';
+
+  @override
+  String get expenseBatchImportHint =>
+      'Informe o título do agrupamento e selecione imagens de comprovantes. Serão criadas despesas em rascunho (OCR + classificação quando disponível).';
+
+  @override
+  String get expenseOcrFill => 'Preencher com OCR';
+
+  @override
+  String get expenseClassifyTipo => 'Sugerir tipo (IA)';
+
+  @override
+  String get expenseStatusPendingFinance => 'Pend. financeiro';
+
+  @override
+  String get expenseStatusFinanceApproved => 'Aprov. financeiro';
+
+  @override
+  String get expenseStatusFinanceRejected => 'Rej. financeiro';
+
+  @override
+  String get expenseDateFrom => 'Data inicial';
+
+  @override
+  String get expenseDateTo => 'Data final';
+
+  @override
+  String get expenseClearPeriod => 'Limpar período';
+
+  @override
+  String get expenseApplyReturnResult => 'Resultado do retorno';
+
+  @override
+  String get expenseSelectOne => 'Selecione ao menos uma despesa.';
+
+  @override
   String get continueLabel => 'Continuar';
 
   @override

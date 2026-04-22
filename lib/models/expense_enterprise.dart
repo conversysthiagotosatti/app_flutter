@@ -133,6 +133,116 @@ class ExpenseAnomalyRow {
   }
 }
 
+class ExpenseGroupSummaryRow {
+  final String agrupamentoTitulo;
+  final int expenseCount;
+  final String totalAmount;
+  final int draftCount;
+  final int myDraftCount;
+
+  ExpenseGroupSummaryRow({
+    required this.agrupamentoTitulo,
+    required this.expenseCount,
+    required this.totalAmount,
+    required this.draftCount,
+    required this.myDraftCount,
+  });
+
+  factory ExpenseGroupSummaryRow.fromJson(Map<String, dynamic> json) {
+    return ExpenseGroupSummaryRow(
+      agrupamentoTitulo: (json['agrupamento_titulo'] ?? '') as String,
+      expenseCount: json['expense_count'] as int? ?? 0,
+      totalAmount: '${json['total_amount'] ?? ''}',
+      draftCount: json['draft_count'] as int? ?? 0,
+      myDraftCount: json['my_draft_count'] as int? ?? 0,
+    );
+  }
+}
+
+class ExpenseGroupSubmitResult {
+  final int submitted;
+  final int autoApproved;
+  final int pendingApproval;
+  final List<Map<String, dynamic>> errors;
+
+  ExpenseGroupSubmitResult({
+    required this.submitted,
+    required this.autoApproved,
+    required this.pendingApproval,
+    required this.errors,
+  });
+
+  factory ExpenseGroupSubmitResult.fromJson(Map<String, dynamic> json) {
+    final err = json['errors'];
+    return ExpenseGroupSubmitResult(
+      submitted: json['submitted'] as int? ?? 0,
+      autoApproved: json['auto_approved'] as int? ?? 0,
+      pendingApproval: json['pending_approval'] as int? ?? 0,
+      errors: err is List
+          ? err.whereType<Map<String, dynamic>>().toList()
+          : const [],
+    );
+  }
+}
+
+class ExpensePendingGroupRow {
+  final String agrupamentoTitulo;
+  final int expenseCount;
+  final String totalAmount;
+
+  ExpensePendingGroupRow({
+    required this.agrupamentoTitulo,
+    required this.expenseCount,
+    required this.totalAmount,
+  });
+
+  factory ExpensePendingGroupRow.fromJson(Map<String, dynamic> json) {
+    return ExpensePendingGroupRow(
+      agrupamentoTitulo: (json['agrupamento_titulo'] ?? '') as String,
+      expenseCount: json['expense_count'] as int? ?? 0,
+      totalAmount: '${json['total_amount'] ?? ''}',
+    );
+  }
+}
+
+class ExpensePendingGroupBulkResult {
+  final int? approved;
+  final int? rejected;
+  final List<Map<String, dynamic>> errors;
+
+  ExpensePendingGroupBulkResult({
+    this.approved,
+    this.rejected,
+    required this.errors,
+  });
+
+  factory ExpensePendingGroupBulkResult.fromJson(Map<String, dynamic> json) {
+    final err = json['errors'];
+    return ExpensePendingGroupBulkResult(
+      approved: json['approved'] as int?,
+      rejected: json['rejected'] as int?,
+      errors: err is List
+          ? err.whereType<Map<String, dynamic>>().toList()
+          : const [],
+    );
+  }
+}
+
+class ExpenseSapSendResponse {
+  final String detail;
+  final Map<String, dynamic>? sap;
+
+  ExpenseSapSendResponse({required this.detail, this.sap});
+
+  factory ExpenseSapSendResponse.fromJson(Map<String, dynamic> json) {
+    final s = json['sap'];
+    return ExpenseSapSendResponse(
+      detail: (json['detail'] ?? '').toString(),
+      sap: s is Map<String, dynamic> ? s : null,
+    );
+  }
+}
+
 class ExpenseEnterpriseRow {
   final int id;
   final int cliente;
@@ -142,6 +252,7 @@ class ExpenseEnterpriseRow {
   final String? userResponsibleUsername;
   final int? contrato;
   final int? centroCusto;
+  final String? agrupamentoTitulo;
   final String title;
   final String description;
   final String amount;
@@ -170,6 +281,7 @@ class ExpenseEnterpriseRow {
     this.userResponsibleUsername,
     this.contrato,
     this.centroCusto,
+    this.agrupamentoTitulo,
     required this.title,
     required this.description,
     required this.amount,
@@ -202,6 +314,7 @@ class ExpenseEnterpriseRow {
       userResponsibleUsername: json['user_responsible_username'] as String?,
       contrato: json['contrato'] as int?,
       centroCusto: json['centro_custo'] as int?,
+      agrupamentoTitulo: json['agrupamento_titulo'] as String?,
       title: (json['title'] ?? '') as String,
       description: (json['description'] ?? '') as String,
       amount: '${json['amount'] ?? ''}',

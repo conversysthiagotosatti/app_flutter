@@ -878,6 +878,228 @@ abstract class AppLocalizations {
   /// **'Excluir este rascunho permanentemente?'**
   String get expenseDeleteConfirm;
 
+  /// No description provided for @expenseGroupsTile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agrupamentos'**
+  String get expenseGroupsTile;
+
+  /// No description provided for @expenseBatchImportTile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar lote'**
+  String get expenseBatchImportTile;
+
+  /// No description provided for @expenseAuditModuleTile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Auditoria'**
+  String get expenseAuditModuleTile;
+
+  /// No description provided for @expenseRefresh.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizar'**
+  String get expenseRefresh;
+
+  /// No description provided for @expenseGroupListTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agrupamentos (rascunhos)'**
+  String get expenseGroupListTitle;
+
+  /// No description provided for @expenseGroupDetailTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lote'**
+  String get expenseGroupDetailTitle;
+
+  /// No description provided for @expenseGroupSubmitBatch.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar lote para aprovação'**
+  String get expenseGroupSubmitBatch;
+
+  /// No description provided for @expenseGroupMembers.
+  ///
+  /// In pt, this message translates to:
+  /// **'Despesas no lote'**
+  String get expenseGroupMembers;
+
+  /// No description provided for @expensePendingGroupsTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Grupos pendentes'**
+  String get expensePendingGroupsTitle;
+
+  /// No description provided for @expenseByExpenseTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Por despesa'**
+  String get expenseByExpenseTitle;
+
+  /// No description provided for @expenseApproveGroup.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovar grupo'**
+  String get expenseApproveGroup;
+
+  /// No description provided for @expenseRejectGroup.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rejeitar grupo'**
+  String get expenseRejectGroup;
+
+  /// No description provided for @expensePaymentsScreenTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pagamentos (financeiro)'**
+  String get expensePaymentsScreenTitle;
+
+  /// No description provided for @expenseSelectAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar todas'**
+  String get expenseSelectAll;
+
+  /// No description provided for @expenseDeselectAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar seleção'**
+  String get expenseDeselectAll;
+
+  /// No description provided for @expenseExportCsv.
+  ///
+  /// In pt, this message translates to:
+  /// **'Copiar CSV'**
+  String get expenseExportCsv;
+
+  /// No description provided for @expenseExportCsvDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'CSV copiado para a área de transferência.'**
+  String get expenseExportCsvDone;
+
+  /// No description provided for @expenseApplyReturn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aplicar retorno CSV'**
+  String get expenseApplyReturn;
+
+  /// No description provided for @expenseSapSend.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar ao SAP'**
+  String get expenseSapSend;
+
+  /// No description provided for @expenseSapBulk.
+  ///
+  /// In pt, this message translates to:
+  /// **'SAP selecionadas'**
+  String get expenseSapBulk;
+
+  /// No description provided for @expenseFinanceApprove.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovar (financeiro)'**
+  String get expenseFinanceApprove;
+
+  /// No description provided for @expenseFinanceReject.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rejeitar (financeiro)'**
+  String get expenseFinanceReject;
+
+  /// No description provided for @expenseAnomaliesTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Anomalias'**
+  String get expenseAnomaliesTitle;
+
+  /// No description provided for @expenseExtractedTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados extraídos (OCR)'**
+  String get expenseExtractedTitle;
+
+  /// No description provided for @expenseApprovalsChainTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovações por nível'**
+  String get expenseApprovalsChainTitle;
+
+  /// No description provided for @expenseAgrupamentoTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agrupamento'**
+  String get expenseAgrupamentoTitulo;
+
+  /// No description provided for @expenseBatchImportHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do agrupamento e selecione imagens de comprovantes. Serão criadas despesas em rascunho (OCR + classificação quando disponível).'**
+  String get expenseBatchImportHint;
+
+  /// No description provided for @expenseOcrFill.
+  ///
+  /// In pt, this message translates to:
+  /// **'Preencher com OCR'**
+  String get expenseOcrFill;
+
+  /// No description provided for @expenseClassifyTipo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sugerir tipo (IA)'**
+  String get expenseClassifyTipo;
+
+  /// No description provided for @expenseStatusPendingFinance.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pend. financeiro'**
+  String get expenseStatusPendingFinance;
+
+  /// No description provided for @expenseStatusFinanceApproved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprov. financeiro'**
+  String get expenseStatusFinanceApproved;
+
+  /// No description provided for @expenseStatusFinanceRejected.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rej. financeiro'**
+  String get expenseStatusFinanceRejected;
+
+  /// No description provided for @expenseDateFrom.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data inicial'**
+  String get expenseDateFrom;
+
+  /// No description provided for @expenseDateTo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data final'**
+  String get expenseDateTo;
+
+  /// No description provided for @expenseClearPeriod.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar período'**
+  String get expenseClearPeriod;
+
+  /// No description provided for @expenseApplyReturnResult.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resultado do retorno'**
+  String get expenseApplyReturnResult;
+
+  /// No description provided for @expenseSelectOne.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione ao menos uma despesa.'**
+  String get expenseSelectOne;
+
   /// No description provided for @continueLabel.
   ///
   /// In pt, this message translates to:

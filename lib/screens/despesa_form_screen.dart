@@ -15,11 +15,15 @@ class DespesaFormScreen extends StatefulWidget {
   final int clienteId;
   final ExpenseEnterpriseRow? existing;
 
+  /// Pré-preenche `agrupamento_titulo` (fluxo de lote / importação).
+  final String? initialAgrupamentoTitulo;
+
   const DespesaFormScreen({
     super.key,
     required this.apiClient,
     required this.clienteId,
     this.existing,
+    this.initialAgrupamentoTitulo,
   });
 
   @override
@@ -35,6 +39,7 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
   final _amount = TextEditingController();
   final _loc = TextEditingController();
   final _contrato = TextEditingController();
+  final _agrupamento = TextEditingController();
 
   List<ExpenseTipoDespesaRow> _tipos = [];
   List<ExpenseCentroCustoRow> _centros = [];
@@ -50,6 +55,7 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
 
   bool _loading = true;
   bool _saving = false;
+  bool _ocrBusy = false;
   String? _error;
 
   bool get _isEdit => widget.existing != null;
@@ -68,7 +74,89 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
     _amount.dispose();
     _loc.dispose();
     _contrato.dispose();
+    _agrupamento.dispose();
     super.dispose();
+  }
+
+  Future<void> _fillFromOcr(AppLocalizations l10n) async {
+    if (_receiptBytes == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expensePickFile)),
+      );
+      return;
+    }
+    setState(() => _ocrBusy = true);
+    try {
+      final o = await _svc.ocrExtractFromImageBytes(
+        _receiptBytes!,
+        _receiptName ?? 'receipt.jpg',
+      );
+      if (!mounted) return;
+      final title = o['title'] ?? o['vendor'];
+      if (title != null) _title.text = title.toString();
+      final amt = o['amount'];
+      if (amt != null) {
+        _amount.text = amt.toString().replaceAll('.', ',');
+      }
+      final d = o['date']?.toString();
+      if (d != null) {
+        final parsed = DateTime.tryParse(d);
+        if (parsed != null) _date = parsed;
+      }
+      final desc = o['description'];
+      if (desc != null) _desc.text = desc.toString();
+      setState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expenseLoadError(e.toString()))),
+      );
+    } finally {
+      if (mounted) setState(() => _ocrBusy = false);
+    }
+  }
+
+  Future<void> _classifyTipo(AppLocalizations l10n) async {
+    if (_receiptBytes == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expensePickFile)),
+      );
+      return;
+    }
+    setState(() => _ocrBusy = true);
+    try {
+      final o = await _svc.classifyTipoFromImage(
+        widget.clienteId,
+        _receiptBytes!,
+        _receiptName ?? 'receipt.jpg',
+      );
+      if (!mounted) return;
+      final id = o['tipo_despesa_id'];
+      int? tid;
+      if (id is int) {
+        tid = id;
+      } else if (id is num) {
+        tid = id.toInt();
+      }
+      if (tid != null && _tipos.any((t) => t.id == tid)) {
+        setState(() => _tipoId = tid);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              (o['rationale'] ?? '—').toString(),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.expenseLoadError(e.toString()))),
+      );
+    } finally {
+      if (mounted) setState(() => _ocrBusy = false);
+    }
   }
 
   Future<void> _bootstrap() async {
@@ -95,8 +183,16 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
         if (ex.date.isNotEmpty) {
           _date = DateTime.tryParse(ex.date);
         }
+        final ag = ex.agrupamentoTitulo;
+        if (ag != null && ag.isNotEmpty) {
+          _agrupamento.text = ag;
+        }
       } else {
         _date = DateTime.now();
+        final ini = widget.initialAgrupamentoTitulo;
+        if (ini != null && ini.isNotEmpty) {
+          _agrupamento.text = ini;
+        }
       }
       if (!mounted) return;
       setState(() {
@@ -206,6 +302,10 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
     final cTxt = _contrato.text.trim();
     if (cTxt.isNotEmpty) {
       fields['contrato_id'] = cTxt;
+    }
+    final ag = _agrupamento.text.trim();
+    if (ag.isNotEmpty) {
+      fields['agrupamento_titulo'] = ag;
     }
 
     final files = <http.MultipartFile>[];
@@ -332,7 +432,7 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
-                value: _tipoId,
+                initialValue: _tipoId,
                 decoration: InputDecoration(
                   labelText: l10n.expenseTipoDespesa,
                   labelStyle: const TextStyle(color: Colors.white70),
@@ -374,7 +474,7 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
                 ),
               ),
               DropdownButtonFormField<int?>(
-                value: _ccId,
+                initialValue: _ccId,
                 decoration: InputDecoration(
                   labelText: l10n.expenseCentroCusto,
                   labelStyle: const TextStyle(color: Colors.white70),
@@ -397,7 +497,7 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
                 onChanged: (v) => setState(() => _ccId = v),
               ),
               DropdownButtonFormField<int?>(
-                value: _respId,
+                initialValue: _respId,
                 decoration: InputDecoration(
                   labelText: l10n.expenseResponsible,
                   labelStyle: const TextStyle(color: Colors.white70),
@@ -448,6 +548,39 @@ class _DespesaFormScreenState extends State<DespesaFormScreen> {
                     ),
                   ),
                 ],
+              ),
+              if (_receiptBytes != null) ...[
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    TextButton.icon(
+                      onPressed: _ocrBusy ? null : () => _fillFromOcr(l10n),
+                      icon: _ocrBusy
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.document_scanner_outlined, size: 18),
+                      label: Text(l10n.expenseOcrFill),
+                    ),
+                    TextButton.icon(
+                      onPressed: _ocrBusy ? null : () => _classifyTipo(l10n),
+                      icon: const Icon(Icons.auto_awesome, size: 18),
+                      label: Text(l10n.expenseClassifyTipo),
+                    ),
+                  ],
+                ),
+              ],
+              TextFormField(
+                controller: _agrupamento,
+                enabled: !_isEdit,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: '${l10n.expenseAgrupamentoTitulo} (opcional)',
+                  labelStyle: const TextStyle(color: Colors.white70),
+                ),
               ),
               const SizedBox(height: 24),
               FilledButton(

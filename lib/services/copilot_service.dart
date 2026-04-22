@@ -2,6 +2,26 @@ import 'dart:convert';
 
 import 'api_client.dart';
 
+class HelpdeskCopilotResult {
+  final String answer;
+  final String? intent;
+  final num? confianca;
+
+  HelpdeskCopilotResult({
+    required this.answer,
+    this.intent,
+    this.confianca,
+  });
+
+  factory HelpdeskCopilotResult.fromJson(Map<String, dynamic> json) {
+    return HelpdeskCopilotResult(
+      answer: (json['answer'] ?? '').toString(),
+      intent: json['intent'] as String?,
+      confianca: json['confianca'] as num?,
+    );
+  }
+}
+
 class CopilotService {
   final ApiClient apiClient;
 
@@ -30,32 +50,50 @@ class CopilotService {
     return answer;
   }
 
-  Future<String> perguntarHelpdesk({
+  /// Mesmo contrato do portal: `askHelpdeskCopilot` → `POST /api/helpdesk/copilot/`.
+  Future<HelpdeskCopilotResult> askHelpdeskCopilot({
     required String mensagem,
-    String? clienteNome,
+    int? clienteId,
+    int? chamadoId,
   }) async {
     final body = <String, dynamic>{
-      'message': mensagem,
+      'mensagem': mensagem.trim(),
     };
-    if (clienteNome != null && clienteNome.isNotEmpty) {
-      body['cliente_nome'] = clienteNome;
+    if (clienteId != null) {
+      body['cliente_id'] = clienteId;
+    }
+    if (chamadoId != null) {
+      body['chamado_id'] = chamadoId;
     }
 
     final resp = await apiClient.post(
-      '/copilot/mcp/chat/',
+      '/api/helpdesk/copilot/',
       body: body,
     );
 
-    if (resp.statusCode != 200) {
+    if (resp.statusCode < 200 || resp.statusCode >= 300) {
+      var detail = '';
+      try {
+        final j = jsonDecode(resp.body);
+        if (j is Map && j['detail'] != null) {
+          detail = j['detail'].toString();
+        }
+      } catch (_) {
+        detail = resp.body.length > 200
+            ? resp.body.substring(0, 200)
+            : resp.body;
+      }
       throw Exception(
-        'Erro ao consultar Copilot Helpdesk (${resp.statusCode})',
+        detail.isEmpty
+            ? 'Erro Copilot Helpdesk (${resp.statusCode})'
+            : detail,
       );
     }
 
-    final data =
-        jsonDecode(resp.body) as Map<String, dynamic>;
-    final answer = data['answer']?.toString() ?? '';
-    return answer;
+    final data = jsonDecode(resp.body);
+    if (data is! Map<String, dynamic>) {
+      throw Exception('Resposta inválida do Copilot Helpdesk');
+    }
+    return HelpdeskCopilotResult.fromJson(data);
   }
 }
-

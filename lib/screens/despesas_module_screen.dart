@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
+import '../services/expense_enterprise_service.dart';
 import '../widgets/conversys_app_bar.dart';
+import 'despesa_form_screen.dart';
+import 'despesas_aprovacoes_screen.dart';
+import 'despesas_auditoria_screen.dart';
 import 'despesas_dashboard_screen.dart';
+import 'despesas_grupos_screen.dart';
+import 'despesas_importacao_lote_screen.dart';
 import 'despesas_list_screen.dart';
+import 'despesas_pagamentos_screen.dart';
 
 class DespesasModuleScreen extends StatelessWidget {
   final ApiClient apiClient;
@@ -19,12 +26,51 @@ class DespesasModuleScreen extends StatelessWidget {
     const iconBg = Color(0xFF0F172A);
     final l10n = AppLocalizations.of(context)!;
 
-    final options = <(String, IconData, void Function(BuildContext))>[
+    Future<int?> pickClienteForNewExpense(BuildContext outer) async {
+      final svc = ExpenseEnterpriseService(apiClient);
+      try {
+        final list = await svc.fetchCompanies();
+        if (!outer.mounted) return null;
+        if (list.isEmpty) return null;
+        if (list.length == 1) return list.first.id;
+        int? chosen;
+        await showDialog<void>(
+          context: outer,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text(l10n.expenseSelectClient),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: list
+                      .map(
+                        (c) => ListTile(
+                          title: Text(c.name),
+                          onTap: () {
+                            chosen = c.id;
+                            Navigator.pop(ctx);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            );
+          },
+        );
+        return chosen;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    final options = <(String, IconData, Future<void> Function(BuildContext))>[
       (
         l10n.expenseListTile,
         Icons.list_alt_outlined,
-        (ctx) {
-          Navigator.of(ctx).push(
+        (ctx) async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(
               builder: (_) => DespesasListScreen(apiClient: apiClient),
             ),
@@ -32,15 +78,28 @@ class DespesasModuleScreen extends StatelessWidget {
         },
       ),
       (
+        l10n.expenseNew,
+        Icons.add_circle_outline,
+        (ctx) async {
+          final cid = await pickClienteForNewExpense(ctx);
+          if (cid == null || !ctx.mounted) return;
+          await Navigator.of(ctx).push(
+            MaterialPageRoute(
+              builder: (_) => DespesaFormScreen(
+                apiClient: apiClient,
+                clienteId: cid,
+              ),
+            ),
+          );
+        },
+      ),
+      (
         l10n.expenseApprovalsTile,
         Icons.pending_actions_outlined,
-        (ctx) {
-          Navigator.of(ctx).push(
+        (ctx) async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(
-              builder: (_) => DespesasListScreen(
-                apiClient: apiClient,
-                initialStatus: 'pending',
-              ),
+              builder: (_) => DespesasAprovacoesScreen(apiClient: apiClient),
             ),
           );
         },
@@ -48,13 +107,43 @@ class DespesasModuleScreen extends StatelessWidget {
       (
         l10n.expensePaymentsTile,
         Icons.payments_outlined,
-        (ctx) {
-          Navigator.of(ctx).push(
+        (ctx) async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(
-              builder: (_) => DespesasListScreen(
-                apiClient: apiClient,
-                initialStatus: 'approved',
-              ),
+              builder: (_) => DespesasPagamentosScreen(apiClient: apiClient),
+            ),
+          );
+        },
+      ),
+      (
+        l10n.expenseGroupsTile,
+        Icons.folder_copy_outlined,
+        (ctx) async {
+          await Navigator.of(ctx).push(
+            MaterialPageRoute(
+              builder: (_) => DespesasGruposScreen(apiClient: apiClient),
+            ),
+          );
+        },
+      ),
+      (
+        l10n.expenseBatchImportTile,
+        Icons.upload_file_outlined,
+        (ctx) async {
+          await Navigator.of(ctx).push(
+            MaterialPageRoute(
+              builder: (_) => DespesasImportacaoLoteScreen(apiClient: apiClient),
+            ),
+          );
+        },
+      ),
+      (
+        l10n.expenseAuditModuleTile,
+        Icons.history_edu_outlined,
+        (ctx) async {
+          await Navigator.of(ctx).push(
+            MaterialPageRoute(
+              builder: (_) => DespesasAuditoriaScreen(apiClient: apiClient),
             ),
           );
         },
@@ -62,8 +151,8 @@ class DespesasModuleScreen extends StatelessWidget {
       (
         l10n.expenseDashboardTile,
         Icons.insights_outlined,
-        (ctx) {
-          Navigator.of(ctx).push(
+        (ctx) async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(
               builder: (_) => DespesasDashboardScreen(apiClient: apiClient),
             ),
@@ -83,7 +172,7 @@ class DespesasModuleScreen extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 4 / 3,
+            childAspectRatio: 1.05,
           ),
           itemBuilder: (context, index) {
             final (label, icon, onTap) = options[index];
@@ -113,7 +202,9 @@ class DespesasModuleScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       label,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),

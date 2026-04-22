@@ -129,6 +129,20 @@ class AuthService {
       await _client.saveModules(normalized);
     }
 
+    final cliente = data['cliente'];
+    if (cliente is Map<String, dynamic>) {
+      final cid = cliente['id'];
+      final nome = cliente['nome'];
+      if (cid is int && nome is String && nome.isNotEmpty) {
+        await _client.saveAuthClienteContext(clienteId: cid, clienteNome: nome);
+      } else if (cid is num && nome is String && nome.isNotEmpty) {
+        await _client.saveAuthClienteContext(
+          clienteId: cid.toInt(),
+          clienteNome: nome,
+        );
+      }
+    }
+
     return data;
   }
 

@@ -11,6 +11,8 @@ class ApiClient {
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
   static const _modulesKey = 'modules';
+  static const _authClienteIdKey = 'auth_cliente_id';
+  static const _authClienteNomeKey = 'auth_cliente_nome';
 
   Future<SharedPreferences> get _prefs async =>
       SharedPreferences.getInstance();
@@ -34,6 +36,28 @@ class ApiClient {
     await prefs.remove(_accessTokenKey);
     await prefs.remove(_refreshTokenKey);
     await prefs.remove(_modulesKey);
+    await prefs.remove(_authClienteIdKey);
+    await prefs.remove(_authClienteNomeKey);
+  }
+
+  /// Cliente ativo após `novo_login` (contexto Copilot Helpdesk / portal).
+  Future<void> saveAuthClienteContext({
+    required int clienteId,
+    required String clienteNome,
+  }) async {
+    final prefs = await _prefs;
+    await prefs.setInt(_authClienteIdKey, clienteId);
+    await prefs.setString(_authClienteNomeKey, clienteNome);
+  }
+
+  Future<int?> loadAuthClienteId() async {
+    final prefs = await _prefs;
+    return prefs.getInt(_authClienteIdKey);
+  }
+
+  Future<String?> loadAuthClienteNome() async {
+    final prefs = await _prefs;
+    return prefs.getString(_authClienteNomeKey);
   }
 
   Future<void> saveModules(List<dynamic> modules) async {

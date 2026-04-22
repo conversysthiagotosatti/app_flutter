@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
@@ -27,6 +28,8 @@ class _DespesasDashboardScreenState extends State<DespesasDashboardScreen> {
   Map<String, dynamic>? _data;
   List<DropdownMenuItem<int>> _clients = [];
   int? _clienteId;
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
 
   @override
   void initState() {
@@ -84,7 +87,14 @@ class _DespesasDashboardScreenState extends State<DespesasDashboardScreen> {
       _error = null;
     });
     try {
-      final d = await _svc.fetchAnalytics(clienteId);
+      final d = await _svc.fetchAnalytics(
+        clienteId,
+        dateFrom: _dateFrom != null
+            ? DateFormat('yyyy-MM-dd').format(_dateFrom!)
+            : null,
+        dateTo:
+            _dateTo != null ? DateFormat('yyyy-MM-dd').format(_dateTo!) : null,
+      );
       if (!mounted) return;
       setState(() {
         _data = d;
@@ -107,6 +117,25 @@ class _DespesasDashboardScreenState extends State<DespesasDashboardScreen> {
     await _loadAnalytics(id);
   }
 
+  Future<void> _pickDate(bool isFrom) async {
+    final now = DateTime.now();
+    final initial = isFrom ? (_dateFrom ?? now) : (_dateTo ?? now);
+    final d = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 2),
+    );
+    if (d == null) return;
+    setState(() {
+      if (isFrom) {
+        _dateFrom = d;
+      } else {
+        _dateTo = d;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -122,7 +151,7 @@ class _DespesasDashboardScreenState extends State<DespesasDashboardScreen> {
           children: [
             if (_clients.isNotEmpty && _clienteId != null)
               DropdownButtonFormField<int>(
-                value: _clienteId,
+                initialValue: _clienteId,
                 decoration: InputDecoration(
                   labelText: l10n.expenseSelectClient,
                   labelStyle: const TextStyle(color: Colors.white70),
@@ -140,6 +169,53 @@ class _DespesasDashboardScreenState extends State<DespesasDashboardScreen> {
                 onChanged: _onClientChanged,
               ),
             const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _pickDate(true),
+                    child: Text(
+                      _dateFrom == null
+                          ? l10n.expenseDateFrom
+                          : DateFormat.yMMMd().format(_dateFrom!),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _pickDate(false),
+                    child: Text(
+                      _dateTo == null
+                          ? l10n.expenseDateTo
+                          : DateFormat.yMMMd().format(_dateTo!),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: l10n.expenseRefresh,
+                  onPressed: _clienteId == null
+                      ? null
+                      : () => _loadAnalytics(_clienteId!),
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _dateFrom = null;
+                  _dateTo = null;
+                });
+                final id = _clienteId;
+                if (id != null) _loadAnalytics(id);
+              },
+              child: Text(l10n.expenseClearPeriod),
+            ),
+            const SizedBox(height: 8),
             Text(
               l10n.expenseAnalyticsHint,
               style: TextStyle(color: Colors.blueGrey[200], fontSize: 12),
