@@ -193,7 +193,7 @@ class _HelpdeskChamadoDetalheScreenState
         widget.chamado.criadoEm;
 
     return Scaffold(
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         'Ticket #${widget.chamado.id}',
         onNotificationsTap: () {
           Navigator.of(context).push(

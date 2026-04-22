@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/notificacao.dart';
 import '../services/api_client.dart';
 import '../services/notificacoes_service.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/conversys_app_bar.dart';
 
 class NotificacoesScreen extends StatefulWidget {
@@ -48,7 +49,10 @@ class _NotificacoesScreenState extends State<NotificacoesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: conversysAppBar('Notificações'),
+      appBar: conversysAppBar(
+        context,
+        AppLocalizations.of(context)!.notifications,
+      ),
       body: RefreshIndicator(
         onRefresh: _recarregar,
         child: FutureBuilder<List<Notificacao>>(

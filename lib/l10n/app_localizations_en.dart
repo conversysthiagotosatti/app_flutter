@@ -1,0 +1,425 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Conversys';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languagePortuguese => 'Português';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageSystem => 'System default';
+
+  @override
+  String get loginSubtitle =>
+      'Sign in to manage the modules available for your client.';
+
+  @override
+  String get usernameOrEmail => 'Username or email';
+
+  @override
+  String get usernameRequired => 'Enter your username';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get passwordRequired => 'Enter your password';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get invalidCredentials =>
+      'Invalid credentials or client access not allowed.';
+
+  @override
+  String get blueHuddleTitle => 'The Blue Huddle';
+
+  @override
+  String get taglineConversys => 'A line engineered by Conversys';
+
+  @override
+  String get predefinedArchitectures => 'Predefined technology architectures';
+
+  @override
+  String get servicesIntro =>
+      'Access your active services below or explore new integrated solutions from Conversys.';
+
+  @override
+  String get myServices => 'My services';
+
+  @override
+  String get noModulesForUser => 'No modules available for this user.';
+
+  @override
+  String get moduleDefaultName => 'Module';
+
+  @override
+  String get statusActive => 'ACTIVE';
+
+  @override
+  String get accessConsole => 'Open console';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get navClients => 'Clients';
+
+  @override
+  String get navContracts => 'Contracts';
+
+  @override
+  String get navTasks => 'Tasks';
+
+  @override
+  String moduleUnavailable(String name) {
+    return 'The module \"$name\" is not yet available in the mobile app.';
+  }
+
+  @override
+  String get inDevelopment => 'Under development';
+
+  @override
+  String get tarefasDashboard => 'Dashboard';
+
+  @override
+  String get tarefasTracking => 'Tracking & stock moves';
+
+  @override
+  String get tarefasCalendar => 'Calendar';
+
+  @override
+  String get tarefasCopilot => 'AI Copilot';
+
+  @override
+  String get tarefasAnalyzeAi => 'Analyze with AI';
+
+  @override
+  String get tarefasRegisterEpic => 'Register epic';
+
+  @override
+  String get tarefasNewTask => 'New task';
+
+  @override
+  String get tarefasKanban => 'Kanban';
+
+  @override
+  String get tarefasReports => 'Reports';
+
+  @override
+  String get tarefasDocuments => 'Documents';
+
+  @override
+  String get tarefasKanbanTitle => 'Task kanban';
+
+  @override
+  String get stockTrackingTitle => 'Tracking & stock moves';
+
+  @override
+  String get stockTrackingIntro =>
+      'Look up a product by serial or pick it from the catalog. Record location changes with a reason and destination.';
+
+  @override
+  String get serialLabel => 'Serial';
+
+  @override
+  String get serialNumber => 'Serial number';
+
+  @override
+  String get serialRequired => 'Enter or scan the serial number.';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get readQrCode => 'Scan QR code';
+
+  @override
+  String get qrOnlyMobile => 'QR scanning is available on Android/iOS.';
+
+  @override
+  String get catalogTitle => 'Tracked products catalog';
+
+  @override
+  String get catalogFilterHint => 'Filter by serial or location…';
+
+  @override
+  String get movementHistory => 'Movement history';
+
+  @override
+  String get noMovementsYet => 'No movements recorded yet.';
+
+  @override
+  String get newMovement => 'New movement';
+
+  @override
+  String get motivesAdminHint =>
+      'Register reasons in Django Admin (Movement reasons).';
+
+  @override
+  String get motive => 'Reason';
+
+  @override
+  String get selectOption => 'Select';
+
+  @override
+  String get selectMotive => 'Select the movement reason.';
+
+  @override
+  String get registeredLocationsHint =>
+      'Registered locations (tap to fill destination)';
+
+  @override
+  String get destinationRequired => 'Enter the destination location.';
+
+  @override
+  String get destinationLocation => 'Destination location';
+
+  @override
+  String get observationsOptional => 'Notes / details (optional)';
+
+  @override
+  String get registerMovement => 'Record movement';
+
+  @override
+  String get movementSaved => 'Movement saved.';
+
+  @override
+  String get selectedProduct => 'Selected product';
+
+  @override
+  String get client => 'Client';
+
+  @override
+  String get subclient => 'Branch / subclient';
+
+  @override
+  String get currentLocation => 'Current location';
+
+  @override
+  String get flashlightTooltip => 'Torch';
+
+  @override
+  String get scanQrTitle => 'Scan QR code';
+
+  @override
+  String get scanQrHint =>
+      'Point at the product QR. It can be plain serial text or a link with ?sn=';
+
+  @override
+  String get serialLookupIntro =>
+      'Look up stock by serial number (same as Django: serial tracking).';
+
+  @override
+  String get serialTrackTitle => 'Track product';
+
+  @override
+  String get productAllocationHeading => 'Product / allocation';
+
+  @override
+  String get stockUnitLabel => 'Stock unit';
+
+  @override
+  String get observationsLabel => 'Notes';
+
+  @override
+  String get updatedAtLabel => 'Updated at';
+
+  @override
+  String get subclientBranchLabel => 'Branch / subclient';
+
+  @override
+  String get enterSerialHint => 'Type or use the QR reader';
+
+  @override
+  String get helpdeskTitle => 'Helpdesk';
+
+  @override
+  String motivesLoadError(String error) {
+    return 'Failed to load reasons: $error';
+  }
+
+  @override
+  String get movementFrom => 'from:';
+
+  @override
+  String movementAuthor(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String get expenseModuleTitle => 'Expenses';
+
+  @override
+  String get expenseListTile => 'List';
+
+  @override
+  String get expenseApprovalsTile => 'Approvals';
+
+  @override
+  String get expensePaymentsTile => 'Payments';
+
+  @override
+  String get expenseDashboardTile => 'Dashboard';
+
+  @override
+  String get expenseNoCompanies =>
+      'No clients available for expenses. Check your access in the web portal.';
+
+  @override
+  String get expenseSelectClient => 'Client';
+
+  @override
+  String get expenseStatusFilter => 'Status';
+
+  @override
+  String get expenseStatusAll => 'All';
+
+  @override
+  String get expenseStatusDraft => 'Draft';
+
+  @override
+  String get expenseStatusPending => 'Pending';
+
+  @override
+  String get expenseStatusApproved => 'Approved';
+
+  @override
+  String get expenseStatusRejected => 'Rejected';
+
+  @override
+  String get expenseStatusAudited => 'Audited';
+
+  @override
+  String get expenseStatusPaid => 'Paid';
+
+  @override
+  String get expenseNew => 'New expense';
+
+  @override
+  String get expenseEdit => 'Edit';
+
+  @override
+  String get expenseDetail => 'Details';
+
+  @override
+  String get expenseFieldTitle => 'Title';
+
+  @override
+  String get expenseFieldDescription => 'Description';
+
+  @override
+  String get expenseFieldAmount => 'Amount';
+
+  @override
+  String get expenseFieldDate => 'Date';
+
+  @override
+  String get expenseFieldLocation => 'Location';
+
+  @override
+  String get expenseTipoDespesa => 'Expense type';
+
+  @override
+  String get expenseCentroCusto => 'Cost center (optional)';
+
+  @override
+  String get expenseContractId => 'Contract ID (optional)';
+
+  @override
+  String get expenseResponsible => 'Responsible user (optional)';
+
+  @override
+  String get expenseReceipt => 'Receipt';
+
+  @override
+  String get expensePickFile => 'Choose file';
+
+  @override
+  String get expenseSaveDraft => 'Save draft';
+
+  @override
+  String get expenseSubmitApproval => 'Submit for approval';
+
+  @override
+  String get expenseDelete => 'Delete';
+
+  @override
+  String get expenseApprove => 'Approve';
+
+  @override
+  String get expenseReject => 'Reject';
+
+  @override
+  String get expenseMarkAudited => 'Mark audited';
+
+  @override
+  String get expenseMarkPaid => 'Mark paid';
+
+  @override
+  String get expenseCommentHint => 'Comment (optional)';
+
+  @override
+  String get expenseAuditTitle => 'History';
+
+  @override
+  String get expenseRiskScore => 'Risk score';
+
+  @override
+  String get expenseOpenReceipt => 'Open receipt';
+
+  @override
+  String get expenseDuplicateWarning =>
+      'This receipt may be a duplicate. Continue anyway?';
+
+  @override
+  String get expenseAnalyticsHint =>
+      'Numeric summary from the API (same endpoint as the web portal).';
+
+  @override
+  String expenseLoadError(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get expenseEmptyList => 'No expenses for this filter.';
+
+  @override
+  String get expenseTitleRequired => 'Enter a title.';
+
+  @override
+  String get expenseAmountInvalid => 'Enter an amount greater than zero.';
+
+  @override
+  String get expenseAuthor => 'Author';
+
+  @override
+  String get expenseDeleteConfirm => 'Delete this draft permanently?';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get cancel => 'Cancel';
+}

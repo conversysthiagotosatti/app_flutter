@@ -139,9 +139,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar: $e')));
     } finally {
       if (!mounted) return;
       setState(() => _salvando = false);
@@ -156,9 +156,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       await _carregarTudo();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao fechar contrato: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao fechar contrato: $e')));
     }
   }
 
@@ -170,9 +170,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       await _carregarTudo();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao rejeitar proposta: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao rejeitar proposta: $e')));
     }
   }
 
@@ -194,9 +194,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       setState(() => _chat = chat);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao enviar mensagem: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao enviar mensagem: $e')));
     } finally {
       if (!mounted) return;
       setState(() => _enviandoMsg = false);
@@ -226,7 +226,7 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<int>(
-                      value: servicoId,
+                      initialValue: servicoId,
                       decoration: const InputDecoration(
                         labelText: 'Serviço',
                         border: OutlineInputBorder(),
@@ -285,7 +285,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
                       return;
                     }
                     final q = quantidade <= 0 ? 1 : quantidade;
-                    final preco = precoUnitario.trim().isEmpty ? '0' : precoUnitario.trim();
+                    final preco = precoUnitario.trim().isEmpty
+                        ? '0'
+                        : precoUnitario.trim();
                     Navigator.of(ctx).pop();
                     try {
                       await _service.criarItem(
@@ -367,11 +369,15 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
                     final n = nome.trim();
                     if (n.isEmpty) {
                       ScaffoldMessenger.of(ctx).showSnackBar(
-                        const SnackBar(content: Text('Informe o nome do produto.')),
+                        const SnackBar(
+                          content: Text('Informe o nome do produto.'),
+                        ),
                       );
                       return;
                     }
-                    final vu = valorUnitario.trim().isEmpty ? '0' : valorUnitario.trim();
+                    final vu = valorUnitario.trim().isEmpty
+                        ? '0'
+                        : valorUnitario.trim();
                     Navigator.of(ctx).pop();
                     try {
                       await _service.criarProduto(
@@ -385,7 +391,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
                     } catch (e) {
                       if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erro ao adicionar produto: $e')),
+                        SnackBar(
+                          content: Text('Erro ao adicionar produto: $e'),
+                        ),
                       );
                     }
                   },
@@ -408,9 +416,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       await _carregarTudo();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao gerar versão: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao gerar versão: $e')));
     } finally {
       if (!mounted) return;
       setState(() => _gerandoVersao = false);
@@ -428,17 +436,14 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       final file = result?.files.firstOrNull;
       if (file == null) return;
 
-      await _service.uploadAnexo(
-        propostaId: widget.propostaId,
-        arquivo: file,
-      );
+      await _service.uploadAnexo(propostaId: widget.propostaId, arquivo: file);
       if (!mounted) return;
       await _carregarTudo();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao enviar anexo: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao enviar anexo: $e')));
     } finally {
       if (!mounted) return;
       setState(() => _uploadingAnexo = false);
@@ -452,9 +457,9 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       await _carregarTudo();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao excluir anexo: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao excluir anexo: $e')));
     }
   }
 
@@ -468,6 +473,7 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
       length: 6,
       child: Scaffold(
         appBar: conversysAppBar(
+          context,
           'Proposta #${widget.propostaId}',
           onNotificationsTap: () {
             Navigator.of(context).push(
@@ -481,570 +487,598 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(
-                    child: Text(
-                      'Erro ao carregar proposta: $_error',
-                      style: const TextStyle(color: Colors.redAccent),
-                    ),
-                  )
-                : _detalhe == null
-                    ? const Center(child: Text('Proposta não encontrada.'))
-                    : Column(
-                        children: [
-                          TabBar(
-                            isScrollable: true,
-                            tabs: const [
-                              Tab(text: 'Detalhes'),
-                              Tab(text: 'Chat'),
-                              Tab(text: 'Itens'),
-                              Tab(text: 'Produtos'),
-                              Tab(text: 'Versões'),
-                              Tab(text: 'Anexos'),
+            ? Center(
+                child: Text(
+                  'Erro ao carregar proposta: $_error',
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              )
+            : _detalhe == null
+            ? const Center(child: Text('Proposta não encontrada.'))
+            : Column(
+                children: [
+                  TabBar(
+                    isScrollable: true,
+                    tabs: const [
+                      Tab(text: 'Detalhes'),
+                      Tab(text: 'Chat'),
+                      Tab(text: 'Itens'),
+                      Tab(text: 'Produtos'),
+                      Tab(text: 'Versões'),
+                      Tab(text: 'Anexos'),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        // Detalhes
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: ListView(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: cardColor,
+                                  border: Border.all(color: cardBorder),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _detalhe!.titulo,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Status: ${_detalhe!.status} • Valor: ${_detalhe!.valorTotal}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: _tituloController,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Título',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: _descricaoController,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Descrição',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      minLines: 3,
+                                      maxLines: 5,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: _validadeController,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Validade (YYYY-MM-DD)',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: FilledButton.icon(
+                                            onPressed: _salvando
+                                                ? null
+                                                : () => _salvarDetalhes(),
+                                            icon: _salvando
+                                                ? const SizedBox(
+                                                    width: 16,
+                                                    height: 16,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                        ),
+                                                  )
+                                                : const Icon(
+                                                    Icons.save_outlined,
+                                                  ),
+                                            label: const Text('Salvar'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton.icon(
+                                            onPressed: () => _fecharContrato(),
+                                            icon: const Icon(
+                                              Icons.check_circle_outline,
+                                            ),
+                                            label: const Text(
+                                              'Fechar contrato',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: OutlinedButton.icon(
+                                            onPressed: () =>
+                                                _rejeitarProposta(),
+                                            icon: const Icon(
+                                              Icons.cancel_outlined,
+                                            ),
+                                            label: const Text('Rejeitar'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                          Expanded(
-                            child: TabBarView(
-                              children: [
-                                // Detalhes
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: ListView(
-                                    children: [
-                                      Container(
+                        ),
+
+                        // Chat
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: _chat.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 8),
+                                  itemBuilder: (context, index) {
+                                    final m = _chat[index];
+                                    final isBot = m.autorTipo != 'interno';
+                                    return Align(
+                                      alignment: isBot
+                                          ? Alignment.centerLeft
+                                          : Alignment.centerRight,
+                                      child: Container(
                                         decoration: BoxDecoration(
-                                          color: cardColor,
-                                          border: Border.all(color: cardBorder),
-                                          borderRadius: BorderRadius.circular(16),
+                                          color: isBot
+                                              ? Colors.white.withOpacity(0.06)
+                                              : Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                    .withOpacity(0.35),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(
+                                              0.12,
+                                            ),
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.all(16),
+                                        padding: const EdgeInsets.all(12),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              _detalhe!.titulo,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              'Status: ${_detalhe!.status} • Valor: ${_detalhe!.valorTotal}',
+                                              m.autorNome,
                                               style: const TextStyle(
                                                 color: Colors.white70,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              m.conteudo,
+                                              style: const TextStyle(
+                                                color: Colors.white,
                                                 fontSize: 13,
                                               ),
                                             ),
-                                            const SizedBox(height: 16),
-                                            TextField(
-                                              controller: _tituloController,
-                                              style: const TextStyle(color: Colors.white),
-                                              decoration: const InputDecoration(
-                                                labelText: 'Título',
-                                                border: OutlineInputBorder(),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              m.criadoEm,
+                                              style: const TextStyle(
+                                                color: Colors.white54,
+                                                fontSize: 10,
                                               ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            TextField(
-                                              controller: _descricaoController,
-                                              style: const TextStyle(color: Colors.white),
-                                              decoration:
-                                                  const InputDecoration(
-                                                labelText: 'Descrição',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                              minLines: 3,
-                                              maxLines: 5,
-                                            ),
-                                            const SizedBox(height: 12),
-                                            TextField(
-                                              controller: _validadeController,
-                                              style: const TextStyle(color: Colors.white),
-                                              decoration:
-                                                  const InputDecoration(
-                                                labelText: 'Validade (YYYY-MM-DD)',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: FilledButton.icon(
-                                                    onPressed: _salvando ? null : () => _salvarDetalhes(),
-                                                    icon: _salvando
-                                                        ? const SizedBox(
-                                                            width: 16,
-                                                            height: 16,
-                                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                                          )
-                                                        : const Icon(Icons.save_outlined),
-                                                    label: const Text('Salvar'),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: OutlinedButton.icon(
-                                                    onPressed: () => _fecharContrato(),
-                                                    icon: const Icon(Icons.check_circle_outline),
-                                                    label: const Text('Fechar contrato'),
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Expanded(
-                                                  child: OutlinedButton.icon(
-                                                    onPressed: () => _rejeitarProposta(),
-                                                    icon: const Icon(Icons.cancel_outlined),
-                                                    label: const Text('Rejeitar'),
-                                                  ),
-                                                ),
-                                              ],
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
-
-                                // Chat
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: ListView.separated(
-                                          itemCount: _chat.length,
-                                          separatorBuilder: (_, __) =>
-                                              const SizedBox(height: 8),
-                                          itemBuilder: (context, index) {
-                                            final m = _chat[index];
-                                            final isBot = m.autorTipo != 'interno';
-                                            return Align(
-                                              alignment: isBot
-                                                  ? Alignment.centerLeft
-                                                  : Alignment.centerRight,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: isBot
-                                                      ? Colors.white.withOpacity(0.06)
-                                                      : Theme.of(context)
-                                                          .colorScheme
-                                                          .primary
-                                                          .withOpacity(0.35),
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  border: Border.all(
-                                                    color: Colors.white.withOpacity(0.12),
-                                                  ),
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.all(12),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      m.autorNome,
-                                                      style: const TextStyle(
-                                                        color: Colors.white70,
-                                                        fontSize: 11,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 6),
-                                                    Text(
-                                                      m.conteudo,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 13,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 6),
-                                                    Text(
-                                                      m.criadoEm,
-                                                      style: const TextStyle(
-                                                        color: Colors.white54,
-                                                        fontSize: 10,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _chatController,
+                                      style: const TextStyle(
+                                        color: Colors.white,
                                       ),
-                                      Row(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Mensagem',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      maxLines: 3,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  FilledButton.icon(
+                                    onPressed: _enviandoMsg
+                                        ? null
+                                        : () => _enviarMensagem(),
+                                    icon: _enviandoMsg
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : const Icon(Icons.send),
+                                    label: const Text('Enviar'),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+
+                        // Itens
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Itens (${(_detalhe!.itens ?? const []).length})',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: _adicionarItem,
+                                    icon: const Icon(Icons.add_circle_outline),
+                                    tooltip: 'Adicionar item',
+                                    color: Colors.blue[200],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: _detalhe!.itens?.length ?? 0,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    final item = _detalhe!.itens![index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: cardColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: cardBorder),
+                                      ),
+                                      padding: const EdgeInsets.all(14),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.servicoNome ??
+                                                'Serviço #${item.servico}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Qtd: ${item.quantidade} • Unit: ${item.precoUnitario}',
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              if ((_detalhe!.itens ?? const []).isEmpty)
+                                const Text(
+                                  'Nenhum item ainda. Toque em + para adicionar.',
+                                  style: TextStyle(color: Colors.white54),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                        // Produtos
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Produtos (${(_detalhe!.produtos ?? const []).length})',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: _adicionarProduto,
+                                    icon: const Icon(Icons.add_circle_outline),
+                                    tooltip: 'Adicionar produto',
+                                    color: Colors.blue[200],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: _detalhe!.produtos?.length ?? 0,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    final produto = _detalhe!.produtos![index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: cardColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: cardBorder),
+                                      ),
+                                      padding: const EdgeInsets.all(14),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            produto.nome,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Qtd: ${produto.quantidade} • Unit: ${produto.valorUnitario}',
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              if ((_detalhe!.produtos ?? const []).isEmpty)
+                                const Text(
+                                  'Nenhum produto ainda. Toque em + para adicionar.',
+                                  style: TextStyle(color: Colors.white54),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                        // Versões
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Versões (${_versoes.length})',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  FilledButton.icon(
+                                    onPressed: _gerandoVersao
+                                        ? null
+                                        : () => _gerarVersao(),
+                                    icon: _gerandoVersao
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : const Icon(Icons.refresh),
+                                    label: Text(
+                                      _gerandoVersao
+                                          ? 'Gerando...'
+                                          : 'Gerar versão',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: _versoes.length,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    final v = _versoes[index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: cardColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: cardBorder),
+                                      ),
+                                      padding: const EdgeInsets.all(14),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Versão ${v.versao}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Criado em: ${v.criadoEm}',
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Anexos
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Anexos (${(_detalhe!.anexos ?? const []).length})',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: _uploadingAnexo
+                                        ? null
+                                        : () => _uploadAnexo(),
+                                    icon: const Icon(
+                                      Icons.upload_file_outlined,
+                                    ),
+                                    tooltip: 'Adicionar anexo',
+                                    color: Colors.blue[200],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: _detalhe!.anexos?.length ?? 0,
+                                  separatorBuilder: (_, _) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) {
+                                    final a = _detalhe!.anexos![index];
+                                    final nome = _arquivoNome(a.arquivo);
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: cardColor,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: cardBorder),
+                                      ),
+                                      padding: const EdgeInsets.all(14),
+                                      child: Row(
                                         children: [
                                           Expanded(
-                                            child: TextField(
-                                              controller: _chatController,
-                                              style: const TextStyle(color: Colors.white),
-                                              decoration:
-                                                  const InputDecoration(
-                                                labelText: 'Mensagem',
-                                                border: OutlineInputBorder(),
-                                              ),
-                                              maxLines: 3,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          FilledButton.icon(
-                                            onPressed: _enviandoMsg ? null : () => _enviarMensagem(),
-                                            icon: _enviandoMsg
-                                                ? const SizedBox(
-                                                    width: 16,
-                                                    height: 16,
-                                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                                  )
-                                                : const Icon(Icons.send),
-                                            label: const Text('Enviar'),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                    ],
-                                  ),
-                                ),
-
-                                // Itens
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Itens (${(_detalhe!.itens ?? const []).length})',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          IconButton(
-                                            onPressed: _adicionarItem,
-                                            icon: const Icon(Icons.add_circle_outline),
-                                            tooltip: 'Adicionar item',
-                                            color: Colors.blue[200],
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Expanded(
-                                        child: ListView.separated(
-                                          itemCount:
-                                              _detalhe!.itens?.length ?? 0,
-                                          separatorBuilder: (_, __) =>
-                                              const SizedBox(height: 10),
-                                          itemBuilder: (context, index) {
-                                            final item = _detalhe!.itens![index];
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: cardColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                    color: cardBorder),
-                                              ),
-                                              padding: const EdgeInsets.all(14),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    item.servicoNome ??
-                                                        'Serviço #${item.servico}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 13,
-                                                    ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  nome,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 13,
                                                   ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    'Qtd: ${item.quantidade} • Unit: ${item.precoUnitario}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white70,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      if ((_detalhe!.itens ?? const []).isEmpty)
-                                        const Text(
-                                          'Nenhum item ainda. Toque em + para adicionar.',
-                                          style: TextStyle(color: Colors.white54),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Produtos
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Produtos (${(_detalhe!.produtos ?? const []).length})',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          IconButton(
-                                            onPressed: _adicionarProduto,
-                                            icon: const Icon(Icons.add_circle_outline),
-                                            tooltip: 'Adicionar produto',
-                                            color: Colors.blue[200],
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Expanded(
-                                        child: ListView.separated(
-                                          itemCount:
-                                              _detalhe!.produtos?.length ?? 0,
-                                          separatorBuilder: (_, __) =>
-                                              const SizedBox(height: 10),
-                                          itemBuilder: (context, index) {
-                                            final produto =
-                                                _detalhe!.produtos![index];
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: cardColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                    color: cardBorder),
-                                              ),
-                                              padding: const EdgeInsets.all(14),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    produto.nome,
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    'Qtd: ${produto.quantidade} • Unit: ${produto.valorUnitario}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white70,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      if ((_detalhe!.produtos ?? const []).isEmpty)
-                                        const Text(
-                                          'Nenhum produto ainda. Toque em + para adicionar.',
-                                          style: TextStyle(color: Colors.white54),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Versões
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Versões (${_versoes.length})',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          FilledButton.icon(
-                                            onPressed: _gerandoVersao ? null : () => _gerarVersao(),
-                                            icon: _gerandoVersao
-                                                ? const SizedBox(
-                                                    width: 16,
-                                                    height: 16,
-                                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                                  )
-                                                : const Icon(Icons.refresh),
-                                            label: Text(_gerandoVersao ? 'Gerando...' : 'Gerar versão'),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Expanded(
-                                        child: ListView.separated(
-                                          itemCount: _versoes.length,
-                                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                                          itemBuilder: (context, index) {
-                                            final v = _versoes[index];
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: cardColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                    color: cardBorder),
-                                              ),
-                                              padding: const EdgeInsets.all(14),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'Versão ${v.versao}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    'Criado em: ${v.criadoEm}',
-                                                    style: const TextStyle(
-                                                      color: Colors.white70,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Anexos
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Anexos (${(_detalhe!.anexos ?? const []).length})',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          IconButton(
-                                            onPressed: _uploadingAnexo ? null : () => _uploadAnexo(),
-                                            icon: const Icon(Icons.upload_file_outlined),
-                                            tooltip: 'Adicionar anexo',
-                                            color: Colors.blue[200],
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Expanded(
-                                        child: ListView.separated(
-                                          itemCount:
-                                              _detalhe!.anexos?.length ?? 0,
-                                          separatorBuilder: (_, __) =>
-                                              const SizedBox(height: 10),
-                                          itemBuilder: (context, index) {
-                                            final a = _detalhe!.anexos![index];
-                                            final nome = _arquivoNome(a.arquivo);
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: cardColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: cardBorder,
                                                 ),
-                                              ),
-                                              padding: const EdgeInsets.all(14),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          nome,
-                                                          maxLines: 2,
-                                                          overflow:
-                                                              TextOverflow.ellipsis,
-                                                          style: const TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight: FontWeight.w700,
-                                                            fontSize: 13,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 6),
-                                                        Text(
-                                                          'Criado em: ${a.criadoEm}',
-                                                          style: const TextStyle(
-                                                            color: Colors.white70,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                const SizedBox(height: 6),
+                                                Text(
+                                                  'Criado em: ${a.criadoEm}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 12,
                                                   ),
-                                                  IconButton(
-                                                    onPressed: () => _abrirArquivo(a.arquivo),
-                                                    icon: const Icon(Icons.open_in_new),
-                                                    tooltip: 'Abrir',
-                                                    color: Colors.blue[200],
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () => _excluirAnexo(a.id),
-                                                    icon: const Icon(Icons.delete_outline),
-                                                    tooltip: 'Excluir',
-                                                    color: Colors.red[300],
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () =>
+                                                _abrirArquivo(a.arquivo),
+                                            icon: const Icon(Icons.open_in_new),
+                                            tooltip: 'Abrir',
+                                            color: Colors.blue[200],
+                                          ),
+                                          IconButton(
+                                            onPressed: () =>
+                                                _excluirAnexo(a.id),
+                                            icon: const Icon(
+                                              Icons.delete_outline,
+                                            ),
+                                            tooltip: 'Excluir',
+                                            color: Colors.red[300],
+                                          ),
+                                        ],
                                       ),
-                                      if ((_detalhe!.anexos ?? const []).isEmpty)
-                                        const Text(
-                                          'Nenhum anexo ainda.',
-                                          style: TextStyle(color: Colors.white54),
-                                        ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
-                              ],
-                            ),
+                              ),
+                              if ((_detalhe!.anexos ?? const []).isEmpty)
+                                const Text(
+                                  'Nenhum anexo ainda.',
+                                  style: TextStyle(color: Colors.white54),
+                                ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -1053,4 +1087,3 @@ class _PropostaDetalheScreenState extends State<PropostaDetalheScreen> {
 extension _FirstOrNullExt<T> on List<T> {
   T? get firstOrNull => isEmpty ? null : first;
 }
-

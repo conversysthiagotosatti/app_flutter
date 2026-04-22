@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/app_localizations.dart';
+import 'l10n/app_locale_controller.dart';
+import 'l10n/app_locale_scope.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/modules_screen.dart';
@@ -7,21 +10,38 @@ import 'services/api_client.dart';
 import 'services/auth_service.dart';
 
 void main() {
-  runApp(const ConversysApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ConversysRoot());
 }
 
-class ConversysApp extends StatelessWidget {
-  const ConversysApp({super.key});
+class ConversysRoot extends StatefulWidget {
+  const ConversysRoot({super.key});
+
+  @override
+  State<ConversysRoot> createState() => _ConversysRootState();
+}
+
+class _ConversysRootState extends State<ConversysRoot> {
+  final AppLocaleController _locale = AppLocaleController();
+
+  @override
+  void initState() {
+    super.initState();
+    _locale.addListener(_onLocale);
+    _locale.loadSaved();
+  }
+
+  void _onLocale() => setState(() {});
+
+  @override
+  void dispose() {
+    _locale.removeListener(_onLocale);
+    _locale.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Paleta alinhada com o front web (front-jyra / Conversys brand):
-    // - Fundo claro: #f8fafc
-    // - Superfícies: #ffffff
-    // - Primário (accent): #005AFF
-    // - Primário escuro: #0047cc
-    // - Texto principal: #0f172a
-    // - Texto secundário: #64748b
     final colorScheme = ColorScheme(
       brightness: Brightness.light,
       primary: const Color(0xFF005AFF),
@@ -40,11 +60,9 @@ class ConversysApp extends StatelessWidget {
       onError: Colors.white,
       errorContainer: const Color(0xFFFFE4E4),
       onErrorContainer: const Color(0xFF7F1D1D),
-      background: const Color(0xFFF8FAFC),
-      onBackground: const Color(0xFF0F172A),
       surface: Colors.white,
       onSurface: const Color(0xFF0F172A),
-      surfaceVariant: const Color(0xFFE2E8F0),
+      surfaceContainerHighest: const Color(0xFFE2E8F0),
       onSurfaceVariant: const Color(0xFF64748B),
       outline: const Color(0xFFCBD5E1),
       outlineVariant: const Color(0xFFE2E8F0),
@@ -55,46 +73,76 @@ class ConversysApp extends StatelessWidget {
       inversePrimary: const Color(0xFFAECBFF),
     );
 
-    return MaterialApp(
-      title: 'Conversys',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: colorScheme,
-        useMaterial3: true,
-        scaffoldBackgroundColor: colorScheme.background,
-        fontFamily: 'Inter',
-        appBarTheme: AppBarTheme(
-          backgroundColor: colorScheme.secondary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.outline),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-          ),
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: colorScheme.surface,
-          indicatorColor: colorScheme.primary.withOpacity(0.08),
-          labelTextStyle: WidgetStatePropertyAll(
-            TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: colorScheme.onSurface,
+    return ListenableBuilder(
+      listenable: _locale,
+      builder: (context, _) {
+        return MaterialApp(
+          onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
+          debugShowCheckedModeBanner: false,
+          locale: _locale.localeOverride,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localeResolutionCallback: (deviceLocale, supported) {
+            if (_locale.localeOverride != null) {
+              for (final l in supported) {
+                if (l.languageCode == _locale.localeOverride!.languageCode) {
+                  return l;
+                }
+              }
+              return const Locale('pt');
+            }
+            for (final l in supported) {
+              if (l.languageCode == deviceLocale?.languageCode) {
+                return l;
+              }
+            }
+            return const Locale('pt');
+          },
+          theme: ThemeData(
+            colorScheme: colorScheme,
+            useMaterial3: true,
+            scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+            fontFamily: 'Inter',
+            appBarTheme: AppBarTheme(
+              backgroundColor: colorScheme.secondary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.outline),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+              ),
+            ),
+            navigationBarTheme: NavigationBarThemeData(
+              backgroundColor: colorScheme.surface,
+              indicatorColor: colorScheme.primary.withOpacity(0.08),
+              labelTextStyle: WidgetStatePropertyAll(
+                TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: Colors.white,
             ),
           ),
-        ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: Colors.white,
-        ),
-      ),
-      home: const _AuthGate(),
+          builder: (context, child) {
+            return AppLocaleScope(
+              notifier: _locale,
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
+          home: const _AuthGate(),
+        );
+      },
     );
   }
 }
@@ -152,4 +200,3 @@ class _AuthGateState extends State<_AuthGate> {
     return const LoginScreen();
   }
 }
-

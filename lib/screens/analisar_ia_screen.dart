@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -106,13 +105,12 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
       final streamed = await request.send();
       final response = await http.Response.fromStream(streamed);
       if (response.statusCode != 200) {
-        throw Exception(
-          'Erro ao analisar PDF (${response.statusCode})',
-        );
+        throw Exception('Erro ao analisar PDF (${response.statusCode})');
       }
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      final clausulas = data['extraido']?['clausulas_count'] ??
+      final clausulas =
+          data['extraido']?['clausulas_count'] ??
           data['clausulas_gravadas'] ??
           0;
 
@@ -127,11 +125,9 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao analisar PDF: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao analisar PDF: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -145,12 +141,12 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Analisar contrato com IA',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -182,7 +178,7 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DropdownButtonFormField<Contrato>(
-                  value: _contratoSelecionado,
+                  initialValue: _contratoSelecionado,
                   items: contratos
                       .map(
                         (c) => DropdownMenuItem(
@@ -216,8 +212,9 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
                       border: Border.all(
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      color:
-                          Theme.of(context).colorScheme.primary.withOpacity(0.04),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.04),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +236,7 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _tipo,
+                        initialValue: _tipo,
                         items: const [
                           DropdownMenuItem(
                             value: 'CONTRATO_PRINCIPAL',
@@ -302,21 +299,25 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed:
-                        _enviando || _arquivo == null ? null : () => _enviar(),
+                    onPressed: _enviando || _arquivo == null
+                        ? null
+                        : () => _enviar(),
                     icon: _enviando
                         ? const SizedBox(
                             height: 18,
                             width: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Icon(Icons.cloud_upload_outlined),
                     label: Text(
-                      _enviando ? 'Enviando e analisando...' : 'Enviar e analisar',
+                      _enviando
+                          ? 'Enviando e analisando...'
+                          : 'Enviar e analisar',
                     ),
                   ),
                 ),
@@ -328,4 +329,3 @@ class _AnalisarIaScreenState extends State<AnalisarIaScreen> {
     );
   }
 }
-

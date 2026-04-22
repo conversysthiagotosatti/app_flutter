@@ -39,11 +39,7 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
     'CANCELADA',
   ];
 
-  static const _prioridades = [
-    'ALTA',
-    'MEDIA',
-    'BAIXA',
-  ];
+  static const _prioridades = ['ALTA', 'MEDIA', 'BAIXA'];
 
   @override
   void initState() {
@@ -118,9 +114,7 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Erro ao carregar atividade da tarefa.'),
-        ),
+        const SnackBar(content: Text('Erro ao carregar atividade da tarefa.')),
       );
     } finally {
       if (mounted) {
@@ -157,11 +151,9 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
       await _carregarLogs();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar tarefa: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar tarefa: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -177,20 +169,19 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
 
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Tarefa #${_tarefa.id}',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
       ),
       body: Column(
         children: [
-          if (_salvando)
-            const LinearProgressIndicator(minHeight: 2),
+          if (_salvando) const LinearProgressIndicator(minHeight: 2),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -229,8 +220,9 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(999),
-                            color: _prioridadeColor(_tarefa.prioridade)
-                                .withOpacity(0.08),
+                            color: _prioridadeColor(
+                              _tarefa.prioridade,
+                            ).withOpacity(0.08),
                           ),
                           child: Text(
                             _tarefa.prioridade!,
@@ -287,7 +279,7 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _tarefa.status,
+                          initialValue: _tarefa.status,
                           decoration: const InputDecoration(
                             labelText: 'Status',
                             border: OutlineInputBorder(),
@@ -311,17 +303,15 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _tarefa.prioridade,
+                          initialValue: _tarefa.prioridade,
                           decoration: const InputDecoration(
                             labelText: 'Prioridade',
                             border: OutlineInputBorder(),
                           ),
                           items: _prioridades
                               .map(
-                                (p) => DropdownMenuItem(
-                                  value: p,
-                                  child: Text(p),
-                                ),
+                                (p) =>
+                                    DropdownMenuItem(value: p, child: Text(p)),
                               )
                               .toList(),
                           onChanged: (value) {
@@ -345,9 +335,7 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                         children: [
                           Text(
                             'Detalhes',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
+                            style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
@@ -410,9 +398,7 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                             children: [
                               Text(
                                 'Atividade',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
+                                style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               const Spacer(),
@@ -428,7 +414,9 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                             const Padding(
                               padding: EdgeInsets.all(8),
                               child: Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                             )
                           else if (_logs.isEmpty)
@@ -447,8 +435,9 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
                               itemBuilder: (context, index) {
                                 final log = _logs[index];
                                 return ListTile(
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(vertical: 2),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
                                   title: Text(
                                     log.detalhe ?? log.acao,
                                     style: const TextStyle(fontSize: 13),
@@ -482,20 +471,14 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF64748B),
-            ),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -519,4 +502,3 @@ class _TarefaDetalheScreenState extends State<TarefaDetalheScreen> {
     return '$d/$m/$y $h:$min';
   }
 }
-

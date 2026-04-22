@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
 import 'analisar_ia_screen.dart';
 import 'cadastrar_epico_screen.dart';
@@ -17,11 +18,12 @@ class TarefasModuleScreen extends StatelessWidget {
   const TarefasModuleScreen({super.key, required this.apiClient});
 
   void _openKanban(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => Scaffold(
           appBar: AppBar(
-            title: const Text('Kanban de tarefas'),
+            title: Text(l10n.tarefasKanbanTitle),
           ),
           body: TarefasTab(apiClient: apiClient),
         ),
@@ -49,27 +51,6 @@ class TarefasModuleScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NovaTarefaScreen(apiClient: apiClient),
-      ),
-    );
-  }
-
-  void _openPlaceholder(BuildContext context, String title) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Tela "$title" ainda não foi implementada no app mobile.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -121,50 +102,51 @@ class TarefasModuleScreen extends StatelessWidget {
     const cardBorder = Color(0xFF1E293B);
     const iconBg = Color(0xFF0F172A);
     const labelColor = Colors.white;
+    final l10n = AppLocalizations.of(context)!;
 
     final options = [
       (
-        'Dashboard',
+        l10n.tarefasDashboard,
         Icons.dashboard_outlined,
         (BuildContext ctx) => _openDashboard(ctx),
       ),
       (
-        'Calendário',
+        l10n.tarefasCalendar,
         Icons.calendar_today_outlined,
         (BuildContext ctx) => _openCalendario(ctx),
       ),
       (
-        'Copilot IA',
+        l10n.tarefasCopilot,
         Icons.bolt,
         (BuildContext ctx) => _openCopilot(ctx),
       ),
       (
-        'Analisar com IA',
+        l10n.tarefasAnalyzeAi,
         Icons.auto_awesome,
         (BuildContext ctx) => _openAnalisarIa(ctx),
       ),
       (
-        'Cadastrar Épico',
+        l10n.tarefasRegisterEpic,
         Icons.layers,
         (BuildContext ctx) => _openCadastrarEpico(ctx),
       ),
       (
-        'Nova tarefa',
+        l10n.tarefasNewTask,
         Icons.add_circle_outline,
         (BuildContext ctx) => _openNovaTarefa(ctx),
       ),
       (
-        'Kanban',
+        l10n.tarefasKanban,
         Icons.view_kanban,
         (BuildContext ctx) => _openKanban(ctx),
       ),
       (
-        'Relatórios',
+        l10n.tarefasReports,
         Icons.bar_chart,
         (BuildContext ctx) => _openRelatorios(ctx),
       ),
       (
-        'Documentos',
+        l10n.tarefasDocuments,
         Icons.description_outlined,
         (BuildContext ctx) => _openDocumentos(ctx),
       ),

@@ -9,10 +9,7 @@ import 'tarefas_apontamento_screen.dart';
 class TarefasCalendarioScreen extends StatefulWidget {
   final ApiClient apiClient;
 
-  const TarefasCalendarioScreen({
-    super.key,
-    required this.apiClient,
-  });
+  const TarefasCalendarioScreen({super.key, required this.apiClient});
 
   @override
   State<TarefasCalendarioScreen> createState() =>
@@ -43,10 +40,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
     try {
       final inicio = DateTime(_mesAtual.year, _mesAtual.month, 1);
       final fim = DateTime(_mesAtual.year, _mesAtual.month + 1, 0);
-      final itens = await _service.listar(
-        inicio: inicio,
-        fim: fim,
-      );
+      final itens = await _service.listar(inicio: inicio, fim: fim);
       if (!mounted) return;
       setState(() {
         _apontamentos = itens;
@@ -126,15 +120,19 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
 
     final primeiroDiaMes = DateTime(_mesAtual.year, _mesAtual.month, 1);
     final ultimoDiaMes = DateTime(_mesAtual.year, _mesAtual.month + 1, 0);
-    final inicioGrid = primeiroDiaMes
-        .subtract(Duration(days: primeiroDiaMes.weekday % 7));
-    final fimGrid = ultimoDiaMes
-        .add(Duration(days: 6 - (ultimoDiaMes.weekday % 7)));
+    final inicioGrid = primeiroDiaMes.subtract(
+      Duration(days: primeiroDiaMes.weekday % 7),
+    );
+    final fimGrid = ultimoDiaMes.add(
+      Duration(days: 6 - (ultimoDiaMes.weekday % 7)),
+    );
 
     final dias = <DateTime>[];
-    for (var d = inicioGrid;
-        d.isBefore(fimGrid.add(const Duration(days: 1)));
-        d = d.add(const Duration(days: 1))) {
+    for (
+      var d = inicioGrid;
+      d.isBefore(fimGrid.add(const Duration(days: 1)));
+      d = d.add(const Duration(days: 1))
+    ) {
       dias.add(d);
     }
 
@@ -144,12 +142,12 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
 
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Calendário de apontamentos',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -160,7 +158,9 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
           if (_diaSelecionado == null) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Toque primeiro em um dia para adicionar a marcação.'),
+                content: Text(
+                  'Toque primeiro em um dia para adicionar a marcação.',
+                ),
               ),
             );
             return;
@@ -183,8 +183,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
       body: Column(
         children: [
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
                 IconButton(
@@ -201,8 +200,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                 ),
                 IconButton(
                   onPressed: _proximoMes,
-                  icon:
-                      const Icon(Icons.chevron_right, color: Colors.white),
+                  icon: const Icon(Icons.chevron_right, color: Colors.white),
                 ),
                 const Spacer(),
                 if (_loading)
@@ -247,18 +245,17 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GridView.builder(
                 itemCount: dias.length,
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 7,
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                 ),
                 itemBuilder: (context, index) {
                   final dia = dias[index];
-                  final bool mesAtualFlag =
-                      dia.month == _mesAtual.month;
+                  final bool mesAtualFlag = dia.month == _mesAtual.month;
                   final horas = horasPorDia[dia] ?? 0;
-                  final selecionado = _diaSelecionado != null &&
+                  final selecionado =
+                      _diaSelecionado != null &&
                       dia.year == _diaSelecionado!.year &&
                       dia.month == _diaSelecionado!.month &&
                       dia.day == _diaSelecionado!.day;
@@ -279,16 +276,10 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                         ),
                         builder: (ctx) {
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              16,
-                              12,
-                              16,
-                              24,
-                            ),
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -320,9 +311,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                                     padding: EdgeInsets.all(8.0),
                                     child: Text(
                                       'Nenhum apontamento neste dia.',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                      ),
+                                      style: TextStyle(color: Colors.white70),
                                     ),
                                   )
                                 else
@@ -330,8 +319,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                                     child: ListView.separated(
                                       shrinkWrap: true,
                                       itemCount: itensDia.length,
-                                      separatorBuilder: (_, __) =>
-                                          const Divider(
+                                      separatorBuilder: (_, _) => const Divider(
                                         color: Colors.white24,
                                         height: 12,
                                       ),
@@ -339,17 +327,15 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                                         final a = itensDia[index];
                                         return ListTile(
                                           contentPadding:
-                                              const EdgeInsets
-                                                  .symmetric(
-                                            horizontal: 0,
-                                          ),
+                                              const EdgeInsets.symmetric(
+                                                horizontal: 0,
+                                              ),
                                           title: Text(
                                             a.tarefaTitulo,
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 14,
-                                              fontWeight:
-                                                  FontWeight.w500,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                           ),
                                           subtitle: Text(
@@ -362,10 +348,8 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                                           trailing: Text(
                                             '${a.horas.toStringAsFixed(1)}h',
                                             style: const TextStyle(
-                                              color: Colors
-                                                  .lightBlueAccent,
-                                              fontWeight:
-                                                  FontWeight.w600,
+                                              color: Colors.lightBlueAccent,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         );
@@ -387,9 +371,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                         border: Border.all(
                           color: selecionado
                               ? Colors.blueAccent
-                              : cardBorder.withOpacity(
-                                  horas > 0 ? 0.9 : 0.6,
-                                ),
+                              : cardBorder.withOpacity(horas > 0 ? 0.9 : 0.6),
                           width: selecionado ? 2 : 1,
                         ),
                       ),
@@ -398,8 +380,7 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 dia.day.toString(),
@@ -412,16 +393,13 @@ class _TarefasCalendarioScreenState extends State<TarefasCalendarioScreen> {
                               ),
                               if (horas > 0)
                                 Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 4,
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.blueAccent
-                                        .withOpacity(0.2),
-                                    borderRadius:
-                                        BorderRadius.circular(999),
+                                    color: Colors.blueAccent.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
                                     '${horas.toStringAsFixed(1)}h',
@@ -469,4 +447,3 @@ class _SemanaLabel extends StatelessWidget {
     );
   }
 }
-

@@ -76,21 +76,15 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
 
   Future<void> _salvar() async {
     if (_tarefaSelecionada == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecione uma tarefa.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Selecione uma tarefa.')));
       return;
     }
-    final horas = double.tryParse(
-      _horasController.text.replaceAll(',', '.'),
-    );
+    final horas = double.tryParse(_horasController.text.replaceAll(',', '.'));
     if (horas == null || horas <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Informe um número de horas válido.'),
-        ),
+        const SnackBar(content: Text('Informe um número de horas válido.')),
       );
       return;
     }
@@ -107,18 +101,14 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Apontamento registrado com sucesso.'),
-        ),
+        const SnackBar(content: Text('Apontamento registrado com sucesso.')),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao lançar horas: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao lançar horas: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -135,9 +125,7 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
         '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}/${data.year}';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Novo apontamento'),
-      ),
+      appBar: AppBar(title: const Text('Novo apontamento')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -147,10 +135,9 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
                 children: [
                   Text(
                     'Data: $dataLabel',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   if (_error != null)
@@ -158,12 +145,11 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
                         'Erro ao carregar tarefas: $_error',
-                        style:
-                            const TextStyle(color: Colors.redAccent),
+                        style: const TextStyle(color: Colors.redAccent),
                       ),
                     ),
                   DropdownButtonFormField<ContratoTarefa>(
-                    value: _tarefaSelecionada,
+                    initialValue: _tarefaSelecionada,
                     decoration: const InputDecoration(
                       labelText: 'Tarefa',
                       border: OutlineInputBorder(),
@@ -188,8 +174,7 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: _horasController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(
+                    keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
                     decoration: const InputDecoration(
@@ -229,4 +214,3 @@ class _TarefasApontamentoScreenState extends State<TarefasApontamentoScreen> {
     );
   }
 }
-

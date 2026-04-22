@@ -41,8 +41,7 @@ class EpicosService {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final data =
-          jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
       return Epico.fromJson(data);
     }
 
@@ -56,19 +55,14 @@ class EpicosService {
   }) async {
     final response = await _client.post(
       '/api/epicos/$id/',
-      body: {
-        'titulo': titulo,
-        if (descricao != null) 'descricao': descricao,
-      },
+      body: {'titulo': titulo, 'descricao': ?descricao},
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final data =
-          jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
       return Epico.fromJson(data);
     }
 
     throw Exception('Erro ao atualizar épico (${response.statusCode})');
   }
 }
-

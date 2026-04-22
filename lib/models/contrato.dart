@@ -38,6 +38,7 @@ class Contrato {
               'id': json['cliente'],
               'nome': json['cliente_nome'] ?? '',
               'ativo': true,
+              'is_prospecto': true,
             }),
       titulo: json['titulo'] as String? ?? '',
       descricao: json['descricao'] as String?,

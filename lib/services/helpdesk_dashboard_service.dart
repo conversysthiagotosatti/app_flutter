@@ -34,14 +34,14 @@ class HelpdeskResumo {
   });
 
   factory HelpdeskResumo.fromJson(Map<String, dynamic> json) {
-    double _toDouble(dynamic v) {
+    double toDouble(dynamic v) {
       if (v == null) return 0;
       if (v is num) return v.toDouble();
       if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0;
       return 0;
     }
 
-    List<Map<String, dynamic>> _toListMap(dynamic v) {
+    List<Map<String, dynamic>> toListMap(dynamic v) {
       if (v is List) {
         return v.whereType<Map<String, dynamic>>().toList();
       }
@@ -55,16 +55,15 @@ class HelpdeskResumo {
       aguardando: json['aguardando'] as int? ?? 0,
       resolvidos: json['resolvidos'] as int? ?? 0,
       cancelados: json['cancelados'] as int? ?? 0,
-      slaCompliance: _toDouble(json['sla_compliance']),
+      slaCompliance: toDouble(json['sla_compliance']),
       slaVencido: json['sla_vencido'] as int? ?? 0,
       slaProximoVencer: json['sla_proximo_vencer'] as int? ?? 0,
-      tempoMedioResolucaoHoras:
-          json['tempo_medio_resolucao_horas'] != null
-              ? _toDouble(json['tempo_medio_resolucao_horas'])
-              : null,
+      tempoMedioResolucaoHoras: json['tempo_medio_resolucao_horas'] != null
+          ? toDouble(json['tempo_medio_resolucao_horas'])
+          : null,
       semAtendente: json['sem_atendente'] as int? ?? 0,
-      porPrioridade: _toListMap(json['por_prioridade']),
-      porStatus: _toListMap(json['por_status']),
+      porPrioridade: toListMap(json['por_prioridade']),
+      porStatus: toListMap(json['por_status']),
     );
   }
 }
@@ -95,15 +94,13 @@ class HelpdeskDashboardService {
   HelpdeskDashboardService(this.apiClient);
 
   Future<HelpdeskResumo> fetchResumo() async {
-    final resp =
-        await apiClient.get('/api/helpdesk/dashboard/resumo/');
+    final resp = await apiClient.get('/api/helpdesk/dashboard/resumo/');
     if (resp.statusCode != 200) {
       throw Exception(
         'Erro ao carregar dashboard de helpdesk (${resp.statusCode})',
       );
     }
-    final data =
-        jsonDecode(resp.body) as Map<String, dynamic>;
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
     return HelpdeskResumo.fromJson(data);
   }
 
@@ -126,4 +123,3 @@ class HelpdeskDashboardService {
     return const [];
   }
 }
-

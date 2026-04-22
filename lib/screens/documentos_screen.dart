@@ -92,9 +92,9 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
       await _carregarArquivos(contrato);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao gerar PDF: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao gerar PDF: $e')));
     } finally {
       if (mounted) {
         setState(() => _gerandoPdf = false);
@@ -106,12 +106,12 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Documentos do contrato',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -130,14 +130,11 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
 
           final contratos = snapshot.data ?? [];
           if (contratos.isEmpty) {
-            return const Center(
-              child: Text('Nenhum contrato encontrado.'),
-            );
+            return const Center(child: Text('Nenhum contrato encontrado.'));
           }
 
           _contratoSelecionado ??= contratos.first;
-          _arquivosFuture ??=
-              _arquivosService.listar(_contratoSelecionado!.id);
+          _arquivosFuture ??= _arquivosService.listar(_contratoSelecionado!.id);
 
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -147,7 +144,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<Contrato>(
-                        value: _contratoSelecionado,
+                        initialValue: _contratoSelecionado,
                         items: contratos
                             .map(
                               (c) => DropdownMenuItem(
@@ -171,25 +168,21 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                     ),
                     const SizedBox(width: 12),
                     FilledButton.icon(
-                      onPressed:
-                          _gerandoPdf ? null : () => _gerarPdf(),
+                      onPressed: _gerandoPdf ? null : () => _gerarPdf(),
                       icon: _gerandoPdf
                           ? const SizedBox(
                               height: 18,
                               width: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(
+                                valueColor: AlwaysStoppedAnimation<Color>(
                                   Colors.white,
                                 ),
                               ),
                             )
                           : const Icon(Icons.picture_as_pdf_outlined),
                       label: Text(
-                        _gerandoPdf
-                            ? 'Gerando...'
-                            : 'Gerar PDF (nova versão)',
+                        _gerandoPdf ? 'Gerando...' : 'Gerar PDF (nova versão)',
                       ),
                     ),
                   ],
@@ -199,16 +192,14 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                   child: FutureBuilder<List<ContratoArquivo>>(
                     future: _arquivosFuture,
                     builder: (context, snap) {
-                      if (snap.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                      if (snap.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (snap.hasError) {
                         return Center(
                           child: Text(
-                              'Erro ao carregar documentos: ${snap.error}'),
+                            'Erro ao carregar documentos: ${snap.error}',
+                          ),
                         );
                       }
 
@@ -244,8 +235,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                         itemBuilder: (context, index) {
                           final arq = arquivos[index];
                           return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -264,8 +254,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 subtitle: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 4),
                                     Wrap(
@@ -274,14 +263,11 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                                       children: [
                                         Chip(
                                           label: Text(
-                                            _tipoLabels[arq.tipo] ??
-                                                arq.tipo,
+                                            _tipoLabels[arq.tipo] ?? arq.tipo,
                                           ),
-                                          visualDensity:
-                                              VisualDensity.compact,
+                                          visualDensity: VisualDensity.compact,
                                           materialTapTargetSize:
-                                              MaterialTapTargetSize
-                                                  .shrinkWrap,
+                                              MaterialTapTargetSize.shrinkWrap,
                                         ),
                                         Text(
                                           'v${arq.versao}',
@@ -292,8 +278,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                                         ),
                                         if (arq.tamanhoBytes != null)
                                           Text(
-                                            _formatBytes(
-                                                arq.tamanhoBytes),
+                                            _formatBytes(arq.tamanhoBytes),
                                             style: const TextStyle(
                                               fontSize: 11,
                                               color: Colors.grey,
@@ -324,8 +309,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                                       Text(
                                         'SHA256: ${arq.sha256}',
                                         maxLines: 1,
-                                        overflow:
-                                            TextOverflow.ellipsis,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.grey,
@@ -335,8 +319,7 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.download),
-                                  onPressed: () =>
-                                      _abrirUrl(arq.url),
+                                  onPressed: () => _abrirUrl(arq.url),
                                   tooltip: 'Abrir / baixar',
                                 ),
                               ),
@@ -355,4 +338,3 @@ class _DocumentosScreenState extends State<DocumentosScreen> {
     );
   }
 }
-

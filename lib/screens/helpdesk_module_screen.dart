@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
 import '../widgets/conversys_app_bar.dart';
-import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_analytics_screen.dart';
 import 'helpdesk_chamados_screen.dart';
 import 'helpdesk_copilot_screen.dart';
@@ -15,9 +15,7 @@ class HelpdeskModuleScreen extends StatelessWidget {
   void _openAnalytics(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => HelpdeskAnalyticsScreen(
-          apiClient: apiClient,
-        ),
+        builder: (_) => HelpdeskAnalyticsScreen(apiClient: apiClient),
       ),
     );
   }
@@ -25,9 +23,7 @@ class HelpdeskModuleScreen extends StatelessWidget {
   void _openChamados(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => HelpdeskChamadosScreen(
-          apiClient: apiClient,
-        ),
+        builder: (_) => HelpdeskChamadosScreen(apiClient: apiClient),
       ),
     );
   }
@@ -35,9 +31,7 @@ class HelpdeskModuleScreen extends StatelessWidget {
   void _openCopilot(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => HelpdeskCopilotScreen(
-          apiClient: apiClient,
-        ),
+        builder: (_) => HelpdeskCopilotScreen(apiClient: apiClient),
       ),
     );
   }
@@ -61,15 +55,14 @@ class HelpdeskModuleScreen extends StatelessWidget {
         Icons.support_agent,
         (BuildContext ctx) => _openChamados(ctx),
       ),
-      (
-        'Copilot IA',
-        Icons.bolt,
-        (BuildContext ctx) => _openCopilot(ctx),
-      ),
+      ('Copilot IA', Icons.bolt, (BuildContext ctx) => _openCopilot(ctx)),
     ];
 
     return Scaffold(
-      appBar: conversysAppBar('Helpdesk'),
+      appBar: conversysAppBar(
+        context,
+        AppLocalizations.of(context)!.helpdeskTitle,
+      ),
       backgroundColor: background,
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -109,13 +102,10 @@ class HelpdeskModuleScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       label,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: labelColor,
-                          ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: labelColor,
+                      ),
                     ),
                   ],
                 ),
@@ -127,4 +117,3 @@ class HelpdeskModuleScreen extends StatelessWidget {
     );
   }
 }
-

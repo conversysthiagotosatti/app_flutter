@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
-  /// Ajuste esta URL para o host/porta onde o Django está rodando.
-  static const String baseUrl = 'http://172.20.10.84';
+  /// Backend local (ex.: `python manage.py runserver` → porta 8000).
+  /// Emulador Android use `http://10.0.2.2:8000` em vez de localhost.
+  static const String baseUrl = 'http://10.0.2.2:8000';
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
@@ -62,8 +63,9 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? query,
     bool auth = true,
+    Map<String, String>? extraHeaders,
   }) async {
-    final headers = await _buildHeaders(auth: auth);
+    final headers = await _buildHeaders(auth: auth, extra: extraHeaders);
     final uri = _buildUri(path, query);
     return http.get(uri, headers: headers);
   }
@@ -71,30 +73,90 @@ class ApiClient {
   Future<http.Response> post(
     String path, {
     Map<String, dynamic>? body,
+    Map<String, dynamic>? query,
     bool auth = true,
+    Map<String, String>? extraHeaders,
   }) async {
-    final headers = await _buildHeaders(auth: auth);
-    final uri = _buildUri(path);
+    final headers = await _buildHeaders(auth: auth, extra: extraHeaders);
+    final uri = _buildUri(path, query);
     return http.post(uri, headers: headers, body: jsonEncode(body ?? {}));
   }
 
   Future<http.Response> patch(
     String path, {
     Map<String, dynamic>? body,
+    Map<String, dynamic>? query,
     bool auth = true,
+    Map<String, String>? extraHeaders,
   }) async {
-    final headers = await _buildHeaders(auth: auth);
-    final uri = _buildUri(path);
+    final headers = await _buildHeaders(auth: auth, extra: extraHeaders);
+    final uri = _buildUri(path, query);
     return http.patch(uri, headers: headers, body: jsonEncode(body ?? {}));
   }
 
   Future<http.Response> delete(
     String path, {
     bool auth = true,
+    Map<String, dynamic>? query,
+    Map<String, String>? extraHeaders,
   }) async {
-    final headers = await _buildHeaders(auth: auth);
-    final uri = _buildUri(path);
+    final headers = await _buildHeaders(auth: auth, extra: extraHeaders);
+    final uri = _buildUri(path, query);
     return http.delete(uri, headers: headers);
+  }
+
+  /// POST multipart (ex.: despesas com comprovante). Não envia `Content-Type`: o boundary é definido pelo pacote `http`.
+  Future<http.Response> postMultipart(
+    String path, {
+    required Map<String, String> fields,
+    List<http.MultipartFile> files = const [],
+    Map<String, dynamic>? query,
+    bool auth = true,
+    Map<String, String>? extraHeaders,
+  }) async {
+    final uri = _buildUri(path, query);
+    final req = http.MultipartRequest('POST', uri);
+    req.headers['Accept'] = 'application/json';
+    if (auth) {
+      final token = await getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        req.headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    if (extraHeaders != null) {
+      req.headers.addAll(extraHeaders);
+    }
+    req.fields.addAll(fields);
+    req.files.addAll(files);
+    final streamed = await req.send();
+    return http.Response.fromStream(streamed);
+  }
+
+  /// PATCH multipart (edição de despesa com novo comprovante opcional).
+  Future<http.Response> patchMultipart(
+    String path, {
+    required Map<String, String> fields,
+    List<http.MultipartFile> files = const [],
+    Map<String, dynamic>? query,
+    bool auth = true,
+    Map<String, String>? extraHeaders,
+  }) async {
+    final uri = _buildUri(path, query);
+    final req = http.MultipartRequest('PATCH', uri);
+    req.headers['Accept'] = 'application/json';
+    if (auth) {
+      final token = await getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        req.headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    if (extraHeaders != null) {
+      req.headers.addAll(extraHeaders);
+    }
+    req.fields.addAll(fields);
+    req.files.addAll(files);
+    final streamed = await req.send();
+    return http.Response.fromStream(streamed);
   }
 
   Future<Map<String, String>> buildAuthHeaders({bool json = true}) async {
@@ -114,7 +176,10 @@ class ApiClient {
     return headers;
   }
 
-  Future<Map<String, String>> _buildHeaders({bool auth = true}) async {
+  Future<Map<String, String>> _buildHeaders({
+    bool auth = true,
+    Map<String, String>? extra,
+  }) async {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -125,6 +190,10 @@ class ApiClient {
       if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
+    }
+
+    if (extra != null) {
+      headers.addAll(extra);
     }
 
     return headers;

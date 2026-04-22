@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../screens/home_screen.dart';
 import '../services/api_client.dart';
+import '../utils/module_order.dart';
+import '../widgets/language_picker_button.dart';
 import 'notificacoes_screen.dart';
 
 class ModulesScreen extends StatelessWidget {
@@ -16,6 +19,9 @@ class ModulesScreen extends StatelessWidget {
     if (lower.contains('contrato')) return Icons.description_outlined;
     if (lower.contains('tarefa')) return Icons.check_circle_outline;
     if (lower.contains('helpdesk')) return Icons.support_agent;
+    if (lower.contains('despesa') || lower.contains('expense')) {
+      return Icons.payments_outlined;
+    }
     if (lower.contains('softdesk')) return Icons.desktop_windows_outlined;
     return Icons.apps;
   }
@@ -24,6 +30,8 @@ class ModulesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final apiClient = ApiClient();
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final orderedModules = orderModulesLikeWeb(modules);
 
     const backgroundTop = Color(0xFF020617); // bem escuro
     const backgroundBottom = Color(0xFF020617);
@@ -57,13 +65,14 @@ class ModulesScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'The Blue Huddle',
+                      l10n.blueHuddleTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Spacer(),
+                    const LanguagePickerIconButton(iconColor: Colors.white),
                     IconButton(
                       icon: const Icon(Icons.notifications_none,
                           color: Colors.white),
@@ -96,7 +105,7 @@ class ModulesScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Uma linha projetada pela Conversys',
+                      l10n.taglineConversys,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: Colors.blue[200],
                         fontWeight: FontWeight.w600,
@@ -104,7 +113,7 @@ class ModulesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Arquiteturas pré-definidas de tecnologia',
+                      l10n.predefinedArchitectures,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -112,14 +121,14 @@ class ModulesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Acesse seus serviços ativos abaixo ou explore novas soluções integradas da Conversys.',
+                      l10n.servicesIntro,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.blueGrey[200],
                       ),
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Meus serviços',
+                      l10n.myServices,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -133,11 +142,11 @@ class ModulesScreen extends StatelessWidget {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: modules.isEmpty
-                      ? const Center(
+                  child: orderedModules.isEmpty
+                      ? Center(
                           child: Text(
-                            'Nenhum módulo disponível para este usuário.',
-                            style: TextStyle(color: Colors.white70),
+                            l10n.noModulesForUser,
+                            style: const TextStyle(color: Colors.white70),
                           ),
                         )
                       : GridView.builder(
@@ -148,13 +157,13 @@ class ModulesScreen extends StatelessWidget {
                             crossAxisSpacing: 16,
                             childAspectRatio: 4 / 3,
                           ),
-                          itemCount: modules.length,
+                          itemCount: orderedModules.length,
                           itemBuilder: (context, index) {
-                            final raw = modules[index];
+                            final raw = orderedModules[index];
                             final nome = (raw is Map &&
                                     raw['nome'] is String)
                                 ? raw['nome'] as String
-                                : 'Módulo';
+                                : l10n.moduleDefaultName;
                             final descricao = (raw is Map &&
                                     raw['descricao'] is String)
                                 ? raw['descricao'] as String
@@ -215,9 +224,9 @@ class ModulesScreen extends StatelessWidget {
                                                   .withOpacity(0.4),
                                             ),
                                           ),
-                                          child: const Text(
-                                            'ATIVO',
-                                            style: TextStyle(
+                                          child: Text(
+                                            l10n.statusActive,
+                                            style: const TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.greenAccent,
@@ -274,9 +283,9 @@ class ModulesScreen extends StatelessWidget {
                                             ),
                                           );
                                         },
-                                        child: const Text(
-                                          'Acessar console',
-                                          style: TextStyle(
+                                        child: Text(
+                                          l10n.accessConsole,
+                                          style: const TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
                                           ),

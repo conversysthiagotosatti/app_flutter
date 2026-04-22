@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
 import '../widgets/conversys_app_bar.dart';
 import 'em_desenvolvimento_screen.dart';
@@ -7,6 +8,7 @@ import 'propostas_list_screen.dart';
 import 'propostas_copilot_screen.dart';
 import 'notificacoes_screen.dart';
 import 'clientes_prospectos_screen.dart';
+import 'produto_rastreamento_movimentacao_screen.dart';
 
 class PropostasModuleScreen extends StatelessWidget {
   final ApiClient apiClient;
@@ -20,12 +22,25 @@ class PropostasModuleScreen extends StatelessWidget {
     const cardBorder = Color(0xFF1E293B);
     const iconBg = Color(0xFF0F172A);
     const labelColor = Colors.white;
+    final l10n = AppLocalizations.of(context)!;
 
     final options = [
       (
         'Propostas',
         Icons.description_outlined,
         (BuildContext ctx) => PropostasListaScreen(apiClient: apiClient),
+      ),
+      (
+        l10n.tarefasTracking,
+        Icons.inventory_2_outlined,
+        (BuildContext ctx) {
+          Navigator.of(ctx).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  ProdutoRastreamentoMovimentacaoScreen(apiClient: apiClient),
+            ),
+          );
+        },
       ),
       (
         'Copilot IA',
@@ -51,7 +66,7 @@ class PropostasModuleScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: background,
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         'Propostas',
         onNotificationsTap: () {
           Navigator.of(context).push(

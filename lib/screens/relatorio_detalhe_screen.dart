@@ -151,7 +151,7 @@ class _RelatorioDetalheScreenState extends State<RelatorioDetalheScreen> {
     final meta = widget.meta;
 
     return Scaffold(
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         meta.nome,
         onNotificationsTap: () {
           Navigator.of(context).push(

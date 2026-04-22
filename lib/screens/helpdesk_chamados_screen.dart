@@ -9,14 +9,10 @@ import 'helpdesk_chamado_detalhe_screen.dart';
 class HelpdeskChamadosScreen extends StatefulWidget {
   final ApiClient apiClient;
 
-  const HelpdeskChamadosScreen({
-    super.key,
-    required this.apiClient,
-  });
+  const HelpdeskChamadosScreen({super.key, required this.apiClient});
 
   @override
-  State<HelpdeskChamadosScreen> createState() =>
-      _HelpdeskChamadosScreenState();
+  State<HelpdeskChamadosScreen> createState() => _HelpdeskChamadosScreenState();
 }
 
 class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
@@ -33,9 +29,7 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
 
   Future<void> _recarregar() async {
     setState(() {
-      _future = _service.listar(
-        search: _search.isNotEmpty ? _search : null,
-      );
+      _future = _service.listar(search: _search.isNotEmpty ? _search : null);
     });
   }
 
@@ -47,9 +41,7 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: _NovoChamadoSheet(
           apiClient: widget.apiClient,
           onCreated: () {
@@ -86,12 +78,12 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Helpdesk · Chamados',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -104,8 +96,7 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
       body: Column(
         children: [
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TextField(
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
@@ -129,11 +120,8 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
               child: FutureBuilder<List<Chamado>>(
                 future: _future,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
                     return ListView(
@@ -152,31 +140,22 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
                     return ListView(
                       children: const [
                         SizedBox(height: 80),
-                        Center(
-                          child: Text(
-                            'Nenhum chamado encontrado.',
-                          ),
-                        ),
+                        Center(child: Text('Nenhum chamado encontrado.')),
                       ],
                     );
                   }
                   return ListView.separated(
                     itemCount: chamados.length,
-                    separatorBuilder: (_, __) => const Divider(
-                      height: 1,
-                    ),
+                    separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final c = chamados[index];
                       final statusColor = _statusColor(c.status);
-                      final prioridadeColor =
-                          _prioridadeColor(c.prioridade);
+                      final prioridadeColor = _prioridadeColor(c.prioridade);
 
                       final solicitanteNome =
-                          (c.solicitanteDetalhes?['first_name'] ??
-                                  '') +
-                              ' ' +
-                              (c.solicitanteDetalhes?['last_name'] ??
-                                  '');
+                          (c.solicitanteDetalhes?['first_name'] ?? '') +
+                          ' ' +
+                          (c.solicitanteDetalhes?['last_name'] ?? '');
 
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(
@@ -209,8 +188,7 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: statusColor.withOpacity(0.1),
-                                    borderRadius:
-                                        BorderRadius.circular(999),
+                                    borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
                                     c.status,
@@ -228,10 +206,8 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: prioridadeColor
-                                        .withOpacity(0.1),
-                                    borderRadius:
-                                        BorderRadius.circular(999),
+                                    color: prioridadeColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
                                     c.prioridade,
@@ -260,8 +236,7 @@ class _HelpdeskChamadosScreenState extends State<HelpdeskChamadosScreen> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  HelpdeskChamadoDetalheScreen(
+                              builder: (_) => HelpdeskChamadoDetalheScreen(
                                 apiClient: widget.apiClient,
                                 chamado: c,
                               ),
@@ -285,10 +260,7 @@ class _NovoChamadoSheet extends StatefulWidget {
   final ApiClient apiClient;
   final VoidCallback onCreated;
 
-  const _NovoChamadoSheet({
-    required this.apiClient,
-    required this.onCreated,
-  });
+  const _NovoChamadoSheet({required this.apiClient, required this.onCreated});
 
   @override
   State<_NovoChamadoSheet> createState() => _NovoChamadoSheetState();
@@ -375,11 +347,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Erro ao carregar opções do helpdesk.',
-          ),
-        ),
+        const SnackBar(content: Text('Erro ao carregar opções do helpdesk.')),
       );
     } finally {
       if (mounted) {
@@ -415,17 +383,13 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
       if (!mounted) return;
       widget.onCreated();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Chamado criado com sucesso.'),
-        ),
+        const SnackBar(content: Text('Chamado criado com sucesso.')),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao criar chamado: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao criar chamado: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -454,8 +418,9 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
-                      color:
-                          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                     ),
                     child: Icon(
                       Icons.headset_mic,
@@ -468,18 +433,15 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                     children: [
                       Text(
                         'Nova Solicitação',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
+                        style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         'Complete os detalhes para processamento imediato',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.grey[600]),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ],
                   ),
@@ -495,14 +457,14 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
               const SizedBox(height: 12),
               // Faixa "Modo Atendente"
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.orange.withOpacity(0.06),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.orange.withOpacity(0.4),
-                  ),
+                  border: Border.all(color: Colors.orange.withOpacity(0.4)),
                 ),
                 child: Row(
                   children: [
@@ -516,8 +478,8 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                       child: Text(
                         'Modo Atendente — Preencha a classificação para o roteamento e SLA corretos.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.orange[800],
-                            ),
+                          color: Colors.orange[800],
+                        ),
                       ),
                     ),
                   ],
@@ -532,8 +494,10 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                 ),
                 color: Colors.grey.shade50,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   child: Column(
                     children: [
                       TextFormField(
@@ -578,9 +542,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                         children: [
                           Text(
                             'Classificação',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
+                            style: Theme.of(context).textTheme.labelSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey[600],
@@ -588,7 +550,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<int>(
-                            value: _grupoSolucaoId,
+                            initialValue: _grupoSolucaoId,
                             decoration: const InputDecoration(
                               labelText: 'Grupo / Fila',
                               border: OutlineInputBorder(),
@@ -611,7 +573,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: _prioridade,
+                            initialValue: _prioridade,
                             decoration: const InputDecoration(
                               labelText: 'Prioridade',
                               border: OutlineInputBorder(),
@@ -642,7 +604,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _categoriaId,
+                            initialValue: _categoriaId,
                             decoration: const InputDecoration(
                               labelText: 'Categoria',
                               border: OutlineInputBorder(),
@@ -666,15 +628,17 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _servicoId,
+                            initialValue: _servicoId,
                             decoration: const InputDecoration(
                               labelText: 'Serviço',
                               border: OutlineInputBorder(),
                             ),
                             items: _servicos
-                                .where((s) =>
-                                    _categoriaId == null ||
-                                    s['categoria'] == _categoriaId)
+                                .where(
+                                  (s) =>
+                                      _categoriaId == null ||
+                                      s['categoria'] == _categoriaId,
+                                )
                                 .map(
                                   (s) => DropdownMenuItem<int>(
                                     value: s['id'] as int,
@@ -692,7 +656,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _tipoChamadoId,
+                            initialValue: _tipoChamadoId,
                             decoration: const InputDecoration(
                               labelText: 'Tipo de chamado',
                               border: OutlineInputBorder(),
@@ -724,9 +688,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                         children: [
                           Text(
                             'Contexto do solicitante',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
+                            style: Theme.of(context).textTheme.labelSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey[600],
@@ -734,7 +696,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<int>(
-                            value: _clienteId,
+                            initialValue: _clienteId,
                             decoration: const InputDecoration(
                               labelText: 'Cliente',
                               border: OutlineInputBorder(),
@@ -757,7 +719,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _contratoId,
+                            initialValue: _contratoId,
                             decoration: const InputDecoration(
                               labelText: 'Contrato',
                               border: OutlineInputBorder(),
@@ -767,13 +729,11 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                                   (c) => DropdownMenuItem<int>(
                                     value: c['id'] as int,
                                     child: Text(
-                                      (c['numero']
-                                                      ?.toString()
-                                                      ?.isNotEmpty ??
+                                      (c['numero']?.toString().isNotEmpty ??
                                               false)
                                           ? c['numero'].toString()
                                           : (c['descricao']?.toString() ??
-                                              'Contrato'),
+                                                'Contrato'),
                                     ),
                                   ),
                                 )
@@ -794,7 +754,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _areaId,
+                            initialValue: _areaId,
                             decoration: const InputDecoration(
                               labelText: 'Área',
                               border: OutlineInputBorder(),
@@ -817,7 +777,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _impactoId,
+                            initialValue: _impactoId,
                             decoration: const InputDecoration(
                               labelText: 'Impacto',
                               border: OutlineInputBorder(),
@@ -840,7 +800,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<int>(
-                            value: _itemConfiguracaoId,
+                            initialValue: _itemConfiguracaoId,
                             decoration: const InputDecoration(
                               labelText: 'Item de configuração',
                               border: OutlineInputBorder(),
@@ -897,9 +857,7 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
                         ? const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text('Criar'),
                   ),
@@ -912,4 +870,3 @@ class _NovoChamadoSheetState extends State<_NovoChamadoSheet> {
     );
   }
 }
-

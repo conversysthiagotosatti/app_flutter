@@ -103,11 +103,9 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
       _novoEpico();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar épico: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar épico: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -121,12 +119,12 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Épicos do contrato',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -145,21 +143,20 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
 
           final contratos = snapshot.data ?? [];
           if (contratos.isEmpty) {
-            return const Center(
-              child: Text('Nenhum contrato encontrado.'),
-            );
+            return const Center(child: Text('Nenhum contrato encontrado.'));
           }
 
           _contratoSelecionado ??= contratos.first;
-          _epicosFuture ??=
-              _epicosService.listar(contratoId: _contratoSelecionado!.id);
+          _epicosFuture ??= _epicosService.listar(
+            contratoId: _contratoSelecionado!.id,
+          );
 
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 DropdownButtonFormField<Contrato>(
-                  value: _contratoSelecionado,
+                  initialValue: _contratoSelecionado,
                   items: contratos
                       .map(
                         (c) => DropdownMenuItem(
@@ -219,14 +216,14 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                                       if (snap.connectionState ==
                                           ConnectionState.waiting) {
                                         return const Center(
-                                          child:
-                                              CircularProgressIndicator(),
+                                          child: CircularProgressIndicator(),
                                         );
                                       }
                                       if (snap.hasError) {
                                         return Center(
                                           child: Text(
-                                              'Erro ao carregar épicos: ${snap.error}'),
+                                            'Erro ao carregar épicos: ${snap.error}',
+                                          ),
                                         );
                                       }
                                       final epicos = snap.data ?? [];
@@ -240,23 +237,22 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                                       }
                                       return ListView.separated(
                                         itemCount: epicos.length,
-                                        separatorBuilder: (_, __) =>
+                                        separatorBuilder: (_, _) =>
                                             const Divider(height: 1),
                                         itemBuilder: (context, index) {
                                           final e = epicos[index];
                                           final selecionado =
-                                              _epicoSelecionado?.id ==
-                                                  e.id;
+                                              _epicoSelecionado?.id == e.id;
                                           return ListTile(
                                             title: Text(e.titulo),
-                                            subtitle: e.descricao != null &&
-                                                    e.descricao!
-                                                        .isNotEmpty
+                                            subtitle:
+                                                e.descricao != null &&
+                                                    e.descricao!.isNotEmpty
                                                 ? Text(
                                                     e.descricao!,
                                                     maxLines: 2,
-                                                    overflow: TextOverflow
-                                                        .ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   )
                                                 : null,
                                             trailing: Text(
@@ -266,8 +262,7 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                                               ),
                                             ),
                                             selected: selecionado,
-                                            onTap: () =>
-                                                _selecionarEpico(e),
+                                            onTap: () => _selecionarEpico(e),
                                           );
                                         },
                                       );
@@ -291,16 +286,15 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                             child: Form(
                               key: _formKey,
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     _epicoSelecionado == null
                                         ? 'Novo épico'
                                         : 'Editar épico',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
                                   ),
                                   const SizedBox(height: 16),
                                   TextFormField(
@@ -323,8 +317,7 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                                       controller: _descricaoController,
                                       maxLines: null,
                                       expands: true,
-                                      decoration:
-                                          const InputDecoration(
+                                      decoration: const InputDecoration(
                                         labelText: 'Descrição (opcional)',
                                         border: OutlineInputBorder(),
                                         alignLabelWithHint: true,
@@ -335,25 +328,24 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: FilledButton(
-                                      onPressed:
-                                          _salvando ? null : _salvar,
+                                      onPressed: _salvando ? null : _salvar,
                                       child: _salvando
                                           ? const SizedBox(
                                               height: 18,
                                               width: 18,
-                                              child:
-                                                  CircularProgressIndicator(
+                                              child: CircularProgressIndicator(
                                                 strokeWidth: 2,
                                                 valueColor:
                                                     AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        Colors.white),
+                                                      Color
+                                                    >(Colors.white),
                                               ),
                                             )
-                                          : Text(_epicoSelecionado ==
-                                                  null
-                                              ? 'Criar épico'
-                                              : 'Salvar alterações'),
+                                          : Text(
+                                              _epicoSelecionado == null
+                                                  ? 'Criar épico'
+                                                  : 'Salvar alterações',
+                                            ),
                                     ),
                                   ),
                                 ],
@@ -373,4 +365,3 @@ class _CadastrarEpicoScreenState extends State<CadastrarEpicoScreen> {
     );
   }
 }
-

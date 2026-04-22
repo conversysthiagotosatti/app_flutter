@@ -46,7 +46,7 @@ class _ContratosTabState extends State<ContratosTab> {
 
         return ListView.separated(
           itemCount: contratos.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final c = contratos[index];
             return ListTile(
@@ -85,4 +85,3 @@ class _ContratosTabState extends State<ContratosTab> {
         '${date.year}';
   }
 }
-

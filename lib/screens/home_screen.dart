@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../utils/module_order.dart';
 import '../widgets/conversys_app_bar.dart';
+import '../widgets/language_picker_button.dart';
+import 'despesas_module_screen.dart';
 import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_module_screen.dart';
 import 'notificacoes_screen.dart';
 import 'propostas_module_screen.dart';
 import 'tabs/clientes_tab.dart';
-import 'tabs/contratos_tab.dart';
-import 'tabs/tarefas_tab.dart';
 import 'tarefas_module_screen.dart';
 import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
 
-  const HomeScreen({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const HomeScreen({super.key, this.initialIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -67,6 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (lower.contains('helpdesk') || lower.contains('help desk')) {
       return Icons.support_agent;
     }
+    if (lower.contains('despesa') || lower.contains('expense')) {
+      return Icons.payments_outlined;
+    }
     if (lower.contains('zabbix') || lower.contains('observa')) {
       return Icons.shield;
     }
@@ -85,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final modules = _modules;
+    final l10n = AppLocalizations.of(context)!;
 
     // Se não houver módulos salvos, mantém o menu padrão fixo.
     if (modules == null || modules.isEmpty) {
@@ -97,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return Scaffold(
         appBar: conversysAppBar(
-          'Conversys',
+          context,
+          l10n.appTitle,
           onNotificationsTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -106,10 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
           extraActions: [
+            const LanguagePickerIconButton(),
             IconButton(
               onPressed: _logout,
               icon: const Icon(Icons.logout),
-              tooltip: 'Sair',
+              tooltip: l10n.signOut,
             ),
           ],
         ),
@@ -119,32 +124,33 @@ class _HomeScreenState extends State<HomeScreen> {
           onDestinationSelected: (index) {
             setState(() => _currentIndex = index);
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.business),
-              label: 'Clientes',
+              icon: const Icon(Icons.business),
+              label: l10n.navClients,
             ),
             NavigationDestination(
-              icon: Icon(Icons.description),
-              label: 'Contratos',
+              icon: const Icon(Icons.description),
+              label: l10n.navContracts,
             ),
             NavigationDestination(
-              icon: Icon(Icons.check_circle_outline),
-              label: 'Tarefas',
+              icon: const Icon(Icons.check_circle_outline),
+              label: l10n.navTasks,
             ),
           ],
         ),
       );
     }
 
-    // Menu de rodapé baseado nos módulos do backend.
+    // Menu de rodapé baseado nos módulos do backend (mesma ordem do portal web).
+    final orderedModules = orderModulesLikeWeb(modules);
     final views = <Widget>[];
     final destinations = <NavigationDestination>[];
 
-    for (final raw in modules) {
+    for (final raw in orderedModules) {
       final nome = (raw is Map && raw['nome'] is String)
           ? raw['nome'] as String
-          : 'Módulo';
+          : l10n.moduleDefaultName;
       final lower = nome.toLowerCase();
 
       Widget page;
@@ -152,6 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
         page = ClientesTab(apiClient: _client);
       } else if (lower.contains('proposta')) {
         page = PropostasModuleScreen(apiClient: _client);
+      } else if (lower.contains('despesa') || lower.contains('expense')) {
+        page = DespesasModuleScreen(apiClient: _client);
       } else if (lower.contains('helpdesk') ||
           lower.contains('help desk') ||
           lower.contains('observa') ||
@@ -176,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Módulo "$nome" ainda não está disponível no app mobile.',
+              l10n.moduleUnavailable(nome),
               textAlign: TextAlign.center,
             ),
           ),
@@ -185,19 +193,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
       views.add(page);
       destinations.add(
-        NavigationDestination(
-          icon: Icon(_iconForModule(nome)),
-          label: nome,
-        ),
+        NavigationDestination(icon: Icon(_iconForModule(nome)), label: nome),
       );
     }
 
-    final safeIndex =
-        _currentIndex.clamp(0, views.length - 1);
+    final safeIndex = _currentIndex.clamp(0, views.length - 1);
 
     return Scaffold(
       appBar: conversysAppBar(
-        'Conversys',
+        context,
+        l10n.appTitle,
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -206,10 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         extraActions: [
+          const LanguagePickerIconButton(),
           IconButton(
             onPressed: _logout,
             icon: const Icon(Icons.logout),
-            tooltip: 'Sair',
+            tooltip: l10n.signOut,
           ),
         ],
       ),
@@ -224,4 +230,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

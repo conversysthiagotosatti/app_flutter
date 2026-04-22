@@ -10,14 +10,10 @@ import 'notificacoes_screen.dart';
 class TarefasCopilotScreen extends StatefulWidget {
   final ApiClient apiClient;
 
-  const TarefasCopilotScreen({
-    super.key,
-    required this.apiClient,
-  });
+  const TarefasCopilotScreen({super.key, required this.apiClient});
 
   @override
-  State<TarefasCopilotScreen> createState() =>
-      _TarefasCopilotScreenState();
+  State<TarefasCopilotScreen> createState() => _TarefasCopilotScreenState();
 }
 
 class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
@@ -53,8 +49,7 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
       _error = null;
     });
     try {
-      final itens =
-          await _contratosService.listarContratos();
+      final itens = await _contratosService.listarContratos();
       if (!mounted) return;
       setState(() {
         _contratos = itens;
@@ -79,20 +74,15 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
   Future<void> _perguntar() async {
     if (_contratoSelecionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Selecione um contrato para o Copilot.'),
-        ),
+        const SnackBar(content: Text('Selecione um contrato para o Copilot.')),
       );
       return;
     }
     final pergunta = _perguntaController.text.trim();
     if (pergunta.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Digite uma pergunta.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Digite uma pergunta.')));
       return;
     }
 
@@ -102,8 +92,7 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
       _error = null;
     });
     try {
-      final resposta =
-          await _copilotService.perguntar(
+      final resposta = await _copilotService.perguntar(
         contratoId: _contratoSelecionado!.id,
         mensagem: pergunta,
       );
@@ -133,12 +122,12 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
 
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Copilot de tarefas',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -161,21 +150,17 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
                 children: [
                   Text(
                     'Pergunte ao Copilot sobre suas tarefas',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Selecione um contrato de projetos e faça perguntas sobre tarefas, épicos e andamento.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Colors.white70),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
                   if (_loadingContratos)
@@ -191,17 +176,14 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
                   else ...[
                     if (_error != null)
                       Padding(
-                        padding:
-                            const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
                           'Erro ao carregar contratos: $_error',
-                          style: const TextStyle(
-                            color: Colors.redAccent,
-                          ),
+                          style: const TextStyle(color: Colors.redAccent),
                         ),
                       ),
                     DropdownButtonFormField<Contrato>(
-                      value: _contratoSelecionado,
+                      initialValue: _contratoSelecionado,
                       dropdownColor: cardColor,
                       decoration: const InputDecoration(
                         labelText: 'Contrato',
@@ -214,9 +196,7 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
                               child: Text(
                                 '#${c.id} · ${c.titulo}',
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ),
                           )
@@ -241,14 +221,12 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed:
-                            _consultando ? null : _perguntar,
+                        onPressed: _consultando ? null : _perguntar,
                         icon: _consultando
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child:
-                                    CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   color: Colors.white,
                                 ),
@@ -275,17 +253,13 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
                     ? const Center(
                         child: Text(
                           'Aguardando pergunta...',
-                          style: TextStyle(
-                            color: Colors.white54,
-                          ),
+                          style: TextStyle(color: Colors.white54),
                         ),
                       )
                     : SingleChildScrollView(
                         child: Text(
                           _resposta!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
               ),
@@ -296,4 +270,3 @@ class _TarefasCopilotScreenState extends State<TarefasCopilotScreen> {
     );
   }
 }
-

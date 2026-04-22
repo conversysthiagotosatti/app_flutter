@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/contrato.dart';
 import '../models/epico.dart';
-import '../models/contrato_tarefa.dart';
 import '../services/api_client.dart';
 import '../services/contratos_service.dart';
 import '../services/epicos_service.dart';
@@ -73,9 +72,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
     });
 
     try {
-      final horas = double.tryParse(
-        _horasController.text.replaceAll(',', '.'),
-      );
+      final horas = double.tryParse(_horasController.text.replaceAll(',', '.'));
 
       await _tarefasService.criar(
         contratoId: contrato.id,
@@ -93,9 +90,9 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao criar tarefa: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao criar tarefa: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -124,12 +121,12 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Nova tarefa',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -148,14 +145,13 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
 
           final contratos = snapshot.data ?? [];
           if (contratos.isEmpty) {
-            return const Center(
-              child: Text('Nenhum contrato encontrado.'),
-            );
+            return const Center(child: Text('Nenhum contrato encontrado.'));
           }
 
           _contratoSelecionado ??= contratos.first;
-          _epicosFuture ??=
-              _epicosService.listar(contratoId: _contratoSelecionado!.id);
+          _epicosFuture ??= _epicosService.listar(
+            contratoId: _contratoSelecionado!.id,
+          );
 
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -164,7 +160,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
               child: Column(
                 children: [
                   DropdownButtonFormField<Contrato>(
-                    value: _contratoSelecionado,
+                    initialValue: _contratoSelecionado,
                     items: contratos
                         .map(
                           (c) => DropdownMenuItem(
@@ -200,8 +196,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                   Widget child;
                                   if (snap.connectionState ==
                                       ConnectionState.waiting) {
-                                    child = const Text(
-                                        'Carregando épicos...');
+                                    child = const Text('Carregando épicos...');
                                   } else if (snap.hasError) {
                                     child = Text(
                                       'Erro ao carregar épicos: ${snap.error}',
@@ -209,7 +204,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                   } else {
                                     final epicos = snap.data ?? [];
                                     child = DropdownButtonFormField<Epico>(
-                                      value: _epicoSelecionado,
+                                      initialValue: _epicoSelecionado,
                                       items: [
                                         const DropdownMenuItem<Epico>(
                                           value: null,
@@ -220,8 +215,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                             value: e,
                                             child: Text(
                                               e.titulo,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
@@ -247,10 +241,9 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                         controller: _horasController,
                                         keyboardType:
                                             TextInputType.numberWithOptions(
-                                          decimal: true,
-                                        ),
-                                        decoration:
-                                            const InputDecoration(
+                                              decimal: true,
+                                            ),
+                                        decoration: const InputDecoration(
                                           labelText: 'Horas previstas',
                                           hintText: 'Ex: 4.0',
                                           border: OutlineInputBorder(),
@@ -260,24 +253,22 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                       InkWell(
                                         onTap: _selecionarData,
                                         child: InputDecorator(
-                                          decoration:
-                                              const InputDecoration(
-                                            labelText:
-                                                'Previsão de início',
+                                          decoration: const InputDecoration(
+                                            labelText: 'Previsão de início',
                                             border: OutlineInputBorder(),
                                           ),
                                           child: Text(
                                             _dataInicioPrevista == null
                                                 ? 'Selecione uma data'
                                                 : '${_dataInicioPrevista!.day.toString().padLeft(2, '0')}/'
-                                                    '${_dataInicioPrevista!.month.toString().padLeft(2, '0')}/'
-                                                    '${_dataInicioPrevista!.year}',
+                                                      '${_dataInicioPrevista!.month.toString().padLeft(2, '0')}/'
+                                                      '${_dataInicioPrevista!.year}',
                                           ),
                                         ),
                                       ),
                                       const SizedBox(height: 12),
                                       DropdownButtonFormField<String>(
-                                        value: _prioridade,
+                                        initialValue: _prioridade,
                                         items: const [
                                           DropdownMenuItem(
                                             value: 'ALTA',
@@ -298,8 +289,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                             _prioridade = value;
                                           });
                                         },
-                                        decoration:
-                                            const InputDecoration(
+                                        decoration: const InputDecoration(
                                           labelText: 'Prioridade',
                                           border: OutlineInputBorder(),
                                         ),
@@ -323,8 +313,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (value) {
-                                  if (value == null ||
-                                      value.trim().isEmpty) {
+                                  if (value == null || value.trim().isEmpty) {
                                     return 'Informe o título';
                                   }
                                   return null;
@@ -360,8 +349,7 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
                               width: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(
+                                valueColor: AlwaysStoppedAnimation<Color>(
                                   Colors.white,
                                 ),
                               ),
@@ -378,4 +366,3 @@ class _NovaTarefaScreenState extends State<NovaTarefaScreen> {
     );
   }
 }
-

@@ -63,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final oper = _oper;
 
     return Scaffold(
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         'Dashboard de Tarefas',
         onNotificationsTap: () {
           Navigator.of(context).push(

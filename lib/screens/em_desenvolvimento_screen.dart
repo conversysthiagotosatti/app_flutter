@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../widgets/conversys_app_bar.dart';
 
 class EmDesenvolvimentoScreen extends StatelessWidget {
@@ -13,11 +14,11 @@ class EmDesenvolvimentoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: conversysAppBar(titulo),
-      body: const Center(
+      appBar: conversysAppBar(context, titulo),
+      body: Center(
         child: Text(
-          'Em Desenvolvimento',
-          style: TextStyle(
+          AppLocalizations.of(context)!.inDevelopment,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),

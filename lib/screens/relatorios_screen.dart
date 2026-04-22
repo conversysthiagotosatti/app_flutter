@@ -36,10 +36,8 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
   void _abrirDetalhe(RelatorioTarefasMeta meta) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => RelatorioDetalheScreen(
-          apiClient: widget.apiClient,
-          meta: meta,
-        ),
+        builder: (_) =>
+            RelatorioDetalheScreen(apiClient: widget.apiClient, meta: meta),
       ),
     );
   }
@@ -48,12 +46,12 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Relatórios de tarefas',
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>
-                  NotificacoesScreen(apiClient: widget.apiClient),
+              builder: (_) => NotificacoesScreen(apiClient: widget.apiClient),
             ),
           );
         },
@@ -98,7 +96,7 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
 
             return ListView.separated(
               itemCount: items.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final item = items[index];
                 return ListTile(
@@ -122,4 +120,3 @@ class _RelatoriosScreenState extends State<RelatoriosScreen> {
     );
   }
 }
-

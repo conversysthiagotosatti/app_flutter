@@ -149,6 +149,7 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
 
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Copilot de Propostas',
         onNotificationsTap: () {
           Navigator.of(context).push(
@@ -177,16 +178,16 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                   Text(
                     'Copilot de Propostas',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Combine serviços, parcerias e histórico do cliente para montar propostas.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.white70,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                   ),
                   const SizedBox(height: 14),
                   if (_loadingClientes)
@@ -206,7 +207,7 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                         ),
                       ),
                     DropdownButtonFormField<Cliente>(
-                      value: _clienteSelecionado,
+                      initialValue: _clienteSelecionado,
                       dropdownColor: cardColor,
                       decoration: const InputDecoration(
                         labelText: 'Cliente (contexto)',
@@ -239,7 +240,7 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: _mensagens.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final m = _mensagens[index];
                   final isUser = m.role == _CopilotRole.user;
@@ -248,15 +249,18 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                       : Colors.white.withOpacity(0.06);
 
                   return Align(
-                    alignment:
-                        isUser ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment: isUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: Container(
                       constraints: const BoxConstraints(maxWidth: 320),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: bubbleColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.12)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.12),
+                        ),
                       ),
                       child: m.isThinking
                           ? Row(
@@ -265,12 +269,17 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                                 SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 ),
                                 SizedBox(width: 8),
                                 Text(
                                   'Pensando...',
-                                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             )
@@ -333,16 +342,23 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                       const SizedBox(width: 8),
                       const Text(
                         'Sugestões recentes',
-                        style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const Spacer(),
                       TextButton(
-                        onPressed: _loadingSugestoes ? null : () => _carregarSugestoes(),
+                        onPressed: _loadingSugestoes
+                            ? null
+                            : () => _carregarSugestoes(),
                         child: _loadingSugestoes
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Text('Recarregar'),
                       ),
@@ -354,10 +370,15 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                       _loadingSugestoes
                           ? 'Carregando sugestões...'
                           : 'As sugestões aparecerão aqui conforme você usar o Copilot.',
-                      style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 12,
+                      ),
                     )
                   else
-                    ..._sugestoes.take(6).map(
+                    ..._sugestoes
+                        .take(6)
+                        .map(
                           (s) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Container(
@@ -366,7 +387,9 @@ class _PropostasCopilotScreenState extends State<PropostasCopilotScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.05),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.white.withOpacity(0.10)),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.10),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -430,4 +453,3 @@ class _CopilotMsg {
   static _CopilotMsg thinking() =>
       const _CopilotMsg(role: _CopilotRole.bot, content: '', isThinking: true);
 }
-

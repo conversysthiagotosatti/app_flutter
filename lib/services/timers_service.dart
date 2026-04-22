@@ -30,7 +30,7 @@ class TimerApontamento {
   });
 
   factory TimerApontamento.fromJson(Map<String, dynamic> json) {
-    double _toDouble(dynamic v) {
+    double toDouble(dynamic v) {
       if (v == null) return 0;
       if (v is num) return v.toDouble();
       if (v is String) {
@@ -47,7 +47,7 @@ class TimerApontamento {
       contratoTitulo: (json['contrato_titulo'] ?? '') as String,
       usuario: json['usuario'] as int,
       usuarioNome: (json['usuario_nome'] ?? '') as String,
-      horas: _toDouble(json['horas']),
+      horas: toDouble(json['horas']),
       iniciadoEm: json['iniciado_em'] as String?,
       finalizadoEm: json['finalizado_em'] as String?,
       data: json['data'] as String?,
@@ -85,16 +85,13 @@ class TimersService {
       query: query.isNotEmpty ? query : null,
     );
     if (resp.statusCode != 200) {
-      throw Exception(
-        'Erro ao carregar apontamentos (${resp.statusCode})',
-      );
+      throw Exception('Erro ao carregar apontamentos (${resp.statusCode})');
     }
     final decoded = jsonDecode(resp.body);
     final List<dynamic> list;
     if (decoded is List) {
       list = decoded;
-    } else if (decoded is Map<String, dynamic> &&
-        decoded['results'] is List) {
+    } else if (decoded is Map<String, dynamic> && decoded['results'] is List) {
       list = decoded['results'] as List<dynamic>;
     } else {
       list = const [];
@@ -127,10 +124,7 @@ class TimersService {
     );
 
     if (resp.statusCode < 200 || resp.statusCode >= 300) {
-      throw Exception(
-        'Erro ao lançar horas (${resp.statusCode})',
-      );
+      throw Exception('Erro ao lançar horas (${resp.statusCode})');
     }
   }
 }
-

@@ -15,8 +15,7 @@ class PropostasListaScreen extends StatefulWidget {
   const PropostasListaScreen({super.key, required this.apiClient});
 
   @override
-  State<PropostasListaScreen> createState() =>
-      _PropostasListaScreenState();
+  State<PropostasListaScreen> createState() => _PropostasListaScreenState();
 }
 
 class _PropostasListaScreenState extends State<PropostasListaScreen> {
@@ -83,7 +82,8 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                 future: clientsFuture,
                 builder: (context, snap) {
                   final clients = snap.data ?? const <Cliente>[];
-                  final isBusy = snap.connectionState == ConnectionState.waiting;
+                  final isBusy =
+                      snap.connectionState == ConnectionState.waiting;
 
                   return SingleChildScrollView(
                     child: Column(
@@ -95,9 +95,8 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                             const SizedBox(width: 8),
                             Text(
                               'Incluir Proposta',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                             const Spacer(),
                             IconButton(
@@ -110,13 +109,11 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                         if (isBusy)
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            child: Center(child: CircularProgressIndicator()),
                           )
                         else ...[
                           DropdownButtonFormField<int>(
-                            value: selectedClienteId,
+                            initialValue: selectedClienteId,
                             dropdownColor: const Color(0xFF0B1220),
                             decoration: const InputDecoration(
                               labelText: 'Cliente',
@@ -129,7 +126,9 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                                     child: Text(
                                       c.nome,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(color: Colors.white),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 )
@@ -168,17 +167,29 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
-                            value: tipoProposta,
+                            initialValue: tipoProposta,
                             dropdownColor: const Color(0xFF0B1220),
                             decoration: const InputDecoration(
                               labelText: 'Tipo',
                               border: OutlineInputBorder(),
                             ),
                             items: const [
-                              DropdownMenuItem(value: 'comercial', child: Text('Comercial')),
-                              DropdownMenuItem(value: 'tecnica', child: Text('Técnica')),
-                              DropdownMenuItem(value: 'contrato', child: Text('Contrato')),
-                              DropdownMenuItem(value: 'memoria_calculo', child: Text('Memória de Cálculo')),
+                              DropdownMenuItem(
+                                value: 'comercial',
+                                child: Text('Comercial'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'tecnica',
+                                child: Text('Técnica'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'contrato',
+                                child: Text('Contrato'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'memoria_calculo',
+                                child: Text('Memória de Cálculo'),
+                              ),
                             ],
                             onChanged: (value) {
                               if (value == null) return;
@@ -191,31 +202,40 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                             child: FilledButton.icon(
                               onPressed: () async {
                                 final titulo = tituloController.text.trim();
-                                final descricao = descricaoController.text.trim();
+                                final descricao = descricaoController.text
+                                    .trim();
                                 if (selectedClienteId == null) {
                                   ScaffoldMessenger.of(ctx).showSnackBar(
-                                    const SnackBar(content: Text('Selecione um cliente.')),
+                                    const SnackBar(
+                                      content: Text('Selecione um cliente.'),
+                                    ),
                                   );
                                   return;
                                 }
                                 if (titulo.isEmpty) {
                                   ScaffoldMessenger.of(ctx).showSnackBar(
-                                    const SnackBar(content: Text('Informe o título.')),
+                                    const SnackBar(
+                                      content: Text('Informe o título.'),
+                                    ),
                                   );
                                   return;
                                 }
 
                                 Navigator.of(ctx).pop();
                                 try {
-                                  final created = await _propostasService.criarProposta(
-                                    clienteId: selectedClienteId!,
-                                    titulo: titulo,
-                                    descricao: descricao,
-                                    dataValidade: validadeController.text.trim().isEmpty
-                                        ? null
-                                        : validadeController.text.trim(),
-                                    tipoProposta: tipoProposta,
-                                  );
+                                  final created = await _propostasService
+                                      .criarProposta(
+                                        clienteId: selectedClienteId!,
+                                        titulo: titulo,
+                                        descricao: descricao,
+                                        dataValidade:
+                                            validadeController.text
+                                                .trim()
+                                                .isEmpty
+                                            ? null
+                                            : validadeController.text.trim(),
+                                        tipoProposta: tipoProposta,
+                                      );
                                   if (!mounted) return;
                                   await _carregar();
                                   if (!mounted) return;
@@ -232,7 +252,11 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
                                 } catch (e) {
                                   if (!mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Erro ao criar proposta: $e')),
+                                    SnackBar(
+                                      content: Text(
+                                        'Erro ao criar proposta: $e',
+                                      ),
+                                    ),
                                   );
                                 }
                               },
@@ -259,6 +283,7 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
 
     return Scaffold(
       appBar: conversysAppBar(
+        context,
         'Propostas',
         onNotificationsTap: () {
           Navigator.of(context).push(
@@ -274,102 +299,118 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
-                ? Center(
-                    child: Text(
-                      'Erro ao carregar propostas: $_error',
-                      style: const TextStyle(color: Colors.redAccent),
-                    ),
-                  )
-                : _propostas.isEmpty
-                    ? const Center(child: Text('Nenhuma proposta encontrada.'))
-                    : ListView.separated(
-                        itemCount: _propostas.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                          final p = _propostas[index];
-                          return InkWell(
-                            borderRadius: BorderRadius.circular(16),
-                            onTap: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => PropostaDetalheScreen(
-                                    apiClient: widget.apiClient,
-                                    propostaId: p.id,
+            ? Center(
+                child: Text(
+                  'Erro ao carregar propostas: $_error',
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              )
+            : _propostas.isEmpty
+            ? const Center(child: Text('Nenhuma proposta encontrada.'))
+            : ListView.separated(
+                itemCount: _propostas.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final p = _propostas[index];
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PropostaDetalheScreen(
+                            apiClient: widget.apiClient,
+                            propostaId: p.id,
+                          ),
+                        ),
+                      );
+                      // Ao voltar, recarrega (mesmo padrão do Kanban).
+                      await _carregar();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B1220),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFF1E293B)),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            p.titulo,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Cliente: ${p.clienteNome ?? p.cliente}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Código: ${p.codigoInterno ?? "—"}',
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Valor: ${p.valorTotal}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
                                   ),
                                 ),
-                              );
-                              // Ao voltar, recarrega (mesmo padrão do Kanban).
-                              await _carregar();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF0B1220),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: const Color(0xFF1E293B)),
                               ),
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    p.titulo,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  p.status,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Cliente: ${p.clienteNome ?? p.cliente}',
-                                    style: const TextStyle(color: Colors.white70, fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Código: ${p.codigoInterno ?? "—"}',
-                                    style: const TextStyle(color: Colors.white54, fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          'Valor: ${p.valorTotal}',
-                                          style: const TextStyle(color: Colors.white70, fontSize: 12),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.08),
-                                          borderRadius: BorderRadius.circular(999),
-                                        ),
-                                        child: Text(
-                                          p.status,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (p.dataValidade != null && p.dataValidade!.isNotEmpty) ...[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Validade: ${p.dataValidade}',
-                                      style: const TextStyle(color: Colors.white54, fontSize: 12),
-                                    ),
-                                  ],
-                                ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (p.dataValidade != null &&
+                              p.dataValidade!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              'Validade: ${p.dataValidade}',
+                              style: const TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
                               ),
                             ),
-                          );
-                        },
+                          ],
+                        ],
                       ),
+                    ),
+                  );
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _abrirNovaProposta,
@@ -379,4 +420,3 @@ class _PropostasListaScreenState extends State<PropostasListaScreen> {
     );
   }
 }
-

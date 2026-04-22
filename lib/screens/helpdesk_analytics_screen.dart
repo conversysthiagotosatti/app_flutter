@@ -66,7 +66,7 @@ class _HelpdeskAnalyticsScreenState extends State<HelpdeskAnalyticsScreen> {
     final resumo = _resumo;
 
     return Scaffold(
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         'Helpdesk · Analytics',
         onNotificationsTap: () {
           Navigator.of(context).push(

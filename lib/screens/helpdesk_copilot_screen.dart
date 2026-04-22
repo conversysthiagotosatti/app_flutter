@@ -85,7 +85,7 @@ class _HelpdeskCopilotScreenState
     const cardBorder = Color(0xFF1E293B);
 
     return Scaffold(
-      appBar: conversysAppBar(
+      appBar: conversysAppBar(context, 
         'Helpdesk · Copilot',
         onNotificationsTap: () {
           Navigator.of(context).push(

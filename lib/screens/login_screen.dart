@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
+import '../widgets/language_picker_button.dart';
 import 'modules_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
 
     if (result != null) {
       final modules = result['modulos'];
@@ -61,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       setState(() {
-        _error = 'Credenciais inválidas ou acesso ao cliente não permitido.';
+        _error = l10n.invalidCredentials;
         _loading = false;
       });
     }
@@ -69,7 +72,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: const [
+          LanguagePickerIconButton(),
+        ],
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 400),
@@ -88,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Conversys',
+                      l10n.appTitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme
@@ -97,20 +107,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Acesse para gerenciar os módulos disponíveis para o seu cliente.',
+                      l10n.loginSubtitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Usuário ou e-mail',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.usernameOrEmail,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Informe o usuário';
+                          return l10n.usernameRequired;
                         }
                         return null;
                       },
@@ -118,14 +128,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Senha',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.password,
+                        border: const OutlineInputBorder(),
                       ),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Informe a senha';
+                          return l10n.passwordRequired;
                         }
                         return null;
                       },
@@ -149,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text('Entrar'),
+                          : Text(l10n.signIn),
                     ),
                   ],
                 ),
@@ -161,4 +171,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
