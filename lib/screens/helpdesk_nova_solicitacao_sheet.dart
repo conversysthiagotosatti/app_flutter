@@ -103,13 +103,13 @@ class _HelpdeskNovaSolicitacaoSheetState
       final clis = await _clientes.listarClientes();
       if (!mounted) return;
       setState(() {
-        _gruposSolucao = r[0] as List<Map<String, dynamic>>;
-        _areas = r[1] as List<Map<String, dynamic>>;
-        _servicos = r[2] as List<Map<String, dynamic>>;
-        _tiposChamado = r[3] as List<Map<String, dynamic>>;
-        _impactos = r[4] as List<Map<String, dynamic>>;
-        _templates = r[5] as List<Map<String, dynamic>>;
-        _itensConfiguracao = r[6] as List<Map<String, dynamic>>;
+        _gruposSolucao = r[0];
+        _areas = r[1];
+        _servicos = r[2];
+        _tiposChamado = r[3];
+        _impactos = r[4];
+        _templates = r[5];
+        _itensConfiguracao = r[6];
         _clientesCadastro = clis;
       });
       if (_isCliente) {
@@ -141,8 +141,7 @@ class _HelpdeskNovaSolicitacaoSheetState
           _subclienteIdSelecionado = subs.first.id;
         } else {
           final subM = m0['subcliente_id'];
-          if (subM is int &&
-              subs.any((s) => s.id == subM)) {
+          if (subM is int && subs.any((s) => s.id == subM)) {
             _subclienteIdSelecionado = subM;
           }
         }
@@ -255,9 +254,7 @@ class _HelpdeskNovaSolicitacaoSheetState
 
   List<Map<String, dynamic>> get _servicosFiltrados {
     if (_categoriaId == null) return _servicos;
-    return _servicos
-        .where((s) => s['categoria'] == _categoriaId)
-        .toList();
+    return _servicos.where((s) => s['categoria'] == _categoriaId).toList();
   }
 
   bool get _exigeEscolhaSubcliente =>
@@ -356,9 +353,7 @@ class _HelpdeskNovaSolicitacaoSheetState
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -396,7 +391,9 @@ class _HelpdeskNovaSolicitacaoSheetState
                     height: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                     ),
                     child: Icon(
                       Icons.headset_mic,
@@ -416,9 +413,8 @@ class _HelpdeskNovaSolicitacaoSheetState
                         const SizedBox(height: 2),
                         Text(
                           'Preencha os detalhes e a equipe Help Desk vai ajudar!',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[600]),
                         ),
                       ],
                     ),
@@ -446,12 +442,19 @@ class _HelpdeskNovaSolicitacaoSheetState
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.shield_outlined, size: 18, color: Colors.orange[800]),
+                      Icon(
+                        Icons.shield_outlined,
+                        size: 18,
+                        color: Colors.orange[800],
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Modo Atendente / Backoffice — Preencha a classificação exata do problema para o cálculo e inicialização correta de SLAs.',
-                          style: TextStyle(fontSize: 12, color: Colors.orange[900]),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange[900],
+                          ),
                         ),
                       ),
                     ],
@@ -460,22 +463,21 @@ class _HelpdeskNovaSolicitacaoSheetState
               if (!_isCliente && _templates.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int?>(
-                  value: _templateId,
+                  initialValue: _templateId,
                   decoration: const InputDecoration(
                     labelText: 'Usar template',
                     border: OutlineInputBorder(),
                     helperText: 'Auto-preenche descrição, categoria e serviço',
                   ),
                   items: [
-                    const DropdownMenuItem<int?>(
-                      value: null,
-                      child: Text('—'),
-                    ),
+                    const DropdownMenuItem<int?>(value: null, child: Text('—')),
                     ..._templates.map(
                       (t) => DropdownMenuItem<int?>(
                         value: t['id'] as int,
                         child: Text(
-                          (t['nome'] ?? t['descricao'] ?? 'Template #${t['id']}')
+                          (t['nome'] ??
+                                  t['descricao'] ??
+                                  'Template #${t['id']}')
                               .toString(),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -489,7 +491,7 @@ class _HelpdeskNovaSolicitacaoSheetState
               _sectionTitle('1. Contexto & usuário'),
               if (!_isCliente) ...[
                 DropdownButtonFormField<int>(
-                  value: _areaId,
+                  initialValue: _areaId,
                   decoration: const InputDecoration(
                     labelText: 'Área de atendimento *',
                     border: OutlineInputBorder(),
@@ -508,7 +510,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
-                  value: _clienteConversysId,
+                  initialValue: _clienteConversysId,
                   decoration: const InputDecoration(
                     labelText: 'Cliente (empresa) *',
                     border: OutlineInputBorder(),
@@ -529,7 +531,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                     const LinearProgressIndicator(minHeight: 2)
                   else if (_subclientesLista.length > 1)
                     DropdownButtonFormField<int>(
-                      value: _subclienteIdSelecionado,
+                      initialValue: _subclienteIdSelecionado,
                       decoration: const InputDecoration(
                         labelText: 'Subcliente (filial) *',
                         border: OutlineInputBorder(),
@@ -538,7 +540,10 @@ class _HelpdeskNovaSolicitacaoSheetState
                           .map(
                             (s) => DropdownMenuItem<int>(
                               value: s.id,
-                              child: Text(s.nome, overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                s.nome,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -556,9 +561,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                         _subclientesLista.isEmpty
                             ? '— Matriz ou sem filial cadastrada'
                             : _subclientesLista.first.nome,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                 ],
@@ -574,7 +577,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                 if (_clienteConversysId != null) ...[
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int?>(
-                    value: _contratoId,
+                    initialValue: _contratoId,
                     decoration: InputDecoration(
                       labelText: 'Contrato vinculado',
                       border: const OutlineInputBorder(),
@@ -598,7 +601,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                             (c['numero']?.toString().isNotEmpty ?? false)
                                 ? c['numero'].toString()
                                 : (c['descricao'] ?? 'Contrato #${c['id']}')
-                                    .toString(),
+                                      .toString(),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -640,7 +643,7 @@ class _HelpdeskNovaSolicitacaoSheetState
               const SizedBox(height: 16),
               _sectionTitle('2. Classificação do chamado'),
               DropdownButtonFormField<int>(
-                value: _servicoId,
+                initialValue: _servicoId,
                 decoration: const InputDecoration(
                   labelText: 'Serviço afetado *',
                   border: OutlineInputBorder(),
@@ -660,7 +663,7 @@ class _HelpdeskNovaSolicitacaoSheetState
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<int>(
-                value: _tipoChamadoId,
+                initialValue: _tipoChamadoId,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de solicitação *',
                   border: OutlineInputBorder(),
@@ -680,16 +683,13 @@ class _HelpdeskNovaSolicitacaoSheetState
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<int?>(
-                value: _impactoId,
+                initialValue: _impactoId,
                 decoration: const InputDecoration(
                   labelText: 'Impacto',
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  const DropdownMenuItem<int?>(
-                    value: null,
-                    child: Text('—'),
-                  ),
+                  const DropdownMenuItem<int?>(value: null, child: Text('—')),
                   ..._impactos.map(
                     (i) => DropdownMenuItem<int?>(
                       value: i['id'] as int,
@@ -703,7 +703,7 @@ class _HelpdeskNovaSolicitacaoSheetState
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _prioridade,
+                initialValue: _prioridade,
                 decoration: const InputDecoration(
                   labelText: 'Prioridade estimada *',
                   border: OutlineInputBorder(),
@@ -714,22 +714,18 @@ class _HelpdeskNovaSolicitacaoSheetState
                   DropdownMenuItem(value: 'MEDIA', child: Text('Média')),
                   DropdownMenuItem(value: 'BAIXA', child: Text('Baixa')),
                 ],
-                onChanged: (v) =>
-                    setState(() => _prioridade = v ?? 'MEDIA'),
+                onChanged: (v) => setState(() => _prioridade = v ?? 'MEDIA'),
               ),
               const SizedBox(height: 16),
               _sectionTitle('3. Ativos & equipamentos (opcional)'),
               DropdownButtonFormField<int?>(
-                value: _itemConfiguracaoId,
+                initialValue: _itemConfiguracaoId,
                 decoration: const InputDecoration(
                   labelText: 'Equipamento associado',
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  const DropdownMenuItem<int?>(
-                    value: null,
-                    child: Text('—'),
-                  ),
+                  const DropdownMenuItem<int?>(value: null, child: Text('—')),
                   ..._itensConfiguracao.map(
                     (ci) => DropdownMenuItem<int?>(
                       value: ci['id'] as int,
@@ -748,7 +744,10 @@ class _HelpdeskNovaSolicitacaoSheetState
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    style: BorderStyle.solid,
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -773,19 +772,22 @@ class _HelpdeskNovaSolicitacaoSheetState
                 ),
                 color: Colors.grey.shade50,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   child: Column(
                     children: [
                       TextFormField(
                         controller: _tituloController,
                         decoration: const InputDecoration(
                           labelText: 'Resumo / título *',
-                          hintText:
-                              'Ex.: Impressora não liga, Wi‑Fi instável…',
+                          hintText: 'Ex.: Impressora não liga, Wi‑Fi instável…',
                           border: InputBorder.none,
                         ),
-                        validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Informe um título' : null,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Informe um título'
+                            : null,
                       ),
                       const Divider(height: 1),
                       const SizedBox(height: 8),
@@ -806,7 +808,7 @@ class _HelpdeskNovaSolicitacaoSheetState
                 const SizedBox(height: 16),
                 _sectionTitle('Avançado: encaminhamento (backoffice)'),
                 DropdownButtonFormField<int>(
-                  value: _grupoSolucaoId,
+                  initialValue: _grupoSolucaoId,
                   decoration: const InputDecoration(
                     labelText: 'Fila / grupo solucionador *',
                     border: OutlineInputBorder(),

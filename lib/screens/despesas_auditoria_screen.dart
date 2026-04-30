@@ -18,7 +18,8 @@ class DespesasAuditoriaScreen extends StatefulWidget {
   const DespesasAuditoriaScreen({super.key, required this.apiClient});
 
   @override
-  State<DespesasAuditoriaScreen> createState() => _DespesasAuditoriaScreenState();
+  State<DespesasAuditoriaScreen> createState() =>
+      _DespesasAuditoriaScreenState();
 }
 
 class _DespesasAuditoriaScreenState extends State<DespesasAuditoriaScreen> {
@@ -150,7 +151,7 @@ class _DespesasAuditoriaScreenState extends State<DespesasAuditoriaScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.separated(
                     itemCount: _rows.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (context, i) {
                       final r = _rows[i];
                       final sel = _selectedId == r.id;
@@ -159,7 +160,10 @@ class _DespesasAuditoriaScreenState extends State<DespesasAuditoriaScreen> {
                         selectedTileColor: const Color(0xFF1E293B),
                         title: Text(
                           '#${r.id} · ${r.title}',
-                          style: const TextStyle(color: Colors.white, fontSize: 13),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
                         ),
                         subtitle: Text(
                           r.status,
@@ -180,52 +184,53 @@ class _DespesasAuditoriaScreenState extends State<DespesasAuditoriaScreen> {
             child: _logsBusy
                 ? const Center(child: CircularProgressIndicator())
                 : _selectedId == null
-                    ? Center(
-                        child: Text(
-                          l10n.expenseAuditTitle,
-                          style: const TextStyle(color: Colors.white38),
+                ? Center(
+                    child: Text(
+                      l10n.expenseAuditTitle,
+                      style: const TextStyle(color: Colors.white38),
+                    ),
+                  )
+                : ListView(
+                    padding: const EdgeInsets.all(12),
+                    children: [
+                      Text(
+                        '#$_selectedId',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
                         ),
-                      )
-                    : ListView(
-                        padding: const EdgeInsets.all(12),
-                        children: [
-                          Text(
-                            '#$_selectedId',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          ..._logs.map(
-                            (a) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${a.timestamp} — ${a.action} — ${a.username ?? '${a.user}'}',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                  if (a.details.isNotEmpty)
-                                    SelectableText(
-                                      const JsonEncoder.withIndent('  ')
-                                          .convert(a.details),
-                                      style: const TextStyle(
-                                        color: Colors.white38,
-                                        fontFamily: 'monospace',
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
+                      const SizedBox(height: 8),
+                      ..._logs.map(
+                        (a) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${a.timestamp} — ${a.action} — ${a.username ?? '${a.user}'}',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              if (a.details.isNotEmpty)
+                                SelectableText(
+                                  const JsonEncoder.withIndent(
+                                    '  ',
+                                  ).convert(a.details),
+                                  style: const TextStyle(
+                                    color: Colors.white38,
+                                    fontFamily: 'monospace',
+                                    fontSize: 10,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),

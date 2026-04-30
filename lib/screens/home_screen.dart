@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../utils/module_order.dart';
 import '../widgets/conversys_app_bar.dart';
 import '../widgets/language_picker_button.dart';
+import 'assets_control_module_screen.dart';
 import 'despesas_module_screen.dart';
 import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_module_screen.dart';
@@ -68,6 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (lower.contains('despesa') || lower.contains('expense')) {
       return Icons.payments_outlined;
+    }
+    if (lower.contains('asset') ||
+        lower.contains('patrim') ||
+        lower.contains('invent')) {
+      return Icons.inventory_2_outlined;
     }
     if (lower.contains('zabbix') || lower.contains('observa')) {
       return Icons.shield;
@@ -160,6 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
         page = PropostasModuleScreen(apiClient: _client);
       } else if (lower.contains('despesa') || lower.contains('expense')) {
         page = DespesasModuleScreen(apiClient: _client);
+      } else if (lower.contains('asset') ||
+          lower.contains('patrim') ||
+          lower.contains('invent')) {
+        page = AssetsControlModuleScreen(apiClient: _client);
       } else if (lower.contains('helpdesk') ||
           lower.contains('help desk') ||
           lower.contains('observa') ||

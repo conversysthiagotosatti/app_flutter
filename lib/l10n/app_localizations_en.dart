@@ -534,4 +534,134 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get assetsModuleTitle => 'Asset control';
+
+  @override
+  String get assetsNoClient => 'Select a client to continue.';
+
+  @override
+  String get assetsTabProducts => 'Products';
+
+  @override
+  String get assetsTabAssets => 'Assets';
+
+  @override
+  String get assetsTabMovements => 'Movements';
+
+  @override
+  String get assetsInsertProduct => 'New product';
+
+  @override
+  String get assetsFieldName => 'Name';
+
+  @override
+  String get assetsFieldBrand => 'Brand';
+
+  @override
+  String get assetsFieldModel => 'Model';
+
+  @override
+  String get assetsFieldInternalCode => 'Internal code';
+
+  @override
+  String get assetsFieldType => 'Type';
+
+  @override
+  String get assetsTypeHardware => 'Hardware';
+
+  @override
+  String get assetsTypeService => 'Service';
+
+  @override
+  String get assetsFieldDescription => 'Description';
+
+  @override
+  String get assetsFieldDatasheet => 'Datasheet (URL)';
+
+  @override
+  String get assetsFieldManual => 'Manual (file)';
+
+  @override
+  String get assetsSaveProduct => 'Save product';
+
+  @override
+  String get assetsInsertAsset => 'New asset';
+
+  @override
+  String get assetsFilterByProduct => 'Product';
+
+  @override
+  String get assetsSerial => 'Serial number';
+
+  @override
+  String get assetsPartNumber => 'Part number';
+
+  @override
+  String get assetsDisplayName => 'Display name';
+
+  @override
+  String get assetsMovPrereq =>
+      'Add products, assets, and at least one movement reason first.';
+
+  @override
+  String get assetsNewMovement => 'New movement';
+
+  @override
+  String get assetsColAsset => 'Asset';
+
+  @override
+  String get assetsMotivo => 'Reason';
+
+  @override
+  String get assetsDestino => 'Destination';
+
+  @override
+  String get assetsResponsible => 'Responsible';
+
+  @override
+  String get assetsObservation => 'Notes';
+
+  @override
+  String get assetsSaveMovement => 'Record movement';
+
+  @override
+  String get assetsEditAsset => 'Edit asset';
+
+  @override
+  String get assetsEditProduct => 'Edit product';
+
+  @override
+  String get assetsColActive => 'Active';
+
+  @override
+  String get assetsFilterSearch => 'Search…';
+
+  @override
+  String get assetsFilterSearchAssets => 'Search assets…';
+
+  @override
+  String get assetsAllProducts => 'All products';
+
+  @override
+  String get assetsFilterTipoAll => 'All types';
+
+  @override
+  String get assetsFilterAtivoAll => 'All';
+
+  @override
+  String get assetsFilterAtivoYes => 'Active only';
+
+  @override
+  String get assetsFilterAtivoNo => 'Inactive only';
+
+  @override
+  String get assetsYesShort => 'Yes';
+
+  @override
+  String get assetsNoShort => 'No';
+
+  @override
+  String get assetsProductTrackingHint => 'View assets for this product';
 }

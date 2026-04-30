@@ -18,6 +18,12 @@ List<dynamic> orderModulesLikeWeb(List<dynamic> modules) {
         n.contains('board')) {
       return 2;
     }
+    // 2.3 Assets / patrimônio (próximo a projetos no portal)
+    if (n.contains('asset') ||
+        n.contains('patrim') ||
+        n.contains('invent')) {
+      return 2.3;
+    }
     // 2.5 Despesas (entre projetos e help desk, alinhado ao portal)
     if (n.contains('despesa') || n.contains('expense')) return 2.5;
     // 3 Help Desk

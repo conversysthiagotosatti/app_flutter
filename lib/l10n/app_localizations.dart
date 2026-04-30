@@ -1111,6 +1111,264 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Cancelar'**
   String get cancel;
+
+  /// No description provided for @assetsModuleTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Controle de assets'**
+  String get assetsModuleTitle;
+
+  /// No description provided for @assetsNoClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione um cliente para continuar.'**
+  String get assetsNoClient;
+
+  /// No description provided for @assetsTabProducts.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtos'**
+  String get assetsTabProducts;
+
+  /// No description provided for @assetsTabAssets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativos'**
+  String get assetsTabAssets;
+
+  /// No description provided for @assetsTabMovements.
+  ///
+  /// In pt, this message translates to:
+  /// **'Movimentações'**
+  String get assetsTabMovements;
+
+  /// No description provided for @assetsInsertProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo produto'**
+  String get assetsInsertProduct;
+
+  /// No description provided for @assetsFieldName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get assetsFieldName;
+
+  /// No description provided for @assetsFieldBrand.
+  ///
+  /// In pt, this message translates to:
+  /// **'Marca'**
+  String get assetsFieldBrand;
+
+  /// No description provided for @assetsFieldModel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modelo'**
+  String get assetsFieldModel;
+
+  /// No description provided for @assetsFieldInternalCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código interno'**
+  String get assetsFieldInternalCode;
+
+  /// No description provided for @assetsFieldType.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get assetsFieldType;
+
+  /// No description provided for @assetsTypeHardware.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hardware'**
+  String get assetsTypeHardware;
+
+  /// No description provided for @assetsTypeService.
+  ///
+  /// In pt, this message translates to:
+  /// **'Serviço'**
+  String get assetsTypeService;
+
+  /// No description provided for @assetsFieldDescription.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get assetsFieldDescription;
+
+  /// No description provided for @assetsFieldDatasheet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ficha técnica (URL)'**
+  String get assetsFieldDatasheet;
+
+  /// No description provided for @assetsFieldManual.
+  ///
+  /// In pt, this message translates to:
+  /// **'Manual (arquivo)'**
+  String get assetsFieldManual;
+
+  /// No description provided for @assetsSaveProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar produto'**
+  String get assetsSaveProduct;
+
+  /// No description provided for @assetsInsertAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo ativo'**
+  String get assetsInsertAsset;
+
+  /// No description provided for @assetsFilterByProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto'**
+  String get assetsFilterByProduct;
+
+  /// No description provided for @assetsSerial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Número de série'**
+  String get assetsSerial;
+
+  /// No description provided for @assetsPartNumber.
+  ///
+  /// In pt, this message translates to:
+  /// **'Part number'**
+  String get assetsPartNumber;
+
+  /// No description provided for @assetsDisplayName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome de exibição'**
+  String get assetsDisplayName;
+
+  /// No description provided for @assetsMovPrereq.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre produtos, ativos e ao menos um motivo de movimentação.'**
+  String get assetsMovPrereq;
+
+  /// No description provided for @assetsNewMovement.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova movimentação'**
+  String get assetsNewMovement;
+
+  /// No description provided for @assetsColAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get assetsColAsset;
+
+  /// No description provided for @assetsMotivo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Motivo'**
+  String get assetsMotivo;
+
+  /// No description provided for @assetsDestino.
+  ///
+  /// In pt, this message translates to:
+  /// **'Destino'**
+  String get assetsDestino;
+
+  /// No description provided for @assetsResponsible.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável'**
+  String get assetsResponsible;
+
+  /// No description provided for @assetsObservation.
+  ///
+  /// In pt, this message translates to:
+  /// **'Observação'**
+  String get assetsObservation;
+
+  /// No description provided for @assetsSaveMovement.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registrar movimentação'**
+  String get assetsSaveMovement;
+
+  /// No description provided for @assetsEditAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar ativo'**
+  String get assetsEditAsset;
+
+  /// No description provided for @assetsEditProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar produto'**
+  String get assetsEditProduct;
+
+  /// No description provided for @assetsColActive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get assetsColActive;
+
+  /// No description provided for @assetsFilterSearch.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar…'**
+  String get assetsFilterSearch;
+
+  /// No description provided for @assetsFilterSearchAssets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar ativos…'**
+  String get assetsFilterSearchAssets;
+
+  /// No description provided for @assetsAllProducts.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os produtos'**
+  String get assetsAllProducts;
+
+  /// No description provided for @assetsFilterTipoAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os tipos'**
+  String get assetsFilterTipoAll;
+
+  /// No description provided for @assetsFilterAtivoAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get assetsFilterAtivoAll;
+
+  /// No description provided for @assetsFilterAtivoYes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente ativos'**
+  String get assetsFilterAtivoYes;
+
+  /// No description provided for @assetsFilterAtivoNo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente inativos'**
+  String get assetsFilterAtivoNo;
+
+  /// No description provided for @assetsYesShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sim'**
+  String get assetsYesShort;
+
+  /// No description provided for @assetsNoShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não'**
+  String get assetsNoShort;
+
+  /// No description provided for @assetsProductTrackingHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver ativos deste produto'**
+  String get assetsProductTrackingHint;
 }
 
 class _AppLocalizationsDelegate

@@ -538,4 +538,134 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cancel => 'Cancelar';
+
+  @override
+  String get assetsModuleTitle => 'Controle de assets';
+
+  @override
+  String get assetsNoClient => 'Selecione um cliente para continuar.';
+
+  @override
+  String get assetsTabProducts => 'Produtos';
+
+  @override
+  String get assetsTabAssets => 'Ativos';
+
+  @override
+  String get assetsTabMovements => 'Movimentações';
+
+  @override
+  String get assetsInsertProduct => 'Novo produto';
+
+  @override
+  String get assetsFieldName => 'Nome';
+
+  @override
+  String get assetsFieldBrand => 'Marca';
+
+  @override
+  String get assetsFieldModel => 'Modelo';
+
+  @override
+  String get assetsFieldInternalCode => 'Código interno';
+
+  @override
+  String get assetsFieldType => 'Tipo';
+
+  @override
+  String get assetsTypeHardware => 'Hardware';
+
+  @override
+  String get assetsTypeService => 'Serviço';
+
+  @override
+  String get assetsFieldDescription => 'Descrição';
+
+  @override
+  String get assetsFieldDatasheet => 'Ficha técnica (URL)';
+
+  @override
+  String get assetsFieldManual => 'Manual (arquivo)';
+
+  @override
+  String get assetsSaveProduct => 'Salvar produto';
+
+  @override
+  String get assetsInsertAsset => 'Novo ativo';
+
+  @override
+  String get assetsFilterByProduct => 'Produto';
+
+  @override
+  String get assetsSerial => 'Número de série';
+
+  @override
+  String get assetsPartNumber => 'Part number';
+
+  @override
+  String get assetsDisplayName => 'Nome de exibição';
+
+  @override
+  String get assetsMovPrereq =>
+      'Cadastre produtos, ativos e ao menos um motivo de movimentação.';
+
+  @override
+  String get assetsNewMovement => 'Nova movimentação';
+
+  @override
+  String get assetsColAsset => 'Ativo';
+
+  @override
+  String get assetsMotivo => 'Motivo';
+
+  @override
+  String get assetsDestino => 'Destino';
+
+  @override
+  String get assetsResponsible => 'Responsável';
+
+  @override
+  String get assetsObservation => 'Observação';
+
+  @override
+  String get assetsSaveMovement => 'Registrar movimentação';
+
+  @override
+  String get assetsEditAsset => 'Editar ativo';
+
+  @override
+  String get assetsEditProduct => 'Editar produto';
+
+  @override
+  String get assetsColActive => 'Ativo';
+
+  @override
+  String get assetsFilterSearch => 'Buscar…';
+
+  @override
+  String get assetsFilterSearchAssets => 'Buscar ativos…';
+
+  @override
+  String get assetsAllProducts => 'Todos os produtos';
+
+  @override
+  String get assetsFilterTipoAll => 'Todos os tipos';
+
+  @override
+  String get assetsFilterAtivoAll => 'Todos';
+
+  @override
+  String get assetsFilterAtivoYes => 'Somente ativos';
+
+  @override
+  String get assetsFilterAtivoNo => 'Somente inativos';
+
+  @override
+  String get assetsYesShort => 'Sim';
+
+  @override
+  String get assetsNoShort => 'Não';
+
+  @override
+  String get assetsProductTrackingHint => 'Ver ativos deste produto';
 }

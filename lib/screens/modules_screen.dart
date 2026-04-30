@@ -22,6 +22,11 @@ class ModulesScreen extends StatelessWidget {
     if (lower.contains('despesa') || lower.contains('expense')) {
       return Icons.payments_outlined;
     }
+    if (lower.contains('asset') ||
+        lower.contains('patrim') ||
+        lower.contains('invent')) {
+      return Icons.inventory_2_outlined;
+    }
     if (lower.contains('softdesk')) return Icons.desktop_windows_outlined;
     return Icons.apps;
   }

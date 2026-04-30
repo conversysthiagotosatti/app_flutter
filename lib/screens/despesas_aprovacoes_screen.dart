@@ -17,7 +17,8 @@ class DespesasAprovacoesScreen extends StatefulWidget {
   const DespesasAprovacoesScreen({super.key, required this.apiClient});
 
   @override
-  State<DespesasAprovacoesScreen> createState() => _DespesasAprovacoesScreenState();
+  State<DespesasAprovacoesScreen> createState() =>
+      _DespesasAprovacoesScreenState();
 }
 
 class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
@@ -201,7 +202,9 @@ class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFF334155)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF334155),
+                          ),
                         ),
                       ),
                       dropdownColor: const Color(0xFF0B1220),
@@ -210,7 +213,10 @@ class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
                           .map(
                             (c) => DropdownMenuItem(
                               value: c.id,
-                              child: Text(c.name, overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                c.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -240,7 +246,7 @@ class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
                           : ListView.separated(
                               padding: const EdgeInsets.all(12),
                               itemCount: _groups.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const Divider(height: 1),
                               itemBuilder: (context, i) {
                                 final g = _groups[i];
@@ -303,7 +309,7 @@ class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
                           : ListView.separated(
                               padding: const EdgeInsets.all(12),
                               itemCount: _expenses.length,
-                              separatorBuilder: (_, __) =>
+                              separatorBuilder: (_, _) =>
                                   const Divider(height: 1),
                               itemBuilder: (context, i) {
                                 final r = _expenses[i];
@@ -314,7 +320,9 @@ class _DespesasAprovacoesScreenState extends State<DespesasAprovacoesScreen>
                                   ),
                                   subtitle: Text(
                                     '${r.amount} · ${_st(l10n, r.status)}',
-                                    style: TextStyle(color: Colors.blueGrey[200]),
+                                    style: TextStyle(
+                                      color: Colors.blueGrey[200],
+                                    ),
                                   ),
                                   onTap: () async {
                                     final cid = _clienteId;

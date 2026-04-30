@@ -129,7 +129,10 @@ class _DespesasGruposScreenState extends State<DespesasGruposScreen> {
                           .map(
                             (c) => DropdownMenuItem(
                               value: c.id,
-                              child: Text(c.name, overflow: TextOverflow.ellipsis),
+                              child: Text(
+                                c.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                           .toList(),
@@ -168,36 +171,35 @@ class _DespesasGruposScreenState extends State<DespesasGruposScreen> {
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
                       : _rows.isEmpty
-                          ? Center(
-                              child: Text(
-                                l10n.expenseEmptyList,
-                                style: const TextStyle(color: Colors.white54),
+                      ? Center(
+                          child: Text(
+                            l10n.expenseEmptyList,
+                            style: const TextStyle(color: Colors.white54),
+                          ),
+                        )
+                      : ListView.separated(
+                          padding: const EdgeInsets.all(12),
+                          itemCount: _rows.length,
+                          separatorBuilder: (_, _) => const Divider(height: 1),
+                          itemBuilder: (context, i) {
+                            final r = _rows[i];
+                            return ListTile(
+                              title: Text(
+                                r.agrupamentoTitulo,
+                                style: const TextStyle(color: Colors.white),
                               ),
-                            )
-                          : ListView.separated(
-                              padding: const EdgeInsets.all(12),
-                              itemCount: _rows.length,
-                              separatorBuilder: (_, __) =>
-                                  const Divider(height: 1),
-                              itemBuilder: (context, i) {
-                                final r = _rows[i];
-                                return ListTile(
-                                  title: Text(
-                                    r.agrupamentoTitulo,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  subtitle: Text(
-                                    '${r.expenseCount} · ${r.totalAmount} · rascunhos: ${r.draftCount}',
-                                    style: TextStyle(color: Colors.blueGrey[200]),
-                                  ),
-                                  trailing: const Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.white38,
-                                  ),
-                                  onTap: () => _openGrupo(r.agrupamentoTitulo),
-                                );
-                              },
-                            ),
+                              subtitle: Text(
+                                '${r.expenseCount} · ${r.totalAmount} · rascunhos: ${r.draftCount}',
+                                style: TextStyle(color: Colors.blueGrey[200]),
+                              ),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: Colors.white38,
+                              ),
+                              onTap: () => _openGrupo(r.agrupamentoTitulo),
+                            );
+                          },
+                        ),
                 ),
               ],
             ),
@@ -345,7 +347,7 @@ class _GrupoDetalhePageState extends State<_GrupoDetalhePage> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: _drafts.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (context, i) {
                       final r = _drafts[i];
                       return ListTile(
