@@ -62,6 +62,7 @@ class HelpdeskModuleScreen extends StatelessWidget {
       appBar: conversysAppBar(
         context,
         AppLocalizations.of(context)!.helpdeskTitle,
+        userAccountMenuApiClient: apiClient,
       ),
       backgroundColor: background,
       body: Padding(

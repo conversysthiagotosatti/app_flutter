@@ -94,11 +94,27 @@ class AssetsConversysService {
     required Map<String, String> fields,
     List<http.MultipartFile> files = const [],
   }) async {
-    final r = await apiClient.patchMultipart(
-      '/api/assets-conversys/produtos/$id/${_clienteQ(clienteId)}',
-      fields: fields,
-      files: files,
-    );
+    late http.Response r;
+    if (files.isEmpty) {
+      final body = <String, dynamic>{};
+      for (final e in fields.entries) {
+        if (e.key == 'ativo') {
+          body[e.key] = e.value == 'true';
+        } else {
+          body[e.key] = e.value;
+        }
+      }
+      r = await apiClient.patch(
+        '/api/assets-conversys/produtos/$id/${_clienteQ(clienteId)}',
+        body: body,
+      );
+    } else {
+      r = await apiClient.patchMultipart(
+        '/api/assets-conversys/produtos/$id/${_clienteQ(clienteId)}',
+        fields: fields,
+        files: files,
+      );
+    }
     _ensureOk(r, 'Erro ao atualizar produto');
     final j = jsonDecode(r.body);
     if (j is! Map<String, dynamic>) {
@@ -206,8 +222,15 @@ class AssetsConversysService {
     return _decodeList(r.body)
         .whereType<Map<String, dynamic>>()
         .map(LocalEstoqueRow.fromJson)
-        .where((l) => l.ativo)
+        .where(
+          (l) =>
+              l.ativo &&
+              (l.clienteId == null || l.clienteId == clienteId),
+        )
         .toList()
-      ..sort((a, b) => a.nome.compareTo(b.nome));
+      ..sort((a, b) {
+        final o = a.ordem.compareTo(b.ordem);
+        return o != 0 ? o : a.nome.compareTo(b.nome);
+      });
   }
 }

@@ -66,8 +66,10 @@ class PropostasModuleScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: background,
-      appBar: conversysAppBar(context, 
+      appBar: conversysAppBar(
+        context,
         'Propostas',
+        userAccountMenuApiClient: apiClient,
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(

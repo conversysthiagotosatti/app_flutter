@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
-import '../services/auth_service.dart';
 import '../utils/module_order.dart';
 import '../widgets/conversys_app_bar.dart';
 import '../widgets/language_picker_button.dart';
@@ -10,11 +9,11 @@ import 'assets_control_module_screen.dart';
 import 'despesas_module_screen.dart';
 import 'em_desenvolvimento_screen.dart';
 import 'helpdesk_module_screen.dart';
+import 'marketplace_module_screen.dart';
 import 'notificacoes_screen.dart';
 import 'propostas_module_screen.dart';
 import 'tabs/clientes_tab.dart';
 import 'tarefas_module_screen.dart';
-import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -28,7 +27,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late int _currentIndex;
   late final ApiClient _client;
-  late final AuthService _authService;
   List<dynamic>? _modules;
 
   @override
@@ -36,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _currentIndex = widget.initialIndex;
     _client = ApiClient();
-    _authService = AuthService(_client);
     _loadModules();
   }
 
@@ -54,42 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  IconData _iconForModule(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('cliente')) return Icons.business;
-    if (lower.contains('proposta')) return Icons.receipt_long;
-    if (lower.contains('contrato')) return Icons.description_outlined;
-    if (lower.contains('tarefa') ||
-        lower.contains('board') ||
-        lower.contains('projeto')) {
-      return Icons.check_circle_outline;
-    }
-    if (lower.contains('helpdesk') || lower.contains('help desk')) {
-      return Icons.support_agent;
-    }
-    if (lower.contains('despesa') || lower.contains('expense')) {
-      return Icons.payments_outlined;
-    }
-    if (lower.contains('asset') ||
-        lower.contains('patrim') ||
-        lower.contains('invent')) {
-      return Icons.inventory_2_outlined;
-    }
-    if (lower.contains('zabbix') || lower.contains('observa')) {
-      return Icons.shield;
-    }
-    return Icons.apps;
-  }
-
-  Future<void> _logout() async {
-    await _authService.logout();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final modules = _modules;
@@ -103,11 +64,15 @@ class _HomeScreenState extends State<HomeScreen> {
         TarefasModuleScreen(apiClient: _client),
         TarefasModuleScreen(apiClient: _client),
       ];
+      // Enquanto os módulos carregam, `initialIndex` pode ser o índice do grid
+      // (muitos itens); o shell fixo só tem 3 abas.
+      final shellIndex = _currentIndex.clamp(0, tabs.length - 1);
 
       return Scaffold(
         appBar: conversysAppBar(
           context,
           l10n.appTitle,
+          userAccountMenuApiClient: _client,
           onNotificationsTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -115,18 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           },
-          extraActions: [
-            const LanguagePickerIconButton(),
-            IconButton(
-              onPressed: _logout,
-              icon: const Icon(Icons.logout),
-              tooltip: l10n.signOut,
-            ),
+          extraActions: const [
+            LanguagePickerIconButton(),
           ],
         ),
-        body: tabs[_currentIndex],
+        body: tabs[shellIndex],
         bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
+          selectedIndex: shellIndex,
           onDestinationSelected: (index) {
             setState(() => _currentIndex = index);
           },
@@ -151,7 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // Menu de rodapé baseado nos módulos do backend (mesma ordem do portal web).
     final orderedModules = orderModulesLikeWeb(modules);
     final views = <Widget>[];
-    final destinations = <NavigationDestination>[];
 
     for (final raw in orderedModules) {
       final nome = (raw is Map && raw['nome'] is String)
@@ -170,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
           lower.contains('patrim') ||
           lower.contains('invent')) {
         page = AssetsControlModuleScreen(apiClient: _client);
+      } else if (lower.contains('marketplace')) {
+        page = MarketplaceModuleScreen(apiClient: _client);
       } else if (lower.contains('helpdesk') ||
           lower.contains('help desk') ||
           lower.contains('observa') ||
@@ -202,9 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       views.add(page);
-      destinations.add(
-        NavigationDestination(icon: Icon(_iconForModule(nome)), label: nome),
-      );
     }
 
     final safeIndex = _currentIndex.clamp(0, views.length - 1);
@@ -213,6 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: conversysAppBar(
         context,
         l10n.appTitle,
+        userAccountMenuApiClient: _client,
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -220,23 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
-        extraActions: [
-          const LanguagePickerIconButton(),
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout),
-            tooltip: l10n.signOut,
-          ),
+        extraActions: const [
+          LanguagePickerIconButton(),
         ],
       ),
       body: views[safeIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: safeIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
-        destinations: destinations,
-      ),
     );
   }
 }

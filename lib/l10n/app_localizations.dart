@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
 import 'app_localizations_pt.dart';
 
 // ignore_for_file: type=lint
@@ -94,8 +96,11 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
     Locale('en'),
+    Locale('es'),
     Locale('pt'),
+    Locale('pt', 'PT'),
   ];
 
   /// No description provided for @appTitle.
@@ -241,6 +246,42 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Sair'**
   String get signOut;
+
+  /// No description provided for @headerSettings.
+  ///
+  /// In pt, this message translates to:
+  /// **'Configurações'**
+  String get headerSettings;
+
+  /// No description provided for @headerLogout.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sair'**
+  String get headerLogout;
+
+  /// No description provided for @headerLogoutConfirm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deseja realmente sair?'**
+  String get headerLogoutConfirm;
+
+  /// No description provided for @userRoleLider.
+  ///
+  /// In pt, this message translates to:
+  /// **'Líder'**
+  String get userRoleLider;
+
+  /// No description provided for @userRoleGerenteProjeto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerente de Projeto'**
+  String get userRoleGerenteProjeto;
+
+  /// No description provided for @userRoleAnalista.
+  ///
+  /// In pt, this message translates to:
+  /// **'Analista'**
+  String get userRoleAnalista;
 
   /// No description provided for @navClients.
   ///
@@ -1369,6 +1410,990 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Ver ativos deste produto'**
   String get assetsProductTrackingHint;
+
+  /// No description provided for @assetsClearFilters.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar filtros'**
+  String get assetsClearFilters;
+
+  /// No description provided for @assetsListProducts.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtos'**
+  String get assetsListProducts;
+
+  /// No description provided for @assetsColName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get assetsColName;
+
+  /// No description provided for @assetsColBrand.
+  ///
+  /// In pt, this message translates to:
+  /// **'Marca'**
+  String get assetsColBrand;
+
+  /// No description provided for @assetsColModel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modelo'**
+  String get assetsColModel;
+
+  /// No description provided for @assetsColDescription.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get assetsColDescription;
+
+  /// No description provided for @assetsColDatasheet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ficha técnica'**
+  String get assetsColDatasheet;
+
+  /// No description provided for @assetsColManual.
+  ///
+  /// In pt, this message translates to:
+  /// **'Manual'**
+  String get assetsColManual;
+
+  /// No description provided for @assetsColType.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get assetsColType;
+
+  /// No description provided for @assetsColCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código'**
+  String get assetsColCode;
+
+  /// No description provided for @assetsColUpdated.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado'**
+  String get assetsColUpdated;
+
+  /// No description provided for @assetsColTracking.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rastrear'**
+  String get assetsColTracking;
+
+  /// No description provided for @assetsProductsEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum produto cadastrado.'**
+  String get assetsProductsEmpty;
+
+  /// No description provided for @assetsEmptyProductsFiltered.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum produto corresponde aos filtros.'**
+  String get assetsEmptyProductsFiltered;
+
+  /// No description provided for @assetsListAssets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativos'**
+  String get assetsListAssets;
+
+  /// No description provided for @assetsColProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto'**
+  String get assetsColProduct;
+
+  /// No description provided for @assetsAssetsEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum ativo cadastrado.'**
+  String get assetsAssetsEmpty;
+
+  /// No description provided for @assetsEmptyAssetsFiltered.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum ativo corresponde aos filtros.'**
+  String get assetsEmptyAssetsFiltered;
+
+  /// No description provided for @assetsFilterSearchMovements.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar movimentações…'**
+  String get assetsFilterSearchMovements;
+
+  /// No description provided for @assetsFilterByAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar por ativo'**
+  String get assetsFilterByAsset;
+
+  /// No description provided for @assetsAllAssets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os ativos'**
+  String get assetsAllAssets;
+
+  /// No description provided for @assetsMovementList.
+  ///
+  /// In pt, this message translates to:
+  /// **'Movimentações'**
+  String get assetsMovementList;
+
+  /// No description provided for @assetsNoMovements.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma movimentação registrada.'**
+  String get assetsNoMovements;
+
+  /// No description provided for @assetsEmptyMovementsFiltered.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma movimentação corresponde aos filtros.'**
+  String get assetsEmptyMovementsFiltered;
+
+  /// No description provided for @assetsColWhen.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quando'**
+  String get assetsColWhen;
+
+  /// No description provided for @assetsColRegisteredBy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registrado por'**
+  String get assetsColRegisteredBy;
+
+  /// No description provided for @assetsFieldSelectAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get assetsFieldSelectAsset;
+
+  /// No description provided for @assetsServiceSerialOrPart.
+  ///
+  /// In pt, this message translates to:
+  /// **'Para produtos de serviço, informe número de série e/ou part number.'**
+  String get assetsServiceSerialOrPart;
+
+  /// No description provided for @assetsSaveAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar ativo'**
+  String get assetsSaveAsset;
+
+  /// No description provided for @assetsPickAsset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione um ativo'**
+  String get assetsPickAsset;
+
+  /// No description provided for @assetsNoMotives.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum motivo de movimentação. Cadastre no Django Admin.'**
+  String get assetsNoMotives;
+
+  /// No description provided for @assetsNoStockLocations.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum local de estoque para este cliente.'**
+  String get assetsNoStockLocations;
+
+  /// No description provided for @assetsReplaceManualHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Substituir manual (arquivo opcional)'**
+  String get assetsReplaceManualHint;
+
+  /// No description provided for @assetsFieldProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto'**
+  String get assetsFieldProduct;
+
+  /// No description provided for @assetsFilterByProductLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar por produto'**
+  String get assetsFilterByProductLabel;
+
+  /// No description provided for @marketplaceModuleTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Marketplace'**
+  String get marketplaceModuleTitle;
+
+  /// No description provided for @marketplaceTabCatalog.
+  ///
+  /// In pt, this message translates to:
+  /// **'Catálogo'**
+  String get marketplaceTabCatalog;
+
+  /// No description provided for @marketplaceTabCredits.
+  ///
+  /// In pt, this message translates to:
+  /// **'Créditos'**
+  String get marketplaceTabCredits;
+
+  /// No description provided for @marketplaceSubtitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Navegue pelos grupos de serviços e adquira produtos para o seu cliente.'**
+  String get marketplaceSubtitle;
+
+  /// No description provided for @marketplaceBackGroups.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar aos grupos'**
+  String get marketplaceBackGroups;
+
+  /// No description provided for @marketplaceGroupDetailIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtos agrupados por subgrupo. Use Adquirir para incluir na cesta do cliente quando houver preço vigente.'**
+  String get marketplaceGroupDetailIntro;
+
+  /// No description provided for @marketplaceLoading.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando…'**
+  String get marketplaceLoading;
+
+  /// No description provided for @marketplaceRetry.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizar'**
+  String get marketplaceRetry;
+
+  /// No description provided for @marketplaceErrorTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar'**
+  String get marketplaceErrorTitle;
+
+  /// No description provided for @marketplaceErrorGeneric.
+  ///
+  /// In pt, this message translates to:
+  /// **'Algo deu errado. Tente novamente.'**
+  String get marketplaceErrorGeneric;
+
+  /// No description provided for @marketplaceEmptyTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum grupo'**
+  String get marketplaceEmptyTitle;
+
+  /// No description provided for @marketplaceEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não há grupos de catálogo do marketplace configurados.'**
+  String get marketplaceEmpty;
+
+  /// No description provided for @marketplaceBadgeActive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get marketplaceBadgeActive;
+
+  /// No description provided for @marketplaceInactive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Inativo'**
+  String get marketplaceInactive;
+
+  /// No description provided for @marketplaceNoDescription.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem descrição'**
+  String get marketplaceNoDescription;
+
+  /// No description provided for @marketplaceSubgroupsCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'subgrupos'**
+  String get marketplaceSubgroupsCount;
+
+  /// No description provided for @marketplaceEmptySubgroups.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este grupo não tem subgrupos.'**
+  String get marketplaceEmptySubgroups;
+
+  /// No description provided for @marketplaceEmptyProducts.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum produto neste subgrupo.'**
+  String get marketplaceEmptyProducts;
+
+  /// No description provided for @marketplaceTableColProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto'**
+  String get marketplaceTableColProduct;
+
+  /// No description provided for @marketplaceTableColDescription.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get marketplaceTableColDescription;
+
+  /// No description provided for @marketplaceTableColValue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor'**
+  String get marketplaceTableColValue;
+
+  /// No description provided for @marketplaceTableColPeriod.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período'**
+  String get marketplaceTableColPeriod;
+
+  /// No description provided for @marketplaceTableColStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status'**
+  String get marketplaceTableColStatus;
+
+  /// No description provided for @marketplaceTableColAction.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação'**
+  String get marketplaceTableColAction;
+
+  /// No description provided for @marketplaceNoPriceVigente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem preço vigente'**
+  String get marketplaceNoPriceVigente;
+
+  /// No description provided for @marketplaceAcquireInactive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto inativo'**
+  String get marketplaceAcquireInactive;
+
+  /// No description provided for @marketplaceAcquireNeedClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione um cliente para adquirir produtos.'**
+  String get marketplaceAcquireNeedClient;
+
+  /// No description provided for @marketplaceAcquireLoading.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adquirindo…'**
+  String get marketplaceAcquireLoading;
+
+  /// No description provided for @marketplaceAcquireButton.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adquirir'**
+  String get marketplaceAcquireButton;
+
+  /// No description provided for @marketplaceAcquireSuccessIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Item adicionado.'**
+  String get marketplaceAcquireSuccessIntro;
+
+  /// No description provided for @marketplaceAcquireVigenciaStart.
+  ///
+  /// In pt, this message translates to:
+  /// **'Válido de'**
+  String get marketplaceAcquireVigenciaStart;
+
+  /// No description provided for @marketplaceAcquireVigenciaEnd.
+  ///
+  /// In pt, this message translates to:
+  /// **'Válido até'**
+  String get marketplaceAcquireVigenciaEnd;
+
+  /// No description provided for @marketplaceAcquireError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível adquirir o produto.'**
+  String get marketplaceAcquireError;
+
+  /// No description provided for @marketplacePeriodoDIARIO.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário'**
+  String get marketplacePeriodoDIARIO;
+
+  /// No description provided for @marketplacePeriodoMENSAL.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mensal'**
+  String get marketplacePeriodoMENSAL;
+
+  /// No description provided for @marketplacePeriodoANUAL.
+  ///
+  /// In pt, this message translates to:
+  /// **'Anual'**
+  String get marketplacePeriodoANUAL;
+
+  /// No description provided for @marketplacePeriodoPOR_SEGUNDO.
+  ///
+  /// In pt, this message translates to:
+  /// **'Por segundo'**
+  String get marketplacePeriodoPOR_SEGUNDO;
+
+  /// No description provided for @marketplacePeriodoPOR_HORA.
+  ///
+  /// In pt, this message translates to:
+  /// **'Por hora'**
+  String get marketplacePeriodoPOR_HORA;
+
+  /// No description provided for @marketplaceCreditsTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Créditos marketplace'**
+  String get marketplaceCreditsTitle;
+
+  /// No description provided for @marketplaceCreditsBalance.
+  ///
+  /// In pt, this message translates to:
+  /// **'Saldo disponível'**
+  String get marketplaceCreditsBalance;
+
+  /// No description provided for @marketplaceCreditsBasket.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtos adquiridos'**
+  String get marketplaceCreditsBasket;
+
+  /// No description provided for @marketplaceCreditsBasketEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum item adquirido ainda.'**
+  String get marketplaceCreditsBasketEmpty;
+
+  /// No description provided for @marketplaceCreditsBasketColProduct.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produto'**
+  String get marketplaceCreditsBasketColProduct;
+
+  /// No description provided for @marketplaceCreditsBasketColStart.
+  ///
+  /// In pt, this message translates to:
+  /// **'Início'**
+  String get marketplaceCreditsBasketColStart;
+
+  /// No description provided for @marketplaceCreditsBasketColEnd.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fim'**
+  String get marketplaceCreditsBasketColEnd;
+
+  /// No description provided for @marketplaceCreditsBasketColAcquired.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adquirido em'**
+  String get marketplaceCreditsBasketColAcquired;
+
+  /// No description provided for @marketplaceCreditsAddSection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar crédito'**
+  String get marketplaceCreditsAddSection;
+
+  /// No description provided for @marketplaceCreditsAmount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor (BRL)'**
+  String get marketplaceCreditsAmount;
+
+  /// No description provided for @marketplaceCreditsInvalidAmount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe um valor válido maior que zero.'**
+  String get marketplaceCreditsInvalidAmount;
+
+  /// No description provided for @marketplaceCreditsSubmit.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar crédito'**
+  String get marketplaceCreditsSubmit;
+
+  /// No description provided for @marketplaceCreditsSubmitting.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviando…'**
+  String get marketplaceCreditsSubmitting;
+
+  /// No description provided for @marketplaceCreditsHistory.
+  ///
+  /// In pt, this message translates to:
+  /// **'Histórico'**
+  String get marketplaceCreditsHistory;
+
+  /// No description provided for @marketplaceCreditsEmptyHistory.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma movimentação ainda.'**
+  String get marketplaceCreditsEmptyHistory;
+
+  /// No description provided for @marketplaceCreditsTableDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get marketplaceCreditsTableDate;
+
+  /// No description provided for @marketplaceCreditsTableType.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get marketplaceCreditsTableType;
+
+  /// No description provided for @marketplaceCreditsTableAmount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor'**
+  String get marketplaceCreditsTableAmount;
+
+  /// No description provided for @marketplaceCreditsTableAfter.
+  ///
+  /// In pt, this message translates to:
+  /// **'Saldo após'**
+  String get marketplaceCreditsTableAfter;
+
+  /// No description provided for @marketplaceCreditsTableDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get marketplaceCreditsTableDesc;
+
+  /// No description provided for @marketplaceCreditsTypeIn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Entrada'**
+  String get marketplaceCreditsTypeIn;
+
+  /// No description provided for @marketplaceCreditsTypeOut.
+  ///
+  /// In pt, this message translates to:
+  /// **'Saída'**
+  String get marketplaceCreditsTypeOut;
+
+  /// No description provided for @marketplaceCreditsLoadError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os dados de crédito.'**
+  String get marketplaceCreditsLoadError;
+
+  /// No description provided for @marketplaceCreditsNoClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione um cliente para gerenciar créditos.'**
+  String get marketplaceCreditsNoClient;
+
+  /// No description provided for @settingsTabProfile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meu perfil'**
+  String get settingsTabProfile;
+
+  /// No description provided for @settingsTabClients.
+  ///
+  /// In pt, this message translates to:
+  /// **'Clientes'**
+  String get settingsTabClients;
+
+  /// No description provided for @settingsTabTeam.
+  ///
+  /// In pt, this message translates to:
+  /// **'Equipe'**
+  String get settingsTabTeam;
+
+  /// No description provided for @settingsTabSecurity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segurança'**
+  String get settingsTabSecurity;
+
+  /// No description provided for @settingsTabDesign.
+  ///
+  /// In pt, this message translates to:
+  /// **'Design'**
+  String get settingsTabDesign;
+
+  /// No description provided for @settingsFirstName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Primeiro nome'**
+  String get settingsFirstName;
+
+  /// No description provided for @settingsLastName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sobrenome'**
+  String get settingsLastName;
+
+  /// No description provided for @settingsContactEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'E-mail de contato'**
+  String get settingsContactEmail;
+
+  /// No description provided for @settingsLoginReadonly.
+  ///
+  /// In pt, this message translates to:
+  /// **'Login (não alterável)'**
+  String get settingsLoginReadonly;
+
+  /// No description provided for @settingsSapUserCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código usuário SAP'**
+  String get settingsSapUserCode;
+
+  /// No description provided for @settingsSapDeptSelect.
+  ///
+  /// In pt, this message translates to:
+  /// **'Departamento SAP'**
+  String get settingsSapDeptSelect;
+
+  /// No description provided for @settingsSapDeptCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código departamento SAP'**
+  String get settingsSapDeptCode;
+
+  /// No description provided for @settingsSapNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'(nenhum)'**
+  String get settingsSapNone;
+
+  /// No description provided for @settingsSaveProfile.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar perfil'**
+  String get settingsSaveProfile;
+
+  /// No description provided for @settingsProfileSaved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil atualizado.'**
+  String get settingsProfileSaved;
+
+  /// No description provided for @settingsProfileError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar o perfil.'**
+  String get settingsProfileError;
+
+  /// No description provided for @settingsPickAvatar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterar foto'**
+  String get settingsPickAvatar;
+
+  /// No description provided for @settingsPasswordIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Altere sua senha. Na próxima entrada usará a nova senha.'**
+  String get settingsPasswordIntro;
+
+  /// No description provided for @settingsCurrentPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Senha atual'**
+  String get settingsCurrentPassword;
+
+  /// No description provided for @settingsNewPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova senha'**
+  String get settingsNewPassword;
+
+  /// No description provided for @settingsConfirmNewPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar nova senha'**
+  String get settingsConfirmNewPassword;
+
+  /// No description provided for @settingsChangePasswordButton.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterar senha'**
+  String get settingsChangePasswordButton;
+
+  /// No description provided for @settingsPasswordChanging.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alterando…'**
+  String get settingsPasswordChanging;
+
+  /// No description provided for @settingsPasswordChanged.
+  ///
+  /// In pt, this message translates to:
+  /// **'Senha alterada com sucesso.'**
+  String get settingsPasswordChanged;
+
+  /// No description provided for @settingsPasswordMismatch.
+  ///
+  /// In pt, this message translates to:
+  /// **'A confirmação não confere.'**
+  String get settingsPasswordMismatch;
+
+  /// No description provided for @settingsPasswordTooShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'A nova senha deve ter pelo menos 6 caracteres.'**
+  String get settingsPasswordTooShort;
+
+  /// No description provided for @settingsPasswordFillAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Preencha todos os campos.'**
+  String get settingsPasswordFillAll;
+
+  /// No description provided for @settingsClientsTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerenciar clientes'**
+  String get settingsClientsTitle;
+
+  /// No description provided for @settingsNewClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo cliente'**
+  String get settingsNewClient;
+
+  /// No description provided for @settingsEditClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar cliente'**
+  String get settingsEditClient;
+
+  /// No description provided for @settingsClientName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get settingsClientName;
+
+  /// No description provided for @settingsClientDocument.
+  ///
+  /// In pt, this message translates to:
+  /// **'Documento (CNPJ/CPF)'**
+  String get settingsClientDocument;
+
+  /// No description provided for @settingsClientEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'E-mail contato'**
+  String get settingsClientEmail;
+
+  /// No description provided for @settingsClientPhone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Telefone'**
+  String get settingsClientPhone;
+
+  /// No description provided for @settingsSaveClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar cliente'**
+  String get settingsSaveClient;
+
+  /// No description provided for @settingsDeleteClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir cliente'**
+  String get settingsDeleteClient;
+
+  /// No description provided for @settingsDeleteClientConfirm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir este cliente? Esta ação não pode ser desfeita.'**
+  String get settingsDeleteClientConfirm;
+
+  /// No description provided for @settingsSubclientes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subclientes'**
+  String get settingsSubclientes;
+
+  /// No description provided for @settingsAddSubcliente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar subcliente'**
+  String get settingsAddSubcliente;
+
+  /// No description provided for @settingsSubclienteName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da unidade'**
+  String get settingsSubclienteName;
+
+  /// No description provided for @settingsSubclienteCnpj.
+  ///
+  /// In pt, this message translates to:
+  /// **'CNPJ'**
+  String get settingsSubclienteCnpj;
+
+  /// No description provided for @settingsTeamTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar novo usuário'**
+  String get settingsTeamTitle;
+
+  /// No description provided for @settingsUsername.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário'**
+  String get settingsUsername;
+
+  /// No description provided for @settingsPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Senha'**
+  String get settingsPassword;
+
+  /// No description provided for @settingsIdSoftdesk.
+  ///
+  /// In pt, this message translates to:
+  /// **'ID Softdesk'**
+  String get settingsIdSoftdesk;
+
+  /// No description provided for @settingsTeamCreate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar usuário'**
+  String get settingsTeamCreate;
+
+  /// No description provided for @settingsTeamCreating.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criando…'**
+  String get settingsTeamCreating;
+
+  /// No description provided for @settingsTeamSuccess.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário criado com sucesso.'**
+  String get settingsTeamSuccess;
+
+  /// No description provided for @settingsTeamNeedMembership.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicione ao menos um vínculo a cliente.'**
+  String get settingsTeamNeedMembership;
+
+  /// No description provided for @settingsSelectCliente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cliente'**
+  String get settingsSelectCliente;
+
+  /// No description provided for @settingsSelectRole.
+  ///
+  /// In pt, this message translates to:
+  /// **'Papel'**
+  String get settingsSelectRole;
+
+  /// No description provided for @settingsAddMembership.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar vínculo'**
+  String get settingsAddMembership;
+
+  /// No description provided for @settingsMenuLogoUrl.
+  ///
+  /// In pt, this message translates to:
+  /// **'Logotipo menu (URL)'**
+  String get settingsMenuLogoUrl;
+
+  /// No description provided for @settingsFrameLogoUrl.
+  ///
+  /// In pt, this message translates to:
+  /// **'Logotipo frame (URL)'**
+  String get settingsFrameLogoUrl;
+
+  /// No description provided for @settingsMenuBg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor fundo menu lateral'**
+  String get settingsMenuBg;
+
+  /// No description provided for @settingsMenuText.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor texto menu lateral'**
+  String get settingsMenuText;
+
+  /// No description provided for @settingsHelpdeskNewBg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor fundo novo chamado helpdesk'**
+  String get settingsHelpdeskNewBg;
+
+  /// No description provided for @settingsFinanceApprover.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovador financeiro (despesas)'**
+  String get settingsFinanceApprover;
+
+  /// No description provided for @settingsExpenseApprover.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovador de despesas'**
+  String get settingsExpenseApprover;
+
+  /// No description provided for @settingsNoneOption.
+  ///
+  /// In pt, this message translates to:
+  /// **'— Nenhum —'**
+  String get settingsNoneOption;
+
+  /// No description provided for @settingsDesignTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Design do cliente ativo'**
+  String get settingsDesignTitle;
+
+  /// No description provided for @settingsDesignSave.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar design'**
+  String get settingsDesignSave;
+
+  /// No description provided for @settingsLoadError.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar.'**
+  String get settingsLoadError;
+
+  /// No description provided for @settingsShowPassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mostrar senha'**
+  String get settingsShowPassword;
+
+  /// No description provided for @settingsHidePassword.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocultar senha'**
+  String get settingsHidePassword;
+
+  /// No description provided for @settingsTipoUsuario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de usuário'**
+  String get settingsTipoUsuario;
+
+  /// No description provided for @settingsRemoveMembership.
+  ///
+  /// In pt, this message translates to:
+  /// **'Remover vínculo'**
+  String get settingsRemoveMembership;
 }
 
 class _AppLocalizationsDelegate
@@ -1382,17 +2407,33 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'pt'].contains(locale.languageCode);
+      <String>['de', 'en', 'es', 'pt'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'PT':
+            return AppLocalizationsPtPt();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
     case 'pt':
       return AppLocalizationsPt();
   }

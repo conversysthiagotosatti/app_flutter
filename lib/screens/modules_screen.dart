@@ -5,6 +5,7 @@ import '../screens/home_screen.dart';
 import '../services/api_client.dart';
 import '../utils/module_order.dart';
 import '../widgets/language_picker_button.dart';
+import '../widgets/user_account_menu_button.dart';
 import 'notificacoes_screen.dart';
 
 class ModulesScreen extends StatelessWidget {
@@ -22,6 +23,7 @@ class ModulesScreen extends StatelessWidget {
     if (lower.contains('despesa') || lower.contains('expense')) {
       return Icons.payments_outlined;
     }
+    if (lower.contains('marketplace')) return Icons.storefront_outlined;
     if (lower.contains('asset') ||
         lower.contains('patrim') ||
         lower.contains('invent')) {
@@ -42,7 +44,6 @@ class ModulesScreen extends StatelessWidget {
     const backgroundBottom = Color(0xFF020617);
     const cardColor = Color(0xFF0B1220);
     const cardBorder = Color(0xFF1E293B);
-    const accent = Color(0xFF005AFF);
 
     return Scaffold(
       backgroundColor: backgroundTop,
@@ -91,14 +92,9 @@ class ModulesScreen extends StatelessWidget {
                       },
                     ),
                     const SizedBox(width: 4),
-                    const CircleAvatar(
-                      radius: 14,
-                      backgroundColor: Colors.white24,
-                      child: Icon(
-                        Icons.person,
-                        size: 18,
-                        color: Colors.white,
-                      ),
+                    UserAccountMenuButton(
+                      apiClient: apiClient,
+                      style: UserAccountMenuStyle.hubDark,
                     ),
                   ],
                 ),
@@ -160,7 +156,8 @@ class ModulesScreen extends StatelessWidget {
                             crossAxisCount: 2,
                             mainAxisSpacing: 16,
                             crossAxisSpacing: 16,
-                            childAspectRatio: 4 / 3,
+                            // Células mais altas (width/height); evita overflow do Column interno.
+                            childAspectRatio: 0.62,
                           ),
                           itemCount: orderedModules.length,
                           itemBuilder: (context, index) {
@@ -174,130 +171,108 @@ class ModulesScreen extends StatelessWidget {
                                 ? raw['descricao'] as String
                                 : '';
 
-                            return InkWell(
-                              borderRadius: BorderRadius.circular(20),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => HomeScreen(
-                                      initialIndex: index,
+                            return Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => HomeScreen(
+                                        initialIndex: index,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                    color: cardColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: cardBorder,
                                     ),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: cardColor,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: cardBorder,
-                                  ),
-                                ),
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color:
-                                                Colors.white.withOpacity(0.05),
-                                          ),
-                                          child: Icon(
-                                            _iconForModule(nome),
-                                            color: Colors.blue[200],
-                                          ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 28,
+                                              height: 28,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white
+                                                    .withOpacity(0.05),
+                                              ),
+                                              child: Icon(
+                                                _iconForModule(nome),
+                                                color: Colors.blue[200],
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(999),
+                                                color: Colors.green
+                                                    .withOpacity(0.1),
+                                                border: Border.all(
+                                                  color: Colors.greenAccent
+                                                      .withOpacity(0.4),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                l10n.statusActive,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.greenAccent,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const Spacer(),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          nome,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                            height: 1.2,
                                           ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(999),
-                                            color:
-                                                Colors.green.withOpacity(0.1),
-                                            border: Border.all(
-                                              color: Colors.greenAccent
-                                                  .withOpacity(0.4),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            l10n.statusActive,
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.greenAccent,
-                                            ),
-                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Expanded(
+                                          child: descricao.isEmpty
+                                              ? const SizedBox.shrink()
+                                              : Text(
+                                                  descricao,
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.blueGrey[200],
+                                                    fontSize: 10,
+                                                    height: 1.25,
+                                                  ),
+                                                  maxLines: 4,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      nome,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    if (descricao.isNotEmpty)
-                                      Text(
-                                        descricao,
-                                        style: TextStyle(
-                                          color: Colors.blueGrey[200],
-                                          fontSize: 11,
-                                        ),
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    const Spacer(),
-                                    Align(
-                                      alignment: Alignment.bottomRight,
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          backgroundColor: accent,
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(999),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) => HomeScreen(
-                                                initialIndex: index,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          l10n.accessConsole,
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             );

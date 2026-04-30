@@ -26,6 +26,7 @@ List<dynamic> orderModulesLikeWeb(List<dynamic> modules) {
     }
     // 2.5 Despesas (entre projetos e help desk, alinhado ao portal)
     if (n.contains('despesa') || n.contains('expense')) return 2.5;
+    if (n.contains('marketplace')) return 2.6;
     // 3 Help Desk
     if (n.contains('helpdesk') || n.contains('help desk')) return 3;
     // 4 Cloud

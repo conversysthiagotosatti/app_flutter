@@ -155,20 +155,41 @@ class LocalEstoqueRow {
   final String nome;
   final String codigo;
   final bool ativo;
+  final int ordem;
+  /// When present, must match the selected client (same as portal filter).
+  final int? clienteId;
 
   LocalEstoqueRow({
     required this.id,
     required this.nome,
     required this.codigo,
     required this.ativo,
+    this.ordem = 0,
+    this.clienteId,
   });
 
   factory LocalEstoqueRow.fromJson(Map<String, dynamic> json) {
+    int? cliente;
+    final c = json['cliente'];
+    if (c is int) {
+      cliente = c;
+    } else if (c is num) {
+      cliente = c.toInt();
+    } else {
+      final cid = json['cliente_id'];
+      if (cid is int) {
+        cliente = cid;
+      } else if (cid is num) {
+        cliente = cid.toInt();
+      }
+    }
     return LocalEstoqueRow(
       id: json['id'] as int,
       nome: (json['nome'] ?? '') as String,
       codigo: (json['codigo'] ?? '') as String,
       ativo: json['ativo'] as bool? ?? true,
+      ordem: json['ordem'] as int? ?? 0,
+      clienteId: cliente,
     );
   }
 }

@@ -4,24 +4,24 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for Spanish Castilian (`es`).
+class AppLocalizationsEs extends AppLocalizations {
+  AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
   String get appTitle => 'Conversys';
 
   @override
-  String get language => 'Language';
+  String get language => 'Idioma';
 
   @override
-  String get languagePortuguese => 'Português';
+  String get languagePortuguese => 'Portugués';
 
   @override
-  String get languageEnglish => 'English';
+  String get languageEnglish => 'Inglés';
 
   @override
-  String get languageSystem => 'System default';
+  String get languageSystem => 'Predeterminado del sistema';
 
   @override
   String get loginSubtitle =>
@@ -84,22 +84,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOut => 'Sign out';
 
   @override
-  String get headerSettings => 'Settings';
+  String get headerSettings => 'Configuracion';
 
   @override
-  String get headerLogout => 'Log out';
+  String get headerLogout => 'Salir';
 
   @override
-  String get headerLogoutConfirm => 'Do you really want to log out?';
+  String get headerLogoutConfirm => 'Realmente deseas cerrar sesion?';
 
   @override
-  String get userRoleLider => 'Leader';
+  String get userRoleLider => 'Lider';
 
   @override
-  String get userRoleGerenteProjeto => 'Project manager';
+  String get userRoleGerenteProjeto => 'Gerente de proyecto';
 
   @override
-  String get userRoleAnalista => 'Analyst';
+  String get userRoleAnalista => 'Analista';
 
   @override
   String get navClients => 'Clients';

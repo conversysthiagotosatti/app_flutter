@@ -83,18 +83,12 @@ class _ConversysRootState extends State<ConversysRoot> {
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           localeResolutionCallback: (deviceLocale, supported) {
+            final list = List<Locale>.from(supported);
             if (_locale.localeOverride != null) {
-              for (final l in supported) {
-                if (l.languageCode == _locale.localeOverride!.languageCode) {
-                  return l;
-                }
-              }
-              return const Locale('pt');
+              return matchSupportedLocale(_locale.localeOverride!, list);
             }
-            for (final l in supported) {
-              if (l.languageCode == deviceLocale?.languageCode) {
-                return l;
-              }
+            if (deviceLocale != null) {
+              return matchSupportedLocale(deviceLocale, list);
             }
             return const Locale('pt');
           },

@@ -162,7 +162,11 @@ class DespesasModuleScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: conversysAppBar(context, l10n.expenseModuleTitle),
+      appBar: conversysAppBar(
+        context,
+        l10n.expenseModuleTitle,
+        userAccountMenuApiClient: apiClient,
+      ),
       backgroundColor: background,
       body: Padding(
         padding: const EdgeInsets.all(16),

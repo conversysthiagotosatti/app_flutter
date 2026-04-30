@@ -4,24 +4,24 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for German (`de`).
+class AppLocalizationsDe extends AppLocalizations {
+  AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
   String get appTitle => 'Conversys';
 
   @override
-  String get language => 'Language';
+  String get language => 'Sprache';
 
   @override
-  String get languagePortuguese => 'Português';
+  String get languagePortuguese => 'Portugiesisch';
 
   @override
-  String get languageEnglish => 'English';
+  String get languageEnglish => 'Englisch';
 
   @override
-  String get languageSystem => 'System default';
+  String get languageSystem => 'Systemstandard';
 
   @override
   String get loginSubtitle =>
@@ -87,16 +87,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get headerSettings => 'Settings';
 
   @override
-  String get headerLogout => 'Log out';
+  String get headerLogout => 'Abmelden';
 
   @override
-  String get headerLogoutConfirm => 'Do you really want to log out?';
+  String get headerLogoutConfirm => 'Mochtest du dich wirklich abmelden?';
 
   @override
-  String get userRoleLider => 'Leader';
+  String get userRoleLider => 'Leiter';
 
   @override
-  String get userRoleGerenteProjeto => 'Project manager';
+  String get userRoleGerenteProjeto => 'Projektmanager';
 
   @override
   String get userRoleAnalista => 'Analyst';

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -10,6 +11,7 @@ import '../models/assets_conversys.dart';
 import '../services/api_client.dart';
 import '../services/assets_conversys_service.dart';
 import '../widgets/conversys_app_bar.dart';
+import 'assets_control_sort.dart';
 import 'notificacoes_screen.dart';
 
 class _ClienteOption {
@@ -45,9 +47,19 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
   String _prodTipo = '';
   String _prodAtivo = 'all';
 
-  List<AssetConversys> _assets = [];
+  /// Lista completa de ativos do cliente (igual ao portal: movimentações usam todos).
+  List<AssetConversys> _allAssets = [];
   String _assetSearch = '';
   int? _assetProdutoFiltro;
+
+  AssetsProdSortKey _prodSortKey = AssetsProdSortKey.nome;
+  bool _prodSortAsc = true;
+
+  AssetsAssetSortKey _assetSortKey = AssetsAssetSortKey.atualizadoEm;
+  bool _assetSortAsc = false;
+
+  AssetsMovSortKey _movSortKey = AssetsMovSortKey.criadoEm;
+  bool _movSortAsc = false;
 
   List<MovimentacaoAssetConversys> _movs = [];
   String _movSearch = '';
@@ -58,18 +70,67 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
 
   bool _busy = false;
 
+  late final TextEditingController _prodSearchCtrl;
+  late final TextEditingController _assetSearchCtrl;
+  late final TextEditingController _movSearchCtrl;
+
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 3, vsync: this);
     _svc = AssetsConversysService(widget.apiClient);
+    _prodSearchCtrl = TextEditingController();
+    _assetSearchCtrl = TextEditingController();
+    _movSearchCtrl = TextEditingController();
+    _prodSearchCtrl.addListener(() {
+      final t = _prodSearchCtrl.text;
+      if (t != _prodSearch) setState(() => _prodSearch = t);
+    });
+    _assetSearchCtrl.addListener(() {
+      final t = _assetSearchCtrl.text;
+      if (t != _assetSearch) setState(() => _assetSearch = t);
+    });
+    _movSearchCtrl.addListener(() {
+      final t = _movSearchCtrl.text;
+      if (t != _movSearch) setState(() => _movSearch = t);
+    });
     _bootstrap();
   }
 
   @override
   void dispose() {
+    _prodSearchCtrl.dispose();
+    _assetSearchCtrl.dispose();
+    _movSearchCtrl.dispose();
     _tabs.dispose();
     super.dispose();
+  }
+
+  void _clearProdFilters() {
+    setState(() {
+      _prodTipo = '';
+      _prodAtivo = 'all';
+      _prodSearch = '';
+    });
+    _prodSearchCtrl.clear();
+  }
+
+  void _clearAssetFilters() {
+    setState(() {
+      _assetProdutoFiltro = null;
+      _assetSearch = '';
+    });
+    _assetSearchCtrl.clear();
+  }
+
+  void _clearMovFilters() {
+    setState(() {
+      _movAssetFiltro = null;
+      _movSearch = '';
+    });
+    _movSearchCtrl.clear();
+    final cid = _clienteId;
+    if (cid != null) _reloadMovs(cid);
   }
 
   Future<void> _bootstrap() async {
@@ -125,14 +186,14 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
       final results = await Future.wait([
         _svc.fetchProdutos(cid),
         _svc.fetchAssets(cid),
-        _svc.fetchMovimentacoes(cid),
+        _svc.fetchMovimentacoes(cid, assetId: _movAssetFiltro),
         _svc.fetchMotivosMovimentacao(),
         _svc.fetchLocaisEstoque(cid),
       ]);
       if (!mounted) return;
       setState(() {
         _produtos = results[0] as List<ProdutoConversys>;
-        _assets = results[1] as List<AssetConversys>;
+        _allAssets = results[1] as List<AssetConversys>;
         _movs = results[2] as List<MovimentacaoAssetConversys>;
         final motList =
             List<MotivoMovimentacaoMini>.from(results[3] as List<MotivoMovimentacaoMini>)
@@ -151,14 +212,6 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
         SnackBar(content: Text('$e')),
       );
     }
-  }
-
-  Future<void> _reloadAssets(int cid) async {
-    final list = await _svc.fetchAssets(
-      cid,
-      produtoId: _assetProdutoFiltro,
-    );
-    if (mounted) setState(() => _assets = list);
   }
 
   Future<void> _reloadMovs(int cid) async {
@@ -194,8 +247,101 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
     return nome.isNotEmpty ? '$nome — $tag ($prod)' : '$tag ($prod)';
   }
 
-  List<ProdutoConversys> get _produtosFiltrados {
-    return _produtos.where((p) {
+  Map<int, String> _produtoNomeMap() {
+    final m = <int, String>{};
+    for (final p in _produtos) {
+      m[p.id] = p.nome;
+    }
+    return m;
+  }
+
+  String? _produtoTipo(int id) {
+    for (final p in _produtos) {
+      if (p.id == id) return p.tipo;
+    }
+    return null;
+  }
+
+  String _formatDt(BuildContext context, String iso) {
+    final dt = DateTime.tryParse(iso);
+    if (dt == null) return iso;
+    final loc = Localizations.localeOf(context);
+    return DateFormat.yMd(loc.toLanguageTag()).add_Hm().format(dt.toLocal());
+  }
+
+  String _localLabel(LocalEstoqueRow l) {
+    final c = l.codigo.trim();
+    return c.isNotEmpty ? '${l.nome} ($c)' : l.nome;
+  }
+
+  void _cycleProdSort(AssetsProdSortKey key) {
+    setState(() {
+      if (_prodSortKey != key) {
+        _prodSortKey = key;
+        _prodSortAsc = key != AssetsProdSortKey.atualizadoEm;
+      } else {
+        _prodSortAsc = !_prodSortAsc;
+      }
+    });
+  }
+
+  void _cycleAssetSort(AssetsAssetSortKey key) {
+    setState(() {
+      if (_assetSortKey != key) {
+        _assetSortKey = key;
+        _assetSortAsc = key != AssetsAssetSortKey.atualizadoEm;
+      } else {
+        _assetSortAsc = !_assetSortAsc;
+      }
+    });
+  }
+
+  void _cycleMovSort(AssetsMovSortKey key) {
+    setState(() {
+      if (_movSortKey != key) {
+        _movSortKey = key;
+        _movSortAsc = key != AssetsMovSortKey.criadoEm;
+      } else {
+        _movSortAsc = !_movSortAsc;
+      }
+    });
+  }
+
+  Widget _sortHeaderIcon(AssetsProdSortKey key) {
+    if (_prodSortKey != key) {
+      return const Icon(Icons.unfold_more, size: 16, color: Colors.white38);
+    }
+    return Icon(
+      _prodSortAsc ? Icons.arrow_upward : Icons.arrow_downward,
+      size: 16,
+      color: Colors.tealAccent,
+    );
+  }
+
+  Widget _sortHeaderIconAsset(AssetsAssetSortKey key) {
+    if (_assetSortKey != key) {
+      return const Icon(Icons.unfold_more, size: 16, color: Colors.white38);
+    }
+    return Icon(
+      _assetSortAsc ? Icons.arrow_upward : Icons.arrow_downward,
+      size: 16,
+      color: Colors.tealAccent,
+    );
+  }
+
+  Widget _sortHeaderIconMov(AssetsMovSortKey key) {
+    if (_movSortKey != key) {
+      return const Icon(Icons.unfold_more, size: 16, color: Colors.white38);
+    }
+    return Icon(
+      _movSortAsc ? Icons.arrow_upward : Icons.arrow_downward,
+      size: 16,
+      color: Colors.tealAccent,
+    );
+  }
+
+  List<ProdutoConversys> _produtosFiltradosSorted() {
+    final filtered = _produtos.where((p) {
       if (_prodTipo.isNotEmpty && p.tipo != _prodTipo) return false;
       if (_prodAtivo == 'active' && !p.ativo) return false;
       if (_prodAtivo == 'inactive' && p.ativo) return false;
@@ -210,41 +356,43 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
         p.fichaTecnica,
       ].join(' ').toLowerCase();
       return blob.contains(q);
-    }).toList()
-      ..sort((a, b) => a.nome.toLowerCase().compareTo(b.nome.toLowerCase()));
+    }).toList();
+    filtered.sort(
+      (a, b) => compareAssetsProdutos(a, b, _prodSortKey, _prodSortAsc),
+    );
+    return filtered;
   }
 
-  List<AssetConversys> get _assetsFiltrados {
+  List<AssetConversys> _assetsFiltradosSorted() {
+    final map = _produtoNomeMap();
     final q = _assetSearch.trim().toLowerCase();
-    return _assets.where((a) {
+    final filtered = _allAssets.where((a) {
+      if (_assetProdutoFiltro != null && a.produto != _assetProdutoFiltro) {
+        return false;
+      }
       if (q.isEmpty) return true;
       final blob = [
         '${a.produto}',
-        _nomeProd(a.produto),
+        map[a.produto] ?? '',
         a.serialNumber,
         a.partNumber,
         a.nomeExibicao,
         a.observacoes,
       ].join(' ').toLowerCase();
       return blob.contains(q);
-    }).toList()
-      ..sort(
-        (a, b) => b.atualizadoEm.compareTo(a.atualizadoEm),
-      );
+    }).toList();
+    filtered.sort(
+      (a, b) => compareAssetsRows(a, b, _assetSortKey, _assetSortAsc, map),
+    );
+    return filtered;
   }
 
-  List<MovimentacaoAssetConversys> get _movsFiltradas {
+  List<MovimentacaoAssetConversys> _movsFiltradasSorted() {
     final q = _movSearch.trim().toLowerCase();
-    return _movs.where((m) {
+    final map = _produtoNomeMap();
+    final filtered = _movs.where((m) {
       if (q.isEmpty) return true;
-      AssetConversys? a;
-      for (final x in _assets) {
-        if (x.id == m.asset) {
-          a = x;
-          break;
-        }
-      }
-      final label = a != null ? _assetLabel(a) : '#${m.asset}';
+      final label = movimentacaoAssetLabel(m, _allAssets, map);
       final blob = [
         label,
         m.motivoNome,
@@ -254,8 +402,18 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
         m.registradoPorNome ?? '',
       ].join(' ').toLowerCase();
       return blob.contains(q);
-    }).toList()
-      ..sort((a, b) => b.criadoEm.compareTo(a.criadoEm));
+    }).toList();
+    filtered.sort(
+      (a, b) => compareMovRows(
+        a,
+        b,
+        _movSortKey,
+        _movSortAsc,
+        _allAssets,
+        map,
+      ),
+    );
+    return filtered;
   }
 
   Future<void> _openNovoProduto(AppLocalizations l10n) async {
@@ -441,7 +599,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(
                       initialValue: pid,
-                      decoration: _dec(l10n.assetsFilterByProduct),
+                      decoration: _dec(l10n.assetsFieldProduct),
                       dropdownColor: const Color(0xFF0B1220),
                       style: const TextStyle(color: Colors.white),
                       items: _produtos
@@ -449,7 +607,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                             (p) => DropdownMenuItem(
                               value: p.id,
                               child: Text(
-                                p.nome,
+                                '${p.nome} (${p.tipo})',
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -464,6 +622,21 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                       onPressed: pid == null
                           ? null
                           : () async {
+                              final tipoP = _produtoTipo(pid!);
+                              if (tipoP == 'SERVICO' &&
+                                  sn.text.trim().isEmpty &&
+                                  pn.text.trim().isEmpty) {
+                                if (ctx.mounted) {
+                                  ScaffoldMessenger.of(ctx).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        l10n.assetsServiceSerialOrPart,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return;
+                              }
                               try {
                                 await _svc.createAsset(cid, {
                                   'produto': pid,
@@ -481,7 +654,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                                 }
                               }
                             },
-                      child: Text(l10n.continueLabel),
+                      child: Text(l10n.assetsSaveAsset),
                     ),
                   ],
                 ),
@@ -496,15 +669,16 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
 
   Future<void> _openNovaMov(AppLocalizations l10n) async {
     final cid = _clienteId;
-    if (cid == null || _assets.isEmpty || _motivos.isEmpty || _locais.isEmpty) {
+    if (cid == null) return;
+    if (_allAssets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.assetsMovPrereq)),
+        SnackBar(content: Text(l10n.assetsAssetsEmpty)),
       );
       return;
     }
-    int? aid = _assets.first.id;
-    int? mid = _motivos.first.id;
-    int? lid = _locais.first.id;
+    int? aid;
+    int? mid = _motivos.isEmpty ? null : _motivos.first.id;
+    int? lid = _locais.isEmpty ? null : _locais.first.id;
     final resp = TextEditingController();
     final obs = TextEditingController();
 
@@ -515,6 +689,8 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSt) {
+            final canSubmit =
+                aid != null && mid != null && lid != null;
             return Padding(
               padding: EdgeInsets.only(
                 left: 20,
@@ -534,59 +710,84 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                     ),
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<int>(
-                    initialValue: aid,
-                    decoration: _dec(l10n.assetsColAsset),
+                  DropdownButtonFormField<int?>(
+                    value: aid,
+                    decoration: _dec(l10n.assetsFieldSelectAsset),
                     dropdownColor: const Color(0xFF0B1220),
                     style: const TextStyle(color: Colors.white, fontSize: 13),
                     isExpanded: true,
-                    items: _assets
-                        .map(
-                          (a) => DropdownMenuItem(
-                            value: a.id,
-                            child: Text(
-                              _assetLabel(a),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                    items: [
+                      DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text(
+                          l10n.assetsPickAsset,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      ..._allAssets.map(
+                        (a) => DropdownMenuItem<int?>(
+                          value: a.id,
+                          child: Text(
+                            _assetLabel(a),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        )
-                        .toList(),
+                        ),
+                      ),
+                    ],
                     onChanged: (v) => setSt(() => aid = v),
                   ),
-                  DropdownButtonFormField<int>(
-                    initialValue: mid,
-                    decoration: _dec(l10n.assetsMotivo),
-                    dropdownColor: const Color(0xFF0B1220),
-                    style: const TextStyle(color: Colors.white),
-                    items: _motivos
-                        .map(
-                          (m) => DropdownMenuItem(
-                            value: m.id,
-                            child: Text(m.nome),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => setSt(() => mid = v),
-                  ),
-                  DropdownButtonFormField<int>(
-                    initialValue: lid,
-                    decoration: _dec(l10n.assetsDestino),
-                    dropdownColor: const Color(0xFF0B1220),
-                    style: const TextStyle(color: Colors.white),
-                    items: _locais
-                        .map(
-                          (l) => DropdownMenuItem(
-                            value: l.id,
-                            child: Text('${l.codigo} — ${l.nome}'),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => setSt(() => lid = v),
-                  ),
+                  if (_motivos.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 4),
+                      child: Text(
+                        l10n.assetsNoMotives,
+                        style: const TextStyle(color: Colors.amber, fontSize: 12),
+                      ),
+                    )
+                  else
+                    DropdownButtonFormField<int>(
+                      value: mid,
+                      decoration: _dec(l10n.assetsMotivo),
+                      dropdownColor: const Color(0xFF0B1220),
+                      style: const TextStyle(color: Colors.white),
+                      items: _motivos
+                          .map(
+                            (m) => DropdownMenuItem(
+                              value: m.id,
+                              child: Text(m.nome),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setSt(() => mid = v),
+                    ),
+                  if (_locais.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 4),
+                      child: Text(
+                        l10n.assetsNoStockLocations,
+                        style: const TextStyle(color: Colors.amber, fontSize: 12),
+                      ),
+                    )
+                  else
+                    DropdownButtonFormField<int>(
+                      value: lid,
+                      decoration: _dec(l10n.assetsDestino),
+                      dropdownColor: const Color(0xFF0B1220),
+                      style: const TextStyle(color: Colors.white),
+                      items: _locais
+                          .map(
+                            (l) => DropdownMenuItem(
+                              value: l.id,
+                              child: Text(_localLabel(l)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setSt(() => lid = v),
+                    ),
                   _tf(resp, l10n.assetsResponsible),
                   _tf(obs, l10n.assetsObservation, maxLines: 2),
                   FilledButton(
-                    onPressed: aid == null || mid == null || lid == null
+                    onPressed: !canSubmit
                         ? null
                         : () async {
                             try {
@@ -696,6 +897,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
     final ficha = TextEditingController(text: p.fichaTecnica);
     var tipo = p.tipo;
     var ativo = p.ativo;
+    PlatformFile? newManual;
 
     final ok = await showDialog<bool>(
       context: context,
@@ -762,6 +964,21 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                       labelText: l10n.assetsFieldDatasheet,
                     ),
                   ),
+                  ListTile(
+                    title: Text(
+                      newManual?.name ?? l10n.assetsReplaceManualHint,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    trailing: const Icon(Icons.attach_file, color: Colors.teal),
+                    onTap: () async {
+                      final r = await FilePicker.platform.pickFiles(
+                        withData: true,
+                      );
+                      if (r != null && r.files.isNotEmpty) {
+                        setSt(() => newManual = r.files.first);
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -781,16 +998,32 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
     );
     if (ok != true || !mounted) return;
     try {
-      await _svc.patchProduto(cid, p.id, fields: {
-        'nome': nome.text.trim(),
-        'tipo': tipo,
-        'codigo_interno': codigo.text.trim(),
-        'marca': marca.text.trim(),
-        'modelo': modelo.text.trim(),
-        'descricao': desc.text.trim(),
-        'ficha_tecnica': ficha.text.trim(),
-        'ativo': ativo ? 'true' : 'false',
-      });
+      final files = <http.MultipartFile>[];
+      final picked = newManual;
+      if (picked?.bytes != null) {
+        files.add(
+          http.MultipartFile.fromBytes(
+            'manual_instrucoes',
+            picked!.bytes!,
+            filename: picked.name,
+          ),
+        );
+      }
+      await _svc.patchProduto(
+        cid,
+        p.id,
+        fields: {
+          'nome': nome.text.trim(),
+          'tipo': tipo,
+          'codigo_interno': codigo.text.trim(),
+          'marca': marca.text.trim(),
+          'modelo': modelo.text.trim(),
+          'descricao': desc.text.trim(),
+          'ficha_tecnica': ficha.text.trim(),
+          'ativo': ativo ? 'true' : 'false',
+        },
+        files: files,
+      );
       await _reloadAll(cid);
     } catch (e) {
       if (mounted) {
@@ -810,6 +1043,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
       appBar: conversysAppBar(
         context,
         l10n.assetsModuleTitle,
+        userAccountMenuApiClient: widget.apiClient,
         onNotificationsTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -869,7 +1103,11 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                                       .firstWhere((e) => e.id == id)
                                       .nome,
                                 );
-                                setState(() => _clienteId = id);
+                                setState(() {
+                                  _clienteId = id;
+                                  _movAssetFiltro = null;
+                                  _assetProdutoFiltro = null;
+                                });
                                 await _reloadAll(id);
                               },
                             ),
@@ -905,9 +1143,9 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                       child: TabBarView(
                         controller: _tabs,
                         children: [
-                          _buildProdutosTab(l10n),
-                          _buildAssetsTab(l10n),
-                          _buildMovsTab(l10n),
+                          _buildProdutosTab(context, l10n),
+                          _buildAssetsTab(context, l10n),
+                          _buildMovsTab(context, l10n),
                         ],
                       ),
                     ),
@@ -916,15 +1154,89 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
     );
   }
 
-  Widget _buildProdutosTab(AppLocalizations l10n) {
+  Widget _prodSortableHeader(String label, AssetsProdSortKey key) {
+    return InkWell(
+      onTap: () => _cycleProdSort(key),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 2),
+          _sortHeaderIcon(key),
+        ],
+      ),
+    );
+  }
+
+  Widget _assetSortableHeader(String label, AssetsAssetSortKey key) {
+    return InkWell(
+      onTap: () => _cycleAssetSort(key),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 2),
+          _sortHeaderIconAsset(key),
+        ],
+      ),
+    );
+  }
+
+  Widget _movSortableHeader(String label, AssetsMovSortKey key) {
+    return InkWell(
+      onTap: () => _cycleMovSort(key),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 2),
+          _sortHeaderIconMov(key),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProdutosTab(BuildContext context, AppLocalizations l10n) {
+    final rows = _produtosFiltradosSorted();
+    const emDash = '—';
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: Row(
             children: [
               Expanded(
                 child: TextField(
+                  controller: _prodSearchCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: l10n.assetsFilterSearch,
@@ -932,105 +1244,303 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
-                  onChanged: (v) => setState(() => _prodSearch = v),
                 ),
               ),
               const SizedBox(width: 8),
               DropdownButton<String>(
                 value: _prodTipo.isEmpty ? '' : _prodTipo,
-                hint: Text(l10n.assetsFilterTipoAll, style: const TextStyle(color: Colors.white54)),
+                hint: Text(
+                  l10n.assetsFilterTipoAll,
+                  style: const TextStyle(color: Colors.white54),
+                ),
                 dropdownColor: const Color(0xFF0B1220),
                 style: const TextStyle(color: Colors.white, fontSize: 13),
                 items: [
-                  DropdownMenuItem(value: '', child: Text(l10n.assetsFilterTipoAll)),
-                  DropdownMenuItem(value: 'HARDWARE', child: Text(l10n.assetsTypeHardware)),
-                  DropdownMenuItem(value: 'SERVICO', child: Text(l10n.assetsTypeService)),
+                  DropdownMenuItem(
+                    value: '',
+                    child: Text(l10n.assetsFilterTipoAll),
+                  ),
+                  DropdownMenuItem(
+                    value: 'HARDWARE',
+                    child: Text(l10n.assetsTypeHardware),
+                  ),
+                  DropdownMenuItem(
+                    value: 'SERVICO',
+                    child: Text(l10n.assetsTypeService),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _prodTipo = v ?? ''),
               ),
             ],
           ),
         ),
-        Row(
-          children: [
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: Text(l10n.assetsFilterAtivoAll),
-              selected: _prodAtivo == 'all',
-              onSelected: (_) => setState(() => _prodAtivo = 'all'),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 4, 8, 0),
+          child: Wrap(
+            spacing: 4,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              ChoiceChip(
+                label: Text(l10n.assetsFilterAtivoAll),
+                selected: _prodAtivo == 'all',
+                onSelected: (_) => setState(() => _prodAtivo = 'all'),
+              ),
+              ChoiceChip(
+                label: Text(l10n.assetsFilterAtivoYes),
+                selected: _prodAtivo == 'active',
+                onSelected: (_) => setState(() => _prodAtivo = 'active'),
+              ),
+              ChoiceChip(
+                label: Text(l10n.assetsFilterAtivoNo),
+                selected: _prodAtivo == 'inactive',
+                onSelected: (_) => setState(() => _prodAtivo = 'inactive'),
+              ),
+              TextButton(
+                onPressed: _clearProdFilters,
+                child: Text(l10n.assetsClearFilters),
+              ),
+              TextButton.icon(
+                onPressed: _clienteId == null || _busy
+                    ? null
+                    : () => _reloadAll(_clienteId!),
+                icon: const Icon(Icons.refresh, size: 16, color: Colors.white54),
+                label: Text(
+                  l10n.expenseRefresh,
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_circle, color: Colors.teal),
+                onPressed: () => _openNovoProduto(l10n),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+          child: Text(
+            _produtos.isEmpty
+                ? l10n.assetsListProducts
+                : '${l10n.assetsListProducts} (${rows.length}/${_produtos.length})',
+            style: const TextStyle(
+              color: Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
-            ChoiceChip(
-              label: Text(l10n.assetsFilterAtivoYes),
-              selected: _prodAtivo == 'active',
-              onSelected: (_) => setState(() => _prodAtivo = 'active'),
-            ),
-            ChoiceChip(
-              label: Text(l10n.assetsFilterAtivoNo),
-              selected: _prodAtivo == 'inactive',
-              onSelected: (_) => setState(() => _prodAtivo = 'inactive'),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.add_circle, color: Colors.teal),
-              onPressed: () => _openNovoProduto(l10n),
-            ),
-          ],
+          ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: _produtosFiltrados.length,
-            itemBuilder: (context, i) {
-              final p = _produtosFiltrados[i];
-              final href = _mediaUrl(p.manualInstrucoes);
-              return ListTile(
-                title: Text(
-                  p.nome,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                subtitle: Text(
-                  '${p.tipo} · ${p.codigoInterno} · ${p.ativo ? l10n.assetsYesShort : l10n.assetsNoShort}',
-                  style: TextStyle(color: Colors.blueGrey[200], fontSize: 12),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (href.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.download, color: Colors.teal),
-                        onPressed: () async {
-                          final u = Uri.tryParse(href);
-                          if (u != null) {
-                            await launchUrl(u, mode: LaunchMode.externalApplication);
-                          }
-                        },
+          child: rows.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      _produtos.isEmpty
+                          ? l10n.assetsProductsEmpty
+                          : l10n.assetsEmptyProductsFiltered,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white54),
+                    ),
+                  ),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth.clamp(600, 1400),
+                        ),
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                            headingRowColor: WidgetStateProperty.all(
+                              const Color(0xFF0F172A),
+                            ),
+                            dataTextStyle: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                            columnSpacing: 12,
+                            columns: [
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColName,
+                                  AssetsProdSortKey.nome,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColBrand,
+                                  AssetsProdSortKey.marca,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColModel,
+                                  AssetsProdSortKey.modelo,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColDescription,
+                                  AssetsProdSortKey.descricao,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColDatasheet,
+                                  AssetsProdSortKey.fichaTecnica,
+                                ),
+                              ),
+                              DataColumn(label: Text(l10n.assetsColManual)),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColType,
+                                  AssetsProdSortKey.tipo,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColCode,
+                                  AssetsProdSortKey.codigoInterno,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColActive,
+                                  AssetsProdSortKey.ativo,
+                                ),
+                              ),
+                              DataColumn(
+                                label: _prodSortableHeader(
+                                  l10n.assetsColUpdated,
+                                  AssetsProdSortKey.atualizadoEm,
+                                ),
+                              ),
+                              DataColumn(label: Text(l10n.assetsColTracking)),
+                            ],
+                            rows: rows.map((p) {
+                              final href = _mediaUrl(p.manualInstrucoes);
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(p.nome)),
+                                  DataCell(Text(p.marca.isEmpty ? emDash : p.marca)),
+                                  DataCell(Text(p.modelo.isEmpty ? emDash : p.modelo)),
+                                  DataCell(
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 160),
+                                      child: Text(
+                                        p.descricao.isEmpty ? emDash : p.descricao,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 140),
+                                      child: Text(
+                                        p.fichaTecnica.isEmpty ? emDash : p.fichaTecnica,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontFamily: 'monospace'),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    href.isEmpty
+                                        ? const Text(emDash)
+                                        : IconButton(
+                                            icon: const Icon(
+                                              Icons.download,
+                                              color: Colors.teal,
+                                              size: 20,
+                                            ),
+                                            onPressed: () async {
+                                              final u = Uri.tryParse(href);
+                                              if (u != null) {
+                                                await launchUrl(
+                                                  u,
+                                                  mode: LaunchMode.externalApplication,
+                                                );
+                                              }
+                                            },
+                                          ),
+                                  ),
+                                  DataCell(Text(p.tipo)),
+                                  DataCell(
+                                    Text(
+                                      p.codigoInterno.isEmpty ? emDash : p.codigoInterno,
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      p.ativo
+                                          ? l10n.assetsYesShort
+                                          : l10n.assetsNoShort,
+                                      style: TextStyle(
+                                        color: p.ativo
+                                            ? Colors.greenAccent
+                                            : Colors.white38,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      _formatDt(context, p.atualizadoEm),
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.account_tree_outlined,
+                                            color: Colors.white54,
+                                            size: 20,
+                                          ),
+                                          tooltip: l10n.assetsProductTrackingHint,
+                                          onPressed: () {
+                                            setState(() => _assetProdutoFiltro = p.id);
+                                            _tabs.animateTo(1);
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.white54,
+                                            size: 20,
+                                          ),
+                                          onPressed: () => _editProduto(p, l10n),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
-                    IconButton(
-                      icon: const Icon(Icons.inventory_2_outlined, color: Colors.white54),
-                      tooltip: l10n.assetsProductTrackingHint,
-                      onPressed: () {
-                        setState(() => _assetProdutoFiltro = p.id);
-                        _tabs.animateTo(1);
-                        final cid = _clienteId;
-                        if (cid != null) _reloadAssets(cid);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, color: Colors.white54),
-                      onPressed: () => _editProduto(p, l10n),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );
   }
 
-  Widget _buildAssetsTab(AppLocalizations l10n) {
+  Widget _buildAssetsTab(BuildContext context, AppLocalizations l10n) {
     final cid = _clienteId;
+    final rows = _assetsFiltradosSorted();
+    final map = _produtoNomeMap();
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.all(8),
@@ -1038,6 +1548,7 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
             children: [
               Expanded(
                 child: TextField(
+                  controller: _assetSearchCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: l10n.assetsFilterSearchAssets,
@@ -1045,24 +1556,23 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
-                  onChanged: (v) => setState(() => _assetSearch = v),
                 ),
               ),
               SizedBox(
-                width: 160,
+                width: 180,
                 child: DropdownButtonFormField<int?>(
-                  initialValue: _assetProdutoFiltro,
+                  value: _assetProdutoFiltro,
                   decoration: InputDecoration(
-                    labelText: l10n.assetsAllProducts,
+                    labelText: l10n.assetsFilterByProductLabel,
                     labelStyle: const TextStyle(color: Colors.white54, fontSize: 11),
                     isDense: true,
                   ),
                   dropdownColor: const Color(0xFF0B1220),
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                   items: [
-                    const DropdownMenuItem<int?>(
+                    DropdownMenuItem<int?>(
                       value: null,
-                      child: Text('—', style: TextStyle(color: Colors.white70)),
+                      child: Text(l10n.assetsAllProducts),
                     ),
                     ..._produtos.map(
                       (p) => DropdownMenuItem(
@@ -1071,10 +1581,21 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                       ),
                     ),
                   ],
-                  onChanged: (v) async {
-                    setState(() => _assetProdutoFiltro = v);
-                    if (cid != null) await _reloadAssets(cid);
-                  },
+                  onChanged: (v) => setState(() => _assetProdutoFiltro = v),
+                ),
+              ),
+              TextButton(
+                onPressed: _clearAssetFilters,
+                child: Text(l10n.assetsClearFilters),
+              ),
+              TextButton.icon(
+                onPressed: cid == null || _busy
+                    ? null
+                    : () => _reloadAll(cid),
+                icon: const Icon(Icons.refresh, size: 16, color: Colors.white54),
+                label: Text(
+                  l10n.expenseRefresh,
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
                 ),
               ),
               IconButton(
@@ -1084,36 +1605,114 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
             ],
           ),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _assetsFiltrados.length,
-            itemBuilder: (context, i) {
-              final a = _assetsFiltrados[i];
-              return ListTile(
-                title: Text(
-                  _assetLabel(a),
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                ),
-                subtitle: Text(
-                  a.atualizadoEm,
-                  style: TextStyle(color: Colors.blueGrey[300], fontSize: 11),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit_outlined, color: Colors.white54),
-                  onPressed: () => _editAsset(a, l10n),
-                ),
-                onTap: () => _editAsset(a, l10n),
-              );
-            },
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+          child: Text(
+            _allAssets.isEmpty
+                ? l10n.assetsListAssets
+                : '${l10n.assetsListAssets} (${rows.length}/${_allAssets.length})',
+            style: const TextStyle(
+              color: Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+        ),
+        Expanded(
+          child: rows.isEmpty
+              ? Center(
+                  child: Text(
+                    _allAssets.isEmpty
+                        ? l10n.assetsAssetsEmpty
+                        : l10n.assetsEmptyAssetsFiltered,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white54),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowColor: WidgetStateProperty.all(
+                      const Color(0xFF0F172A),
+                    ),
+                    dataTextStyle: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                    columns: [
+                      DataColumn(
+                        label: _assetSortableHeader(
+                          l10n.assetsColProduct,
+                          AssetsAssetSortKey.produto,
+                        ),
+                      ),
+                      DataColumn(
+                        label: _assetSortableHeader(
+                          l10n.assetsSerial,
+                          AssetsAssetSortKey.serialNumber,
+                        ),
+                      ),
+                      DataColumn(
+                        label: _assetSortableHeader(
+                          l10n.assetsPartNumber,
+                          AssetsAssetSortKey.partNumber,
+                        ),
+                      ),
+                      DataColumn(
+                        label: _assetSortableHeader(
+                          l10n.assetsDisplayName,
+                          AssetsAssetSortKey.nomeExibicao,
+                        ),
+                      ),
+                      DataColumn(
+                        label: _assetSortableHeader(
+                          l10n.assetsColUpdated,
+                          AssetsAssetSortKey.atualizadoEm,
+                        ),
+                      ),
+                      const DataColumn(label: Text('')),
+                    ],
+                    rows: rows.map((a) {
+                      return DataRow(
+                        onSelectChanged: (_) => _editAsset(a, l10n),
+                        cells: [
+                          DataCell(Text(map[a.produto] ?? '#${a.produto}')),
+                          DataCell(Text(a.serialNumber.isEmpty ? '—' : a.serialNumber)),
+                          DataCell(Text(a.partNumber.isEmpty ? '—' : a.partNumber)),
+                          DataCell(Text(a.nomeExibicao.isEmpty ? '—' : a.nomeExibicao)),
+                          DataCell(
+                            Text(
+                              _formatDt(context, a.atualizadoEm),
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                          DataCell(
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit_outlined,
+                                color: Colors.white54,
+                                size: 20,
+                              ),
+                              onPressed: () => _editAsset(a, l10n),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
         ),
       ],
     );
   }
 
-  Widget _buildMovsTab(AppLocalizations l10n) {
+  Widget _buildMovsTab(BuildContext context, AppLocalizations l10n) {
     final cid = _clienteId;
+    final rows = _movsFiltradasSorted();
+    final map = _produtoNomeMap();
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.all(8),
@@ -1121,22 +1720,22 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
             children: [
               Expanded(
                 child: TextField(
+                  controller: _movSearchCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: l10n.assetsFilterSearch,
+                    hintText: l10n.assetsFilterSearchMovements,
                     hintStyle: const TextStyle(color: Colors.white38),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
-                  onChanged: (v) => setState(() => _movSearch = v),
                 ),
               ),
               SizedBox(
-                width: 140,
+                width: 220,
                 child: DropdownButtonFormField<int?>(
-                  initialValue: _movAssetFiltro,
+                  value: _movAssetFiltro,
                   decoration: InputDecoration(
-                    labelText: l10n.assetsColAsset,
+                    labelText: l10n.assetsFilterByAsset,
                     isDense: true,
                     labelStyle: const TextStyle(color: Colors.white54, fontSize: 10),
                   ),
@@ -1144,15 +1743,15 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                   style: const TextStyle(color: Colors.white, fontSize: 11),
                   isExpanded: true,
                   items: [
-                    const DropdownMenuItem<int?>(
+                    DropdownMenuItem<int?>(
                       value: null,
-                      child: Text('—', style: TextStyle(color: Colors.white70)),
+                      child: Text(l10n.assetsAllAssets),
                     ),
-                    ..._assets.map(
+                    ..._allAssets.map(
                       (a) => DropdownMenuItem(
                         value: a.id,
                         child: Text(
-                          '#${a.id}',
+                          _assetLabel(a),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -1164,6 +1763,20 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
                   },
                 ),
               ),
+              TextButton(
+                onPressed: _clearMovFilters,
+                child: Text(l10n.assetsClearFilters),
+              ),
+              TextButton.icon(
+                onPressed: cid == null || _busy
+                    ? null
+                    : () => _reloadAll(cid),
+                icon: const Icon(Icons.refresh, size: 16, color: Colors.white54),
+                label: Text(
+                  l10n.expenseRefresh,
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+              ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.teal),
                 onPressed: () => _openNovaMov(l10n),
@@ -1171,24 +1784,144 @@ class _AssetsControlModuleScreenState extends State<AssetsControlModuleScreen>
             ],
           ),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _movsFiltradas.length,
-            itemBuilder: (context, i) {
-              final m = _movsFiltradas[i];
-              return ListTile(
-                title: Text(
-                  m.motivoNome,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                subtitle: Text(
-                  '${m.criadoEm}\n${m.destinoNome ?? '—'} · ${m.responsavel}',
-                  style: TextStyle(color: Colors.blueGrey[200], fontSize: 11),
-                ),
-                isThreeLine: true,
-              );
-            },
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+          child: Text(
+            _movs.isEmpty
+                ? l10n.assetsMovementList
+                : '${l10n.assetsMovementList} (${rows.length}/${_movs.length})',
+            style: const TextStyle(
+              color: Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+        ),
+        Expanded(
+          child: rows.isEmpty
+              ? Center(
+                  child: Text(
+                    _movs.isEmpty
+                        ? l10n.assetsNoMovements
+                        : l10n.assetsEmptyMovementsFiltered,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white54),
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SingleChildScrollView(
+                    child: DataTable(
+                      headingRowColor: WidgetStateProperty.all(
+                        const Color(0xFF0F172A),
+                      ),
+                      dataTextStyle: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                      columnSpacing: 14,
+                      columns: [
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsColWhen,
+                            AssetsMovSortKey.criadoEm,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsFieldSelectAsset,
+                            AssetsMovSortKey.assetLabel,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsMotivo,
+                            AssetsMovSortKey.motivoNome,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsDestino,
+                            AssetsMovSortKey.destinoNome,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsResponsible,
+                            AssetsMovSortKey.responsavel,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsColRegisteredBy,
+                            AssetsMovSortKey.registradoPorNome,
+                          ),
+                        ),
+                        DataColumn(
+                          label: _movSortableHeader(
+                            l10n.assetsObservation,
+                            AssetsMovSortKey.observacao,
+                          ),
+                        ),
+                      ],
+                      rows: rows.map((m) {
+                        final assetTxt =
+                            movimentacaoAssetLabel(m, _allAssets, map);
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Text(
+                                _formatDt(context, m.criadoEm),
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                            ),
+                            DataCell(
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 220),
+                                child: Text(
+                                  assetTxt,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            DataCell(Text(m.motivoNome.isEmpty ? '—' : m.motivoNome)),
+                            DataCell(
+                              Text(
+                                (m.destinoNome ?? '').trim().isEmpty
+                                    ? '—'
+                                    : m.destinoNome!,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                m.responsavel.trim().isEmpty ? '—' : m.responsavel,
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                (m.registradoPorNome ?? '').trim().isEmpty
+                                    ? '—'
+                                    : m.registradoPorNome!,
+                              ),
+                            ),
+                            DataCell(
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 160),
+                                child: Text(
+                                  m.observacao.trim().isEmpty ? '—' : m.observacao,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
         ),
       ],
     );
