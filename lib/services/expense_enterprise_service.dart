@@ -132,10 +132,47 @@ class ExpenseEnterpriseService {
         .toList();
   }
 
+  /// `id` do usuário autenticado (`GET /api/auth/me/`), para filtro `user_id` na lista.
+  Future<int?> fetchAuthUserId() async {
+    final r = await apiClient.get('/api/auth/me/');
+    if (r.statusCode < 200 || r.statusCode >= 300) return null;
+    final decoded = jsonDecode(r.body);
+    if (decoded is! Map<String, dynamic>) return null;
+    final raw = decoded['id'] ?? decoded['user_id'] ?? decoded['pk'];
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    if (raw is String) return int.tryParse(raw);
+    return null;
+  }
+
+  /// Títulos de agrupamento; com [meOnly] envia `me_only=1` (só despesas do usuário logado), como no portal.
+  Future<List<String>> fetchAgrupamentoTitulos(
+    int clienteId, {
+    bool meOnly = true,
+  }) async {
+    final extra = <String, String>{};
+    if (meOnly) {
+      extra['me_only'] = '1';
+    }
+    final r = await apiClient.get(
+      '/api/expenses/agrupamento-titulos/',
+      query: _tenantQuery(clienteId, extra.isEmpty ? null : extra),
+      extraHeaders: _tenantHeaders(clienteId),
+    );
+    _ensureOk(r, 'Erro ao carregar títulos de agrupamento');
+    final decoded = jsonDecode(r.body);
+    if (decoded is! List) return [];
+    return decoded.map((e) => e.toString()).toList();
+  }
+
   Future<List<ExpenseEnterpriseRow>> fetchExpenses(
     int clienteId, {
     String? status,
     String? agrupamentoTitulo,
+    String? period,
+    String? dateFrom,
+    String? dateTo,
+    int? userId,
   }) async {
     final extra = <String, String>{};
     if (status != null && status.isNotEmpty) {
@@ -143,6 +180,22 @@ class ExpenseEnterpriseService {
     }
     if (agrupamentoTitulo != null && agrupamentoTitulo.trim().isNotEmpty) {
       extra['agrupamento_titulo'] = agrupamentoTitulo.trim();
+    }
+    final p = (period ?? '').trim();
+    final usePeriod = p.isNotEmpty && p != 'custom';
+    if (usePeriod) {
+      extra['period'] = p;
+    }
+    final df = (dateFrom ?? '').trim();
+    final dt = (dateTo ?? '').trim();
+    if (df.isNotEmpty) {
+      extra['date_from'] = df;
+    }
+    if (dt.isNotEmpty) {
+      extra['date_to'] = dt;
+    }
+    if (userId != null && userId > 0) {
+      extra['user_id'] = '$userId';
     }
     final q = _tenantQuery(clienteId, extra.isEmpty ? null : extra);
     final r = await apiClient.get(

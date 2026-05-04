@@ -5,6 +5,7 @@ import '../services/api_client.dart';
 import '../utils/module_order.dart';
 import '../widgets/conversys_app_bar.dart';
 import '../widgets/language_picker_button.dart';
+import '../widgets/permitted_cliente_selector.dart';
 import 'assets_control_module_screen.dart';
 import 'despesas_module_screen.dart';
 import 'em_desenvolvimento_screen.dart';
@@ -14,6 +15,14 @@ import 'notificacoes_screen.dart';
 import 'propostas_module_screen.dart';
 import 'tabs/clientes_tab.dart';
 import 'tarefas_module_screen.dart';
+
+bool _moduleRawIsExpenseModule(Object? raw) {
+  final nome = (raw is Map && raw['nome'] is String)
+      ? raw['nome'] as String
+      : '';
+  final lower = nome.toLowerCase();
+  return lower.contains('despesa') || lower.contains('expense');
+}
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -166,6 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final safeIndex = _currentIndex.clamp(0, views.length - 1);
+    final showExpenseCompanyPicker = safeIndex < orderedModules.length &&
+        _moduleRawIsExpenseModule(orderedModules[safeIndex]);
 
     return Scaffold(
       appBar: conversysAppBar(
@@ -182,6 +193,9 @@ class _HomeScreenState extends State<HomeScreen> {
         extraActions: const [
           LanguagePickerIconButton(),
         ],
+        subtitle: showExpenseCompanyPicker
+            ? PermittedClienteSelector(apiClient: _client)
+            : null,
       ),
       body: views[safeIndex],
     );

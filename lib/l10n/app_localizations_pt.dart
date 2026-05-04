@@ -383,6 +383,52 @@ class AppLocalizationsPt extends AppLocalizations {
   String get expenseSubmitApproval => 'Enviar para aprovação';
 
   @override
+  String get expenseFormSave => 'Salvar';
+
+  @override
+  String get expenseFormSend => 'Enviar';
+
+  @override
+  String get expenseReceiptSection => 'Comprovante (imagem)';
+
+  @override
+  String get expenseReceiptOcrHint =>
+      'Usa OpenAI (mesma chave OPENAI_API_KEY do servidor) para ler o comprovante. Selecione um arquivo de imagem ou use Fotografar.';
+
+  @override
+  String get expenseTakePhoto => 'Fotografar';
+
+  @override
+  String get expenseReceiptEmptyPreview =>
+      'A pré-visualização do comprovante aparecerá aqui após fotografar ou escolher um arquivo.';
+
+  @override
+  String get expenseFieldClient => 'Cliente';
+
+  @override
+  String get expenseApproverProfileHint =>
+      'Definido no seu cadastro de usuário; não pode ser alterado aqui.';
+
+  @override
+  String get expenseFieldApprover => 'Aprovador';
+
+  @override
+  String get expenseFieldFinanceApprover => 'Aprovador financeiro';
+
+  @override
+  String get expenseContractNone => '(sem contrato)';
+
+  @override
+  String get expenseCentroNone => '(sem centro de custo)';
+
+  @override
+  String get expenseDraftSavedSnackbar => 'Rascunho salvo.';
+
+  @override
+  String get expenseAgrupamentoHint =>
+      'Opcional. Sugestões dos seus agrupamentos anteriores; pode digitar outro texto ou deixar em branco.';
+
+  @override
   String get expenseDelete => 'Excluir';
 
   @override
@@ -544,6 +590,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get expenseClearPeriod => 'Limpar período';
+
+  @override
+  String get expenseSessionClientLabel => 'Cliente da sessão';
+
+  @override
+  String get expenseListSelectClienteApp =>
+      'Selecione uma empresa no menu superior da aplicação para listar despesas.';
+
+  @override
+  String get expenseFilterPeriod => 'Período';
+
+  @override
+  String get expenseFilterPeriodAll => 'Todo o período';
+
+  @override
+  String get expenseFilterPeriodLast7Days => 'Últimos 7 dias';
+
+  @override
+  String get expenseFilterPeriodCurrentMonth => 'Mês atual';
+
+  @override
+  String get expenseFilterPeriodCurrentYear => 'Ano atual';
+
+  @override
+  String get expenseFilterPeriodLast30Days => 'Últimos 30 dias';
+
+  @override
+  String get expenseFilterPeriodLastYear => 'Ano anterior';
+
+  @override
+  String get expenseFilterPeriodCustom => 'Período livre';
+
+  @override
+  String get expenseFilterGroupAll => 'Todos os agrupamentos';
+
+  @override
+  String get expenseFilterUserAll => 'Todos os usuários';
 
   @override
   String get expenseApplyReturnResult => 'Resultado do retorno';
@@ -1576,6 +1659,52 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get expenseSubmitApproval => 'Enviar para aprovação';
 
   @override
+  String get expenseFormSave => 'Salvar';
+
+  @override
+  String get expenseFormSend => 'Enviar';
+
+  @override
+  String get expenseReceiptSection => 'Comprovante (imagem)';
+
+  @override
+  String get expenseReceiptOcrHint =>
+      'Usa OpenAI (mesma chave OPENAI_API_KEY do servidor) para ler o comprovante. Selecione um ficheiro de imagem ou use Fotografar.';
+
+  @override
+  String get expenseTakePhoto => 'Fotografar';
+
+  @override
+  String get expenseReceiptEmptyPreview =>
+      'A pré-visualização do comprovante aparecerá aqui após fotografar ou escolher um ficheiro.';
+
+  @override
+  String get expenseFieldClient => 'Cliente';
+
+  @override
+  String get expenseApproverProfileHint =>
+      'Definido no seu cadastro de utilizador; não pode ser alterado aqui.';
+
+  @override
+  String get expenseFieldApprover => 'Aprovador';
+
+  @override
+  String get expenseFieldFinanceApprover => 'Aprovador financeiro';
+
+  @override
+  String get expenseContractNone => '(sem contrato)';
+
+  @override
+  String get expenseCentroNone => '(sem centro de custo)';
+
+  @override
+  String get expenseDraftSavedSnackbar => 'Rascunho guardado.';
+
+  @override
+  String get expenseAgrupamentoHint =>
+      'Opcional. Sugestões dos seus agrupamentos anteriores; pode escrever outro texto ou deixar em branco.';
+
+  @override
   String get expenseDelete => 'Excluir';
 
   @override
@@ -1737,6 +1866,43 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get expenseClearPeriod => 'Limpar período';
+
+  @override
+  String get expenseSessionClientLabel => 'Cliente da sessão';
+
+  @override
+  String get expenseListSelectClienteApp =>
+      'Selecione uma empresa no menu superior da aplicação para listar despesas.';
+
+  @override
+  String get expenseFilterPeriod => 'Período';
+
+  @override
+  String get expenseFilterPeriodAll => 'Todo o período';
+
+  @override
+  String get expenseFilterPeriodLast7Days => 'Últimos 7 dias';
+
+  @override
+  String get expenseFilterPeriodCurrentMonth => 'Mês atual';
+
+  @override
+  String get expenseFilterPeriodCurrentYear => 'Ano atual';
+
+  @override
+  String get expenseFilterPeriodLast30Days => 'Últimos 30 dias';
+
+  @override
+  String get expenseFilterPeriodLastYear => 'Ano anterior';
+
+  @override
+  String get expenseFilterPeriodCustom => 'Período livre';
+
+  @override
+  String get expenseFilterGroupAll => 'Todos os agrupamentos';
+
+  @override
+  String get expenseFilterUserAll => 'Todos os utilizadores';
 
   @override
   String get expenseApplyReturnResult => 'Resultado do retorno';

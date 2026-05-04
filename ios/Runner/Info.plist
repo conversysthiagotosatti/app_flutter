@@ -67,6 +67,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>O app usa a câmera para ler o QR Code do número de série do produto.</string>
+	<string>O app usa a câmera para ler o QR Code do número de série do produto e para fotografar comprovantes de despesas.</string>
 </dict>
 </plist>

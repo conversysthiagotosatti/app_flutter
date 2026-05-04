@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/api_client.dart';
-import '../services/expense_enterprise_service.dart';
-import '../widgets/conversys_app_bar.dart';
+import '../utils/expense_cliente_selection.dart';
+import '../widgets/permitted_cliente_selector.dart';
 import 'despesa_form_screen.dart';
 import 'despesas_aprovacoes_screen.dart';
 import 'despesas_auditoria_screen.dart';
@@ -27,12 +28,18 @@ class DespesasModuleScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     Future<int?> pickClienteForNewExpense(BuildContext outer) async {
-      final svc = ExpenseEnterpriseService(apiClient);
       try {
-        final list = await svc.fetchCompanies();
+        final list = await fetchPermittedClientes(apiClient);
         if (!outer.mounted) return null;
         if (list.isEmpty) return null;
         if (list.length == 1) return list.first.id;
+        final prefs = await SharedPreferences.getInstance();
+        int? saved = prefs.getInt(kExpenseSelectedClienteIdKey);
+        saved ??= await apiClient.loadAuthClienteId();
+        if (saved != null && list.any((c) => c.id == saved)) {
+          return saved;
+        }
+        if (!outer.mounted) return null;
         int? chosen;
         await showDialog<void>(
           context: outer,
@@ -46,7 +53,7 @@ class DespesasModuleScreen extends StatelessWidget {
                   children: list
                       .map(
                         (c) => ListTile(
-                          title: Text(c.name),
+                          title: Text(c.nome),
                           onTap: () {
                             chosen = c.id;
                             Navigator.pop(ctx);
@@ -162,11 +169,6 @@ class DespesasModuleScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: conversysAppBar(
-        context,
-        l10n.expenseModuleTitle,
-        userAccountMenuApiClient: apiClient,
-      ),
       backgroundColor: background,
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -381,6 +381,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseSubmitApproval => 'Submit for approval';
 
   @override
+  String get expenseFormSave => 'Save';
+
+  @override
+  String get expenseFormSend => 'Send';
+
+  @override
+  String get expenseReceiptSection => 'Receipt (image)';
+
+  @override
+  String get expenseReceiptOcrHint =>
+      'Uses OpenAI (same OPENAI_API_KEY as the server) to read the receipt. Select an image file or use Take photo.';
+
+  @override
+  String get expenseTakePhoto => 'Take photo';
+
+  @override
+  String get expenseReceiptEmptyPreview =>
+      'The receipt preview will appear here after you take a photo or choose a file.';
+
+  @override
+  String get expenseFieldClient => 'Client';
+
+  @override
+  String get expenseApproverProfileHint =>
+      'Set on your user profile; cannot be changed here.';
+
+  @override
+  String get expenseFieldApprover => 'Approver';
+
+  @override
+  String get expenseFieldFinanceApprover => 'Finance approver';
+
+  @override
+  String get expenseContractNone => '(no contract)';
+
+  @override
+  String get expenseCentroNone => '(no cost center)';
+
+  @override
+  String get expenseDraftSavedSnackbar => 'Draft saved.';
+
+  @override
+  String get expenseAgrupamentoHint =>
+      'Optional. Suggestions from your previous groupings; you can type another title or leave blank.';
+
+  @override
   String get expenseDelete => 'Delete';
 
   @override
@@ -540,6 +586,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expenseClearPeriod => 'Clear period';
+
+  @override
+  String get expenseSessionClientLabel => 'Session client';
+
+  @override
+  String get expenseListSelectClienteApp =>
+      'Select a company in the app header to list expenses.';
+
+  @override
+  String get expenseFilterPeriod => 'Period';
+
+  @override
+  String get expenseFilterPeriodAll => 'All time';
+
+  @override
+  String get expenseFilterPeriodLast7Days => 'Last 7 days';
+
+  @override
+  String get expenseFilterPeriodCurrentMonth => 'Current month';
+
+  @override
+  String get expenseFilterPeriodCurrentYear => 'Current year';
+
+  @override
+  String get expenseFilterPeriodLast30Days => 'Last 30 days';
+
+  @override
+  String get expenseFilterPeriodLastYear => 'Last year';
+
+  @override
+  String get expenseFilterPeriodCustom => 'Custom range';
+
+  @override
+  String get expenseFilterGroupAll => 'All groups';
+
+  @override
+  String get expenseFilterUserAll => 'All users';
 
   @override
   String get expenseApplyReturnResult => 'Return file result';

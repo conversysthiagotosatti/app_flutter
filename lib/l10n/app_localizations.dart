@@ -817,6 +817,90 @@ abstract class AppLocalizations {
   /// **'Enviar para aprovação'**
   String get expenseSubmitApproval;
 
+  /// No description provided for @expenseFormSave.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar'**
+  String get expenseFormSave;
+
+  /// No description provided for @expenseFormSend.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar'**
+  String get expenseFormSend;
+
+  /// No description provided for @expenseReceiptSection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comprovante (imagem)'**
+  String get expenseReceiptSection;
+
+  /// No description provided for @expenseReceiptOcrHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usa OpenAI (mesma chave OPENAI_API_KEY do servidor) para ler o comprovante. Selecione um arquivo de imagem ou use Fotografar.'**
+  String get expenseReceiptOcrHint;
+
+  /// No description provided for @expenseTakePhoto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fotografar'**
+  String get expenseTakePhoto;
+
+  /// No description provided for @expenseReceiptEmptyPreview.
+  ///
+  /// In pt, this message translates to:
+  /// **'A pré-visualização do comprovante aparecerá aqui após fotografar ou escolher um arquivo.'**
+  String get expenseReceiptEmptyPreview;
+
+  /// No description provided for @expenseFieldClient.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cliente'**
+  String get expenseFieldClient;
+
+  /// No description provided for @expenseApproverProfileHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Definido no seu cadastro de usuário; não pode ser alterado aqui.'**
+  String get expenseApproverProfileHint;
+
+  /// No description provided for @expenseFieldApprover.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovador'**
+  String get expenseFieldApprover;
+
+  /// No description provided for @expenseFieldFinanceApprover.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aprovador financeiro'**
+  String get expenseFieldFinanceApprover;
+
+  /// No description provided for @expenseContractNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'(sem contrato)'**
+  String get expenseContractNone;
+
+  /// No description provided for @expenseCentroNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'(sem centro de custo)'**
+  String get expenseCentroNone;
+
+  /// No description provided for @expenseDraftSavedSnackbar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rascunho salvo.'**
+  String get expenseDraftSavedSnackbar;
+
+  /// No description provided for @expenseAgrupamentoHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Opcional. Sugestões dos seus agrupamentos anteriores; pode digitar outro texto ou deixar em branco.'**
+  String get expenseAgrupamentoHint;
+
   /// No description provided for @expenseDelete.
   ///
   /// In pt, this message translates to:
@@ -1128,6 +1212,78 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Limpar período'**
   String get expenseClearPeriod;
+
+  /// No description provided for @expenseSessionClientLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cliente da sessão'**
+  String get expenseSessionClientLabel;
+
+  /// No description provided for @expenseListSelectClienteApp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione uma empresa no menu superior da aplicação para listar despesas.'**
+  String get expenseListSelectClienteApp;
+
+  /// No description provided for @expenseFilterPeriod.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período'**
+  String get expenseFilterPeriod;
+
+  /// No description provided for @expenseFilterPeriodAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todo o período'**
+  String get expenseFilterPeriodAll;
+
+  /// No description provided for @expenseFilterPeriodLast7Days.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 7 dias'**
+  String get expenseFilterPeriodLast7Days;
+
+  /// No description provided for @expenseFilterPeriodCurrentMonth.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês atual'**
+  String get expenseFilterPeriodCurrentMonth;
+
+  /// No description provided for @expenseFilterPeriodCurrentYear.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ano atual'**
+  String get expenseFilterPeriodCurrentYear;
+
+  /// No description provided for @expenseFilterPeriodLast30Days.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 30 dias'**
+  String get expenseFilterPeriodLast30Days;
+
+  /// No description provided for @expenseFilterPeriodLastYear.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ano anterior'**
+  String get expenseFilterPeriodLastYear;
+
+  /// No description provided for @expenseFilterPeriodCustom.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período livre'**
+  String get expenseFilterPeriodCustom;
+
+  /// No description provided for @expenseFilterGroupAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os agrupamentos'**
+  String get expenseFilterGroupAll;
+
+  /// No description provided for @expenseFilterUserAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os usuários'**
+  String get expenseFilterUserAll;
 
   /// No description provided for @expenseApplyReturnResult.
   ///

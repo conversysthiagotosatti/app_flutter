@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/expense_enterprise.dart';
 import '../services/api_client.dart';
 import '../services/expense_enterprise_service.dart';
 import '../widgets/conversys_app_bar.dart';
+import '../widgets/permitted_cliente_selector.dart';
 import 'despesa_detalhe_screen.dart';
 import 'despesa_form_screen.dart';
 
-const _kExpenseClienteId = 'expense_selected_cliente_id';
-
+/// Filtros alinhados ao portal (`ExpenseList.tsx`): cliente da sessão (somente leitura),
+/// status, período, agrupamentos só do usuário logado (`me_only`), lista filtrada pelo
+/// mesmo usuário (`user_id` quando permitido pela API) e atualizar.
 class DespesasListScreen extends StatefulWidget {
   final ApiClient apiClient;
   final String? initialStatus;
@@ -28,20 +29,31 @@ class DespesasListScreen extends StatefulWidget {
 class _DespesasListScreenState extends State<DespesasListScreen> {
   late final ExpenseEnterpriseService _svc;
   late String _statusFilter;
+  String _period = '';
+  String _agrupamento = '';
+  String _dateFrom = '';
+  String _dateTo = '';
+  int? _loggedUserId;
 
-  bool _loadingCompanies = true;
+  bool _loadingBootstrap = true;
   bool _loadingList = false;
   String? _error;
-  List<ExpenseClienteRow> _companies = [];
-  List<ExpenseEnterpriseRow> _rows = [];
+  bool _noSessionClient = false;
+
   int? _clienteId;
+  String _clienteNome = '';
+  List<String> _agrupamentoOptions = [];
+  List<ExpenseEnterpriseRow> _rows = [];
+
+  static const _inputBorder = Color(0xFF334155);
+  static const _cardFill = Color(0xFF0B1220);
 
   @override
   void initState() {
     super.initState();
     _svc = ExpenseEnterpriseService(widget.apiClient);
     _statusFilter = widget.initialStatus ?? '';
-    _loadCompanies();
+    _bootstrap();
   }
 
   String _statusLabel(AppLocalizations l10n, String code) {
@@ -69,52 +81,70 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
     }
   }
 
-  Future<void> _loadCompanies() async {
+  Future<void> _bootstrap() async {
     setState(() {
-      _loadingCompanies = true;
+      _loadingBootstrap = true;
       _error = null;
+      _noSessionClient = false;
     });
     try {
-      final list = await _svc.fetchCompanies();
-      final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getInt(_kExpenseClienteId);
-      int? pick = saved;
-      if (pick != null && !list.any((c) => c.id == pick)) {
-        pick = null;
+      final permitted = await fetchPermittedClientes(widget.apiClient);
+      final cid = await widget.apiClient.loadAuthClienteId();
+      if (cid == null || !permitted.any((p) => p.id == cid)) {
+        if (!mounted) return;
+        setState(() {
+          _loadingBootstrap = false;
+          _noSessionClient = true;
+          _clienteId = null;
+          _clienteNome = '';
+        });
+        return;
       }
-      pick ??= list.isNotEmpty ? list.first.id : null;
+
+      final nome = permitted.firstWhere((p) => p.id == cid).nome;
+      final uid = await _svc.fetchAuthUserId();
+
+      var agTitles = <String>[];
+      try {
+        agTitles = await _svc.fetchAgrupamentoTitulos(cid, meOnly: true);
+      } catch (_) {}
+
       if (!mounted) return;
       setState(() {
-        _companies = list;
-        _clienteId = pick;
-        _loadingCompanies = false;
+        _clienteId = cid;
+        _clienteNome = nome;
+        _loggedUserId = uid;
+        _agrupamentoOptions = agTitles;
+        _loadingBootstrap = false;
       });
-      if (pick != null) {
-        await _loadList(pick);
-      }
+      await _loadList();
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _loadingCompanies = false;
+        _loadingBootstrap = false;
         _error = e.toString();
       });
     }
   }
 
-  Future<void> _persistCliente(int id) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_kExpenseClienteId, id);
-  }
-
-  Future<void> _loadList(int clienteId) async {
+  Future<void> _loadList() async {
+    final cid = _clienteId;
+    if (cid == null) return;
     setState(() {
       _loadingList = true;
       _error = null;
     });
     try {
+      final p = _period.trim();
+      final usePeriod = p.isNotEmpty && p != 'custom';
       final list = await _svc.fetchExpenses(
-        clienteId,
+        cid,
         status: _statusFilter.isEmpty ? null : _statusFilter,
+        agrupamentoTitulo: _agrupamento.trim().isEmpty ? null : _agrupamento.trim(),
+        period: usePeriod ? p : null,
+        dateFrom: p == 'custom' && _dateFrom.trim().isNotEmpty ? _dateFrom.trim() : null,
+        dateTo: p == 'custom' && _dateTo.trim().isNotEmpty ? _dateTo.trim() : null,
+        userId: (_loggedUserId != null && _loggedUserId! > 0) ? _loggedUserId : null,
       );
       if (!mounted) return;
       setState(() {
@@ -130,18 +160,56 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
     }
   }
 
-  Future<void> _onClienteChanged(int? id) async {
-    if (id == null) return;
-    await _persistCliente(id);
-    setState(() => _clienteId = id);
-    await _loadList(id);
-  }
-
   Future<void> _onStatusChanged(String? value) async {
     if (value == null) return;
     setState(() => _statusFilter = value);
-    final cid = _clienteId;
-    if (cid != null) await _loadList(cid);
+    await _loadList();
+  }
+
+  Future<void> _onPeriodChanged(String? value) async {
+    if (value == null) return;
+    setState(() {
+      _period = value;
+      if (value != 'custom') {
+        _dateFrom = '';
+        _dateTo = '';
+      }
+    });
+    await _loadList();
+  }
+
+  Future<void> _onAgrupamentoChanged(String? value) async {
+    if (value == null) return;
+    setState(() => _agrupamento = value);
+    await _loadList();
+  }
+
+  Future<void> _pickDate(bool isFrom) async {
+    final l10n = AppLocalizations.of(context)!;
+    final initialStr = isFrom ? _dateFrom : _dateTo;
+    final initial = DateTime.tryParse(initialStr) ?? DateTime.now();
+    final first = DateTime(2000);
+    final last = DateTime(2100);
+    final d = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: first,
+      lastDate: last,
+      helpText: isFrom ? l10n.expenseDateFrom : l10n.expenseDateTo,
+    );
+    if (d == null || !mounted) return;
+    final y = d.year.toString().padLeft(4, '0');
+    final m = d.month.toString().padLeft(2, '0');
+    final day = d.day.toString().padLeft(2, '0');
+    final iso = '$y-$m-$day';
+    setState(() {
+      if (isFrom) {
+        _dateFrom = iso;
+      } else {
+        _dateTo = iso;
+      }
+    });
+    await _loadList();
   }
 
   Future<void> _openDetail(ExpenseEnterpriseRow row) async {
@@ -157,7 +225,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
       ),
     );
     if (mounted && cid == _clienteId) {
-      await _loadList(cid);
+      await _loadList();
     }
   }
 
@@ -172,7 +240,21 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
         ),
       ),
     );
-    if (mounted && ok == true && cid == _clienteId) await _loadList(cid);
+    if (mounted && ok == true && cid == _clienteId) await _loadList();
+  }
+
+  InputDecoration _filterDecoration(AppLocalizations l10n, String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white70),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: _inputBorder),
+      ),
+      filled: true,
+      fillColor: _cardFill,
+    );
   }
 
   @override
@@ -180,7 +262,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
     final l10n = AppLocalizations.of(context)!;
     const bg = Color(0xFF020617);
 
-    if (_loadingCompanies) {
+    if (_loadingBootstrap) {
       return Scaffold(
         appBar: conversysAppBar(context, l10n.expenseListTile),
         backgroundColor: bg,
@@ -188,7 +270,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
       );
     }
 
-    if (_companies.isEmpty) {
+    if (_noSessionClient) {
       return Scaffold(
         appBar: conversysAppBar(context, l10n.expenseListTile),
         backgroundColor: bg,
@@ -196,7 +278,24 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              l10n.expenseNoCompanies,
+              l10n.expenseListSelectClienteApp,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_clienteId == null) {
+      return Scaffold(
+        appBar: conversysAppBar(context, l10n.expenseListTile),
+        backgroundColor: bg,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              _error ?? l10n.expenseNoCompanies,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white70),
             ),
@@ -239,66 +338,170 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
       DropdownMenuItem(value: 'paid', child: Text(l10n.expenseStatusPaid)),
     ];
 
+    final periodItems = <DropdownMenuItem<String>>[
+      DropdownMenuItem(value: '', child: Text(l10n.expenseFilterPeriodAll)),
+      DropdownMenuItem(
+        value: 'last_7_days',
+        child: Text(l10n.expenseFilterPeriodLast7Days),
+      ),
+      DropdownMenuItem(
+        value: 'current_month',
+        child: Text(l10n.expenseFilterPeriodCurrentMonth),
+      ),
+      DropdownMenuItem(
+        value: 'current_year',
+        child: Text(l10n.expenseFilterPeriodCurrentYear),
+      ),
+      DropdownMenuItem(
+        value: 'last_30_days',
+        child: Text(l10n.expenseFilterPeriodLast30Days),
+      ),
+      DropdownMenuItem(
+        value: 'last_year',
+        child: Text(l10n.expenseFilterPeriodLastYear),
+      ),
+      DropdownMenuItem(
+        value: 'custom',
+        child: Text(l10n.expenseFilterPeriodCustom),
+      ),
+    ];
+
+    final agrupItems = <DropdownMenuItem<String>>[
+      DropdownMenuItem(value: '', child: Text(l10n.expenseFilterGroupAll)),
+      ..._agrupamentoOptions.map(
+        (t) => DropdownMenuItem(value: t, child: Text(t, overflow: TextOverflow.ellipsis)),
+      ),
+    ];
+
     return Scaffold(
       appBar: conversysAppBar(context, l10n.expenseListTile),
       backgroundColor: bg,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _clienteId == null ? null : _openNew,
+        onPressed: _openNew,
         icon: const Icon(Icons.add),
         label: Text(l10n.expenseNew),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DropdownButtonFormField<int>(
-                  initialValue: _clienteId,
+                Text(
+                  l10n.expenseSessionClientLabel,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                InputDecorator(
                   decoration: InputDecoration(
-                    labelText: l10n.expenseSelectClient,
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF334155)),
+                      borderSide: const BorderSide(color: _inputBorder),
                     ),
+                    filled: true,
+                    fillColor: _cardFill,
                   ),
-                  dropdownColor: const Color(0xFF0B1220),
-                  style: const TextStyle(color: Colors.white),
-                  items: _companies
-                      .map(
-                        (c) => DropdownMenuItem(
-                          value: c.id,
+                  child: Text(
+                    _clienteNome.isNotEmpty ? _clienteNome : '—',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 168,
+                      child: DropdownButtonFormField<String>(
+                        value: _statusFilter,
+                        decoration: _filterDecoration(l10n, l10n.expenseStatusFilter),
+                        dropdownColor: _cardFill,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        isExpanded: true,
+                        items: statusItems,
+                        onChanged: _onStatusChanged,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 176,
+                      child: DropdownButtonFormField<String>(
+                        value: _period,
+                        decoration: _filterDecoration(l10n, l10n.expenseFilterPeriod),
+                        dropdownColor: _cardFill,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        isExpanded: true,
+                        items: periodItems,
+                        onChanged: _onPeriodChanged,
+                      ),
+                    ),
+                    if (_period == 'custom') ...[
+                      SizedBox(
+                        width: 148,
+                        child: OutlinedButton(
+                          onPressed: _loadingList ? null : () => _pickDate(true),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white70,
+                            side: const BorderSide(color: _inputBorder),
+                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                          ),
                           child: Text(
-                            c.name,
+                            _dateFrom.isEmpty ? l10n.expenseDateFrom : _dateFrom,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      )
-                      .toList(),
-                  onChanged: _onClienteChanged,
-                ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  initialValue: _statusFilter,
-                  decoration: InputDecoration(
-                    labelText: l10n.expenseStatusFilter,
-                    labelStyle: const TextStyle(color: Colors.white70),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      ),
+                      SizedBox(
+                        width: 148,
+                        child: OutlinedButton(
+                          onPressed: _loadingList ? null : () => _pickDate(false),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white70,
+                            side: const BorderSide(color: _inputBorder),
+                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                          ),
+                          child: Text(
+                            _dateTo.isEmpty ? l10n.expenseDateTo : _dateTo,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                    SizedBox(
+                      width: 200,
+                      child: DropdownButtonFormField<String>(
+                        value: _agrupamento.isEmpty || agrupItems.any((e) => e.value == _agrupamento)
+                            ? _agrupamento
+                            : '',
+                        decoration: _filterDecoration(l10n, l10n.expenseAgrupamentoTitulo),
+                        dropdownColor: _cardFill,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        isExpanded: true,
+                        items: agrupItems,
+                        onChanged: _onAgrupamentoChanged,
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF334155)),
+                    IconButton.filledTonal(
+                      onPressed: _loadingList ? null : _loadList,
+                      tooltip: l10n.expenseRefresh,
+                      icon: _loadingList
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
                     ),
-                  ),
-                  dropdownColor: const Color(0xFF0B1220),
-                  style: const TextStyle(color: Colors.white),
-                  items: statusItems,
-                  onChanged: _onStatusChanged,
+                  ],
                 ),
               ],
             ),
@@ -312,7 +515,7 @@ class _DespesasListScreenState extends State<DespesasListScreen> {
               ),
             ),
           Expanded(
-            child: _loadingList
+            child: _loadingList && _rows.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : _rows.isEmpty
                     ? Center(

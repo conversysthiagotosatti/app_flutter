@@ -3,20 +3,30 @@ class ExpenseClienteRow {
   final String name;
   final String document;
   final bool active;
+  /// Papel no tenant de despesas (`employee`, `manager`, …); vem de `/api/companies/`.
+  final String? expenseRole;
 
   ExpenseClienteRow({
     required this.id,
     required this.name,
     required this.document,
     required this.active,
+    this.expenseRole,
   });
 
   factory ExpenseClienteRow.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final id = rawId is int
+        ? rawId
+        : rawId is num
+            ? rawId.toInt()
+            : 0;
     return ExpenseClienteRow(
-      id: json['id'] as int,
+      id: id,
       name: (json['name'] ?? '') as String,
       document: (json['document'] ?? '') as String,
       active: json['active'] as bool? ?? true,
+      expenseRole: json['expense_role'] as String?,
     );
   }
 }
@@ -80,8 +90,14 @@ class ExpenseCompanyUserRow {
   ExpenseCompanyUserRow({required this.id, required this.username});
 
   factory ExpenseCompanyUserRow.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final id = rawId is int
+        ? rawId
+        : rawId is num
+            ? rawId.toInt()
+            : 0;
     return ExpenseCompanyUserRow(
-      id: json['id'] as int,
+      id: id,
       username: (json['username'] ?? '') as String,
     );
   }

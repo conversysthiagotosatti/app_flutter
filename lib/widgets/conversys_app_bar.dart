@@ -11,6 +11,8 @@ PreferredSizeWidget conversysAppBar(
   VoidCallback? onNotificationsTap,
   VoidCallback? onProfileTap,
   ApiClient? userAccountMenuApiClient,
+  /// Linha extra sob o título (ex.: seletor de empresa no módulo Despesas).
+  Widget? subtitle,
 }) {
   final l10n = AppLocalizations.of(context)!;
   final actions = <Widget>[];
@@ -49,8 +51,26 @@ PreferredSizeWidget conversysAppBar(
       ),
   ]);
 
+  final hasSubtitle = subtitle != null;
+
   return AppBar(
-    title: Text(title),
+    toolbarHeight: hasSubtitle ? 88 : kToolbarHeight,
+    title: hasSubtitle
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              SizedBox(height: 36, child: subtitle),
+            ],
+          )
+        : Text(title),
     actions: actions,
   );
 }
