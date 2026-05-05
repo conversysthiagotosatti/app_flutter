@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiClient {
   /// Backend local (ex.: `python manage.py runserver` → porta 8000).
   /// Emulador Android use `http://10.0.2.2:8000` em vez de localhost.
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'http://172.20.5.66:8000';
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
